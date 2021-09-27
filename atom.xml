@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-08-25T15:21:47.914Z</updated>
+  <updated>2021-09-27T15:12:50.028Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -21,10 +21,29 @@
     <link href="http://example.com/2021/08/25/dae/"/>
     <id>http://example.com/2021/08/25/dae/</id>
     <published>2021-08-25T15:21:47.000Z</published>
-    <updated>2021-08-25T15:21:47.914Z</updated>
+    <updated>2021-09-27T15:12:50.028Z</updated>
     
     
     
+    
+    <category term="Research" scheme="http://example.com/categories/Research/"/>
+    
+    
+    <category term="CV" scheme="http://example.com/tags/CV/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>dae</title>
+    <link href="http://example.com/2021/08/25/dae%E7%9A%84%E5%89%AF%E6%9C%AC/"/>
+    <id>http://example.com/2021/08/25/dae%E7%9A%84%E5%89%AF%E6%9C%AC/</id>
+    <published>2021-08-25T15:21:47.000Z</published>
+    <updated>2021-09-27T15:03:41.937Z</updated>
+    
+    
+    
+    
+    <category term="Preliminary AI" scheme="http://example.com/categories/Preliminary-AI/"/>
     
     
   </entry>
@@ -34,11 +53,15 @@
     <link href="http://example.com/2021/08/25/test/"/>
     <id>http://example.com/2021/08/25/test/</id>
     <published>2021-08-25T14:42:55.000Z</published>
-    <updated>2021-08-25T14:42:55.846Z</updated>
+    <updated>2021-09-27T15:13:44.515Z</updated>
     
     
     
     
+    <category term="Leetcode" scheme="http://example.com/categories/Leetcode/"/>
+    
+    
+    <category term="Data Structure" scheme="http://example.com/tags/Data-Structure/"/>
     
   </entry>
   
@@ -47,11 +70,15 @@
     <link href="http://example.com/2021/08/16/test-my-site/"/>
     <id>http://example.com/2021/08/16/test-my-site/</id>
     <published>2021-08-16T14:58:35.000Z</published>
-    <updated>2021-08-16T14:58:35.710Z</updated>
+    <updated>2021-09-27T15:13:14.304Z</updated>
     
     
     
     
+    <category term="Paper_daily" scheme="http://example.com/categories/Paper-daily/"/>
+    
+    
+    <category term="NLP" scheme="http://example.com/tags/NLP/"/>
     
   </entry>
   
@@ -60,7 +87,7 @@
     <link href="http://example.com/2021/08/16/hello-world/"/>
     <id>http://example.com/2021/08/16/hello-world/</id>
     <published>2021-08-16T14:25:40.470Z</published>
-    <updated>2021-09-23T14:20:24.050Z</updated>
+    <updated>2021-09-27T15:01:09.150Z</updated>
     
     <content type="html"><![CDATA[<p>由于Hexo博客的撰写需要用Markdown，然而这些杂七杂八的语法很难全部记住，因此在这页博客中记录一下</p><h2 id="文字"><a href="#文字" class="headerlink" title="文字"></a>文字</h2><h3 id="标题"><a href="#标题" class="headerlink" title="标题"></a>标题</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 一级标题</span><br><span class="line">## 二级标题</span><br><span class="line">...</span><br></pre></td></tr></table></figure><h3 id="居中"><a href="#居中" class="headerlink" title="居中"></a>居中</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;center&gt;这一行需要居中&lt;/center&gt;</span><br></pre></td></tr></table></figure><h3 id="字体"><a href="#字体" class="headerlink" title="字体"></a>字体</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">**（）** 加粗</span><br><span class="line">*（）* 斜体</span><br><span class="line">～～（）～～ 删除线</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;font face= “黑体” color=red size=72&gt;字体设置&lt;/font&gt;</span><br></pre></td></tr></table></figure><h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;这是引用文字</span><br></pre></td></tr></table></figure><h2 id="分割线"><a href="#分割线" class="headerlink" title="分割线"></a>分割线</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">***</span><br></pre></td></tr></table></figure><h2 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![图片alt](图片地址 &#x27;&#x27;图片title&#x27;&#x27;)</span><br></pre></td></tr></table></figure><p>图片alt就是显示在图片下面的文字，相当于对图片内容的解释。<br>图片title是图片的标题，当鼠标移到图片上时显示的内容。title可加可不加</p><h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[超链接名](超链接地址 &quot;超链接title&quot;)</span><br></pre></td></tr></table></figure><h2 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- 列表内容</span><br><span class="line">+ 列表内容</span><br><span class="line">1. 列表内容</span><br></pre></td></tr></table></figure><h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">`代码内容`</span><br><span class="line">\```</span><br><span class="line">  代码...</span><br><span class="line">  代码...</span><br><span class="line">  代码...</span><br><span class="line">\```</span><br></pre></td></tr></table></figure><h2 id="数学公式"><a href="#数学公式" class="headerlink" title="数学公式"></a>数学公式</h2><p>公式、希腊字母、上标下标等基本语法与latex类似，可参考<a href="https://www.jianshu.com/p/a0aa94ef8ab2">markdown数学公式</a><br>‘’’<br>正文中$…$<br>单行显示$$…$$<br>‘’’</p>]]></content>
     
@@ -72,6 +99,8 @@
       
     
     
+    
+    <category term="杂七杂八" scheme="http://example.com/categories/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/"/>
     
     
   </entry>
