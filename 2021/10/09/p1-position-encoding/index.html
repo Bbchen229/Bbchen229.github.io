@@ -79,22 +79,23 @@
 
 
 
-<meta name="description" content="Encoding Word Order in Complex Embeddings ICLR 2020 Code: link 概要 针对位置编码提出的改进，切入点新颖高效且为位置编码带来了一定的具体意义和可解释性。传统的位置嵌入捕获单个单词的位置，而不是单个单词位置之间的有序关系(例如邻接关系或优先级)。本文提出的方法建模单词的全局绝对位置和它们的顺序关系，将以前定义为独立向量的词嵌入推广到变量(">
+<meta name="description" content="Encoding Word Order in Complex Embeddings Code: link 概要 针对位置编码提出的改进，切入点新颖高效且为位置编码带来了一定的具体意义和可解释性。传统的位置嵌入捕获单个单词的位置，而不是单个单词位置之间的有序关系(例如邻接关系或优先级)。本文提出的方法建模单词的全局绝对位置和它们的顺序关系，将以前定义为独立向量的词嵌入推广到变量(位置)上的连续词函数">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Encoding Word Order in Complex Embeddings">
+<meta property="og:title" content="Encoding Word Order in Complex Embeddings [ICLR2020]">
 <meta property="og:url" content="http://example.com/2021/10/09/p1-position-encoding/index.html">
 <meta property="og:site_name" content="Chen&#39;s Homepage">
-<meta property="og:description" content="Encoding Word Order in Complex Embeddings ICLR 2020 Code: link 概要 针对位置编码提出的改进，切入点新颖高效且为位置编码带来了一定的具体意义和可解释性。传统的位置嵌入捕获单个单词的位置，而不是单个单词位置之间的有序关系(例如邻接关系或优先级)。本文提出的方法建模单词的全局绝对位置和它们的顺序关系，将以前定义为独立向量的词嵌入推广到变量(">
+<meta property="og:description" content="Encoding Word Order in Complex Embeddings Code: link 概要 针对位置编码提出的改进，切入点新颖高效且为位置编码带来了一定的具体意义和可解释性。传统的位置嵌入捕获单个单词的位置，而不是单个单词位置之间的有序关系(例如邻接关系或优先级)。本文提出的方法建模单词的全局绝对位置和它们的顺序关系，将以前定义为独立向量的词嵌入推广到变量(位置)上的连续词函数">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/pe4.png">
 <meta property="og:image" content="http://example.com/images/pe1.png">
 <meta property="og:image" content="http://example.com/images/pe2.png">
 <meta property="og:image" content="http://example.com/images/pe3.png">
 <meta property="article:published_time" content="2021-10-09T13:29:54.000Z">
-<meta property="article:modified_time" content="2021-10-10T12:08:37.446Z">
+<meta property="article:modified_time" content="2021-10-26T15:36:04.658Z">
 <meta property="article:author" content="Chen jiayuan">
 <meta property="article:tag" content="Positional_encoding">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/images/pe1.png">
+<meta name="twitter:image" content="http://example.com/images/pe4.png">
 
 
 
@@ -130,7 +131,7 @@
 
 
 
-  <title>Encoding Word Order in Complex Embeddings | Chen's Homepage</title>
+  <title>Encoding Word Order in Complex Embeddings [ICLR2020] | Chen's Homepage</title>
   
 
 
@@ -286,7 +287,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Encoding Word Order in Complex Embeddings</h1>
+          <h1 class="post-title" itemprop="name headline">Encoding Word Order in Complex Embeddings [ICLR2020]</h1>
         
 
         <div class="post-meta">
@@ -359,7 +360,6 @@
 
       
         <p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1912.12333.pdf">Encoding Word Order in Complex Embeddings</a><br />
-ICLR 2020<br />
 Code: <a target="_blank" rel="noopener" href="https://github.com/iclr-complex-order/complex-order">link</a></p>
 <h2 id="概要">概要</h2>
 <p>针对位置编码提出的改进，切入点新颖高效且为位置编码带来了一定的具体意义和可解释性。传统的位置嵌入捕获单个单词的位置，而不是单个单词位置之间的有序关系(例如邻接关系或优先级)。本文提出的方法建模单词的全局绝对位置和它们的顺序关系，将以前定义为独立向量的词嵌入推广到变量(位置)上的连续词函数。每个单词的表示会随着位置的增加而移动。因此，在连续函数中，不同位置的词表示可以相互关联。将这些函数的通解推广到复值域，得到了更丰富的表示。作者在文本分类、机器翻译和语言模型方面进行实验，取得了良好的表现。</p>
@@ -379,6 +379,7 @@ P E_{(p o s, 2 i+1)} &amp;=\cos \left(p o s / 10000^{2 i / d_{\text {model }}} \
 \]</span> 其中<span class="math inline">\(d_{model}\)</span>为输入词向量的维度。如d(model)=128,那么位置3对应的位置向量为 <span class="math display">\[
 \left[\sin \left(3 / 10000^{0 / 128}\right), \cos \left(3 / 10000^{1 / 128}\right), \sin \left(3 / 10000^{2 / 28}\right), \cos \left(3 / 10000^{3 / 28}\right), \ldots\right]
 \]</span> 在具体的应用时可能前一部分用正弦后一部分用余弦。</p>
+<p><img src="/images/pe4.png" title="Bert中的位置编码" /></p>
 <h3 id="相对位置编码">相对位置编码</h3>
 <p>Todo<br />
 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1803.02155">Self-Attention with Relative Position Representations</a></p>
@@ -482,8 +483,8 @@ Todo</p>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/10/10/pd2/" rel="prev" title="Vocabulary Learning via Optimal Transport for Neural Machine Translation">
-                Vocabulary Learning via Optimal Transport for Neural Machine Translation <i class="fa fa-chevron-right"></i>
+              <a href="/2021/10/10/pd2/" rel="prev" title="Vocabulary Learning via Optimal Transport for Neural Machine Translation [ACL2021]">
+                Vocabulary Learning via Optimal Transport for Neural Machine Translation [ACL2021] <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -565,7 +566,7 @@ Todo</p>
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -576,7 +577,7 @@ Todo</p>
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -587,7 +588,7 @@ Todo</p>
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
