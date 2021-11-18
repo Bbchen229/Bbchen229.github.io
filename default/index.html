@@ -280,7 +280,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/11/18/svgd-2/" itemprop="url">Untitled</a></h1>
+                <a class="post-title-link" href="/2021/11/18/svgd-2/" itemprop="url">SVGD补充</a></h1>
         
 
         <div class="post-meta">
@@ -292,7 +292,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-18T10:04:35+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-18T10:03:58+08:00">
                 2021-11-18
               </time>
             
@@ -302,6 +302,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
+                    <span itemprop="name">Paper_daily</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -332,7 +354,10 @@
       
         
           
-            
+            <p>关于<a href="/2021/11/09/svgd/" title="SVGD">SVGD</a>的内容，这一篇博客中大致做了简单的介绍，包括从上到下的数学推导和简单的逻辑链。但整个贝叶斯推断背后还有许多思想，且SVGD背后也隐藏的一些思维过程。这篇Blog将作为SVGD相关内容的补充以及涉及到的知识体系的简要归纳。</p>
+<h1 id="svgd实验">SVGD实验</h1>
+<h2 id="拟合高斯分布">拟合高斯分布</h2>
+<h2 id="贝叶斯神经网络">贝叶斯神经网络</h2>
 
           
         
@@ -707,6 +732,53 @@ f(x)=\langle f, k(\cdot, x)\rangle_{\mathcal{H}}, \quad k\left(x, x^{\prime}\rig
 \]</span> 证明的话根据<span class="math inline">\(\boldsymbol{s}_{p}(x) \boldsymbol{f}(x)^{\top}+\nabla \boldsymbol{f}(x)=\nabla_{x}(\boldsymbol{f}(x) p(x)) / p(x)\)</span>和分布积分法则就可以推导出来。</p>
 <p>有了上面的引理，我们可以得到 <span class="math display">\[\mathbb{E}_{p}\left[\mathcal{A}_{q} \boldsymbol{f}(x)\right]=\mathbb{E}_{p}\left[\mathcal{A}_{q} \boldsymbol{f}(x)-\mathcal{A}_{p} \boldsymbol{f}(x)\right]=\mathbb{E}_{p}\left[\left(\boldsymbol{s}_{q}(x)-\boldsymbol{s}_{p}(x)\right) \boldsymbol{f}(x)^{\top}\right]\]</span></p>
 <p>也就是说<span class="math inline">\(\mathbb{E}_{p}\left[\mathcal{A}_{q} \boldsymbol{f}(x)\right]\)</span>是一个由<span class="math inline">\(f(x)\)</span>加权的期望，对于<span class="math inline">\(\left(s_{q}(x)-s_{p}(x)\right)\)</span>的期望。</p>
+<h3 id="ksd">KSD</h3>
+<p>借助上面的推导以及RKHS的性质，我们可以定义出核空间下的stein discrepancy： <span class="math display">\[
+S(p, q)=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{x})\right)^{T} k(\mathbf{x}, \mathbf{y})\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{x})\right)\right]
+\]</span> （这里我们将Kernelized前后的stein discrepancy分别写为<span class="math inline">\(\mathbb{S}(p,q)\)</span>和<span class="math inline">\(S(p, q)\)</span>。另外需要注意后续部分推导是针对stein discrepancy中的期望项）<br />
+我们要用一个可采样的分布<span class="math inline">\(q\)</span>拟合分布<span class="math inline">\(p\)</span>，因此我们希望<span class="math inline">\(S(p, q)\)</span>[]中的式子是与<span class="math inline">\(p\)</span>无关的。把式子展开后可以发现 <span class="math display">\[
+\begin{aligned}
+S(p, q) &amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim}\left[\left(s_{q}-s_{p}\right)^{T} k(\mathbf{x}, \mathbf{y})\left(s_{q}-s_{p}\right)\right] \\
+&amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim}\left[\left(s_{q}-s_{p}\right)^{T}\left(k(\mathbf{x}, \mathbf{y}) s_{q}+\nabla_{y} k(\mathbf{x}, \mathbf{y})-k(\mathbf{x}, \mathbf{y}) s_{p}-\nabla_{\mathbf{y}} k(\mathbf{x}, \mathbf{y})\right)\right] \\
+&amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim}\left[\left(s_{q}-s_{p}\right)^{T} v(\mathbf{x}, \mathbf{y})\right]
+\end{aligned}
+\]</span> 其中<span class="math inline">\(v(\mathbf{x}, \mathbf{y})=k(\mathbf{x}, \mathbf{y}) s_{q}(\mathbf{y})+\nabla_{\mathbf{y}} k(\mathbf{x}, \mathbf{y})=\mathcal{A}_{q} k_{\mathbf{x}}(\mathbf{y}), k_{\mathbf{x}}(\cdot)=k(\mathbf{x}, \cdot)\)</span></p>
+<p>而对于固定的 <span class="math inline">\(\mathbf{y}\)</span>, 容易证明 <span class="math inline">\(v(\cdot, \mathbf{y})\)</span> 是Stein class of <span class="math inline">\(p(\mathbf{x})\)</span>, 即满足 <span class="math inline">\(\int_{\mathbf{x} \in \mathcal{X}} \nabla_{\mathbf{x}}(v(\mathbf{x}, \mathbf{y}) p(\mathbf{x})) d \mathbf{x}=0\)</span> 。因此就可以进一步将上式写开为 <span class="math display">\[
+\begin{aligned}
+S(p, q) &amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[s_{q}^{T} v(\mathbf{x}, \mathbf{y})-\left(\nabla_{\mathbf{x}} \ln p(\mathbf{x})\right)^{T} v(\mathbf{x}, \mathbf{y})\right] \\
+&amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[s_{q}^{T} v(\mathbf{x}, \mathbf{y})\right]-\int d \mathbf{x} d \mathbf{y} p(\mathbf{x}) p(\mathbf{y})\left(\nabla_{\mathbf{x}} \ln p(\mathbf{x})\right)^{T} v(\mathbf{x}, \mathbf{y}) \\
+&amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[s_{q}^{T} v(\mathbf{x}, \mathbf{y})\right]+\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[\operatorname{tr} \nabla_{\mathbf{x}} v(\mathbf{x}, \mathbf{y})\right]
+\end{aligned}
+\]</span></p>
+<p>其中<span class="math inline">\(\nabla_{\mathbf{x}} v(\mathbf{x}, \mathbf{y})=\nabla_{\mathbf{x}} k(\mathbf{x}, \mathbf{y}) s_{q}(\mathbf{y})^{T}+\nabla_{\mathbf{x}} \nabla_{\mathbf{y}} k(\mathbf{x}, \mathbf{y})\)</span>为一个矩阵。</p>
+<p>这样就得到了前文提到了 <span class="math display">\[
+S(p, q)=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[u_{q}(\mathbf{x}, \mathbf{y})\right]
+\]</span> 其中<span class="math inline">\(u_{q}(\mathbf{x}, \mathbf{y})\)</span>仅与分布<span class="math inline">\(q\)</span>有关。</p>
+<p>上述的推导说明了什么？说明引入核方法的可行性。而另一方面，我们要用核方法来加速内积的计算，如何体现？<br />
+借助RKHS的对称性和再生性，我们可以将<span class="math inline">\(S(p,q)\)</span>进行变化： <span class="math display">\[
+\begin{aligned}
+S(p, q) &amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{y})\right)^{T} k(\mathbf{x}, \mathbf{y})\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{y})\right)\right] \\
+&amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{y})\right)^{T}&lt;k(\mathbf{x}, \cdot), k(\cdot, \mathbf{y})&gt;_{\mathcal{H}}\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{y})\right)\right] \\
+&amp;=\sum_{i=1}^{d}&lt;\mathbb{E}_{\mathbf{x} \sim p}\left[\left(s_{q}^{i}(\mathbf{x})-s_{p}^{i}(\mathbf{x})\right) k(\mathbf{x}, \cdot)\right], \mathbb{E}_{\mathbf{y} \sim p}\left[\left(s_{q}^{i}(\mathbf{y})-s_{p}^{i}(\mathbf{y})\right) k(\cdot \mathbf{y})\right]&gt;_{\mathcal{H}} \\
+&amp;=\sum_{i=1}^{d}&lt;\beta_{i}, \beta_{i}&gt;_{\mathcal{H}} \\
+&amp;=\|\boldsymbol{\beta}\|_{\mathcal{H}^{d}}^{2}
+\end{aligned}
+\]</span> 其中<span class="math inline">\(\boldsymbol{\beta}(\mathbf{y})\)</span>是一个向量函数 <span class="math display">\[
+\boldsymbol{\beta}(\mathbf{y})=\mathbb{E}_{\mathbf{x} \sim p}\left[\mathcal{A}_{q} k_{\mathbf{y}}(\mathbf{x})\right]=\mathbb{E}_{\mathbf{x} \sim p}\left[\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{x})\right) k_{\mathbf{y}}(\mathbf{x})\right]
+\]</span></p>
+<p>在这里再展示一下最开始的stein discrepancy <span class="math display">\[
+\mathbb{S}(p, q)=\max _{f \in \mathcal{F}}\left(\mathbb{E}_{p}\left[\mathcal{A}_{q} f(x)\right]\right)^{2}
+\]</span> 对于任意向量 <span class="math inline">\(\mathbf{f} \in \mathcal{H}^{d}\)</span> 与 <span class="math inline">\(\boldsymbol{\beta}\)</span> 的内积为 <span class="math display">\[
+\begin{aligned}
+&lt;\mathbf{f}, \boldsymbol{\beta}&gt;_{\mathcal{H}^{d}} &amp;=\sum_{i=1}^{d}&lt;f_{i}, \mathbb{E}_{\mathbf{x} \sim p}\left[s_{q}^{i}(\mathbf{x}) k(\mathbf{x}, \cdot)+\nabla_{x_{i}} k(\mathbf{x}, \cdot)\right]&gt;_{\mathcal{H}} \\
+&amp;=\sum_{i=1}^{d} \mathbb{E}_{\mathbf{x} \sim p}\left[s_{q}^{i}(\mathbf{x})&lt;f_{i}, k(\mathbf{x}, \cdot)&gt;_{\mathcal{H}}+&lt;f_{i}, \nabla_{x_{i}} k(\mathbf{x}, \cdot)&gt;_{\mathcal{H}}\right] \\
+&amp;=\sum_{i=1}^{d} \mathbb{E}_{\mathbf{x} \sim p}\left[s_{q}^{i}(\mathbf{x}) f_{i}(\mathbf{x})+\nabla_{x_{i}} f_{i}(\mathbf{x})\right] \\
+&amp;=\mathbb{E}_{\mathbf{x} \sim p}\left[\operatorname{tr}\left(\mathcal{A}_{q} \mathbf{f}(\mathbf{x})\right)\right] \leq\|\boldsymbol{\beta}\|_{\mathcal{H}^{d}} (因为任意两个向量内积小于它与自身的内积)
+\end{aligned}
+\]</span> 因此我们有 <span class="math display">\[
+\|\boldsymbol{\beta}\|_{\mathcal{H}^{d}}=S(p, q)=\max _{f \in \mathcal{H}^{d}}\left\{\mathbb{E}_{\mathbf{x} \sim p}\left[\operatorname{tr}\left(\mathcal{A}_{q} f(\mathbf{x})\right)\right]\right \}.
+\]</span> 上式中<span class="math inline">\(\|f\|_{\mathcal{H}^{d}} \leq 1\)</span>，对应于最初提到的映射到希尔伯特空间中的一个球中的最优向量。这个<span class="math inline">\(S(p,q)\)</span>最大值所对应的向量为 <span class="math inline">\({f}^{*}=\boldsymbol{\beta} /\|\boldsymbol{\beta}\|_{\mathcal{H}^{d}}\)</span></p>
+<p>简单来说，引入kernel之后，我们可以直接得到stein discrepancy定义式中的函数。也就是说，KSD非常容易就能求得。</p>
 <h1 id="stein-variational-gradient-descent-svgd">Stein Variational Gradient Descent (SVGD)</h1>
 <p>SVGD的另一个核心公式在于 <span class="math display">\[
 \left.\nabla_{\epsilon} \mathrm{KL}\left(q_{[T]} \| p\right)\right|_{\epsilon=0}=-\mathbb{E}_{x \sim q}\left[\operatorname{tr}\left(\mathcal{A}_{p} \phi(x)\right)\right]
