@@ -261,6 +261,429 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/29/word2vec/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/09/29/word2vec/" itemprop="url">word2vec</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-09-29T00:10:00+08:00">
+                2021-09-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/20/sort-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/09/20/sort-1/" itemprop="url">sort algorithm 1</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-09-20T23:01:57+08:00">
+                2021-09-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Leetcode/" itemprop="url" rel="index">
+                    <span itemprop="name">Leetcode</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="sorti">Sort(i)</h1>
+<p>三种复杂度为<span class="math inline">\(O(n^2)\)</span>的排序算法:</p>
+<ul>
+<li>冒泡排序</li>
+<li>选择排序</li>
+<li>插入排序</li>
+</ul>
+<h2 id="bubble-sort">Bubble sort</h2>
+<p>“一趟一趟来” <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bubble_sort</span>(<span class="params">ls</span>):</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(ls)-<span class="number">1</span>):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(ls)-i-<span class="number">1</span>):</span><br><span class="line">            <span class="keyword">if</span> ls[j] &gt; ls[j+<span class="number">1</span>]:</span><br><span class="line">                ls[j+<span class="number">1</span>],ls[j]=ls[j],ls[j+<span class="number">1</span>]</span><br><span class="line">    <span class="keyword">return</span>(ls)</span><br></pre></td></tr></table></figure></p>
+<h2 id="select-sort">Select sort</h2>
+<p>&quot;一个一个排&quot; <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">select_sort</span>(<span class="params">ls</span>):</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(ls)-<span class="number">1</span>):</span><br><span class="line">        min_loc = i</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(ls)-<span class="number">1</span>-i):</span><br><span class="line">            <span class="keyword">if</span> ls[i+j]&lt;ls[min_loc]:</span><br><span class="line">                min_loc =i+j</span><br><span class="line">        ls[min_loc],ls[i] = ls[i],ls[min_loc]</span><br><span class="line">    <span class="built_in">print</span>(ls)</span><br></pre></td></tr></table></figure></p>
+<h2 id="insert-sort">Insert sort</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">insert_select</span>(<span class="params">ls</span>):</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="built_in">len</span>(ls)):</span><br><span class="line">        j = i-<span class="number">1</span></span><br><span class="line">        tmp = ls[i]</span><br><span class="line">        <span class="keyword">while</span> j&gt;=<span class="number">0</span> <span class="keyword">and</span> ls[j]&gt;tmp:</span><br><span class="line">            ls[j+<span class="number">1</span>]=ls[j]</span><br><span class="line">            j-=<span class="number">1</span></span><br><span class="line">        ls[j+<span class="number">1</span>] = tmp</span><br><span class="line">    <span class="built_in">print</span>(ls)</span><br></pre></td></tr></table></figure>
+<h1 id="sortii">Sort(ii)</h1>
+<p>三种复杂度为<span class="math inline">\(O(nlogn)\)</span>的排序算法:</p>
+<ul>
+<li>快速排序</li>
+<li>归并排序</li>
+<li>堆排序</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/25/dae%E7%9A%84%E5%89%AF%E6%9C%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/08/25/dae%E7%9A%84%E5%89%AF%E6%9C%AC/" itemprop="url">Linear Regression (python & pytorch)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-08-25T23:21:47+08:00">
+                2021-08-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Preliminary-AI/" itemprop="url" rel="index">
+                    <span itemprop="name">Preliminary AI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/25/test/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -660,6 +1083,9 @@
 <p>图片alt就是显示在图片下面的文字，相当于对图片内容的解释。 图片title是图片的标题，当鼠标移到图片上时显示的内容。title可加可不加</p>
 <h2 id="链接">链接</h2>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[超链接名](超链接地址 &quot;超链接title&quot;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">站内链接</span><br><span class="line">&#123;% post_link [博客名] title %&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="页内跳转">页内跳转</h2>
+<p>分成两部：定义锚点、使用markdown语法跳转 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;span id=&quot;jump&quot;&gt; （跳转到的地方） &lt;/span&gt;</span><br><span class="line">[点击跳转](#jump)</span><br></pre></td></tr></table></figure></p>
 <h2 id="列表">列表</h2>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- 列表内容</span><br><span class="line">+ 列表内容</span><br><span class="line">1. 列表内容</span><br></pre></td></tr></table></figure>
 <h2 id="代码">代码</h2>
@@ -1017,6 +1443,346 @@ y=\mu(\boldsymbol{x})+\epsilon * \sigma^{2}(\boldsymbol{x})
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/08/09/mcmc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/09/mcmc/" itemprop="url">Markov Chain Monte Carlo</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-08-09T20:34:33+08:00">
+                2020-08-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Preliminary-AI/" itemprop="url" rel="index">
+                    <span itemprop="name">Preliminary AI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/07/09/vi/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/07/09/vi/" itemprop="url">Variational Inference</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-09T18:04:42+08:00">
+                2020-07-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Preliminary-AI/" itemprop="url" rel="index">
+                    <span itemprop="name">Preliminary AI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>参考内容：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1601.00670">Variational Inference: A Review for Statisticians</a>、《深度学习》</p>
+<h1 id="背景">背景</h1>
+<p>从贝叶斯派角度来看，对于一个问题可以分为贝叶斯推断和贝叶斯决策两个部分。由推断得到<span class="math inline">\(P(\theta|x)\)</span>，再据此进行决策/预测。从另一个角度来说，这也是一个Encoding的过程。<br />
+变分推断是一种近似推断的方法。在概率模型中，我们往往需要对难以计算或计算开销极大的分布进行近似。从贝叶斯派的角度来看，对未知量的推断实际上是对后验概率的计算，MCMC就是一种计算的方法。但相较于MCMC，变分推断在大数据下更加快速。<br />
+至于变分，我们把“自变量也是函数的函数”称为泛函，求泛函的极值问题称为变分问题。</p>
+<h1 id="基本思路">基本思路</h1>
+<p>对于一个一般的问题，我们考虑一个观测变量<span class="math inline">\(\mathbf{x}=x_{1: n}\)</span>和隐变量<span class="math inline">\(\mathbf{z}=z_{1: m}\)</span>的联合概率分布 <span class="math display">\[
+p(\mathbf{z}, \mathbf{x})=p(\mathbf{z}) p(\mathbf{x} \mid \mathbf{z})
+\]</span> 从贝叶斯统计的角度而言，隐变量的分布能确定数据的分布。通过先验分布<span class="math inline">\(p(\mathbf{z})\)</span>得到隐变量，并借助似然<span class="math inline">\(p(\mathbf{x} \mid \mathbf{z})\)</span>得到观测变量</p>
+<blockquote>
+<p>Inference in a Bayesian model amounts to conditioning on data and computing the posterior <span class="math inline">\(p(\mathbf{z} \mid \mathbf{x})\)</span>. In complex Bayesian models, this computation often requires approximate inference.</p>
+</blockquote>
+<p>对于MCMC，我们首先基于<span class="math inline">\(z\)</span>构造一个马尔可夫链 (其平稳分布就是<span class="math inline">\(p(\mathbf{z} \mid \mathbf{x})\)</span>)，而后从分布中采样，借此作为后验分布的近似。而变分推断的主要思想是将近似转化为一个优化问题，即找到一个分布（from a family of approximate densities）与后验分布的KL divergence尽可能小。</p>
+<h1 id="数学推导">数学推导</h1>
+<p>变分推断的目标是在已知观测变量的情况下近似得到隐变量的条件密度。其核心思想是用优化的方法来解决这个问题。我们借助分布族，以“变分参数”参数化来得到隐变量的分布。而最优的变分参数则根据KL散度在分布族中寻找。最终将这一分布作为精确的条件密度的近似。</p>
+<p>令<span class="math inline">\(\mathbf{x}=x_{1: n}\)</span>为观测变量，<span class="math inline">\(\mathbf{z}=z_{1: m}\)</span>为隐变量，目标是计算给定观测变量下隐变量的条件概率分布<span class="math inline">\(p(\mathbf{z} \mid \mathbf{x})\)</span>， <span class="math display">\[
+p(\mathbf{z} \mid \mathbf{x})=\frac{p(\mathbf{z}, \mathbf{x})}{p(\mathbf{x})}
+\]</span> 上式分母我们称之为evidence，可以借助联合概率密度进行计算 <span class="math display">\[
+p(\mathbf{x})=\int p(\mathbf{z}, \mathbf{x}) \mathrm{d} \mathbf{z}
+\]</span> 在贝叶斯模型中，我们将模型所有的未知参数都表示为隐变量（latent variables），而上面evidence的积分在很多情况下需要指数时间，而不计算evidence又没法得到我们所需的条件概率，所以这也是变分推断的困难所在。</p>
+<h2 id="elbothe-evidence-lower-bound">ELBO(The evidence lower bound)</h2>
+<p>在变分推断中，我们指定一个隐变量的分布族<span class="math inline">\(\mathscr{Q}\)</span>，其中每一个<span class="math inline">\(q(\mathbf{z}) \in \mathscr{Q}\)</span>都是条件概率分布近似的候选项，而我们的目标就是找到一个最优，也就是KL散度最小的。因此我们的推断问题就对应于一个优化问题： <span class="math display">\[
+q^{*}(\mathbf{z})=\underset{q(\mathbf{z}) \in \mathscr{Q}}{\arg \min } \mathrm{KL}(q(\mathbf{z}) \| p(\mathbf{z} \mid \mathbf{x}))
+\]</span> 同样，上式是无法直接计算的，因为 <span class="math display">\[
+\mathrm{KL}(q(\mathbf{z}) \| p(\mathbf{z} \mid \mathbf{x}))=\mathbb{E}[\log q(\mathbf{z})]-\mathbb{E}[\log p(\mathbf{z} \mid \mathbf{x})]
+\]</span> <span class="math display">\[
+\mathrm{KL}(q(\mathbf{z}) \| p(\mathbf{z} \mid \mathbf{x}))=\mathbb{E}[\log q(\mathbf{z})]-\mathbb{E}[\log p(\mathbf{z}, \mathbf{x})]+\log p(\mathbf{x})
+\]</span> 而<span class="math inline">\(\log p(\mathbf{x})\)</span>也就是evidence就是我们要绕过的。<br />
+因为我们没法直接计算KL散度，所以将优化目标进行转化 <span class="math display">\[
+\operatorname{ELBO}(q)=\mathbb{E}[\log p(\mathbf{z}, \mathbf{x})]-\mathbb{E}[\log q(\mathbf{z})]
+\]</span> 上式就是<strong>evidence lower bound（ELBO）</strong>，它等于负KL-divergence 加上<span class="math inline">\(\log p(\mathbf{x})\)</span>，最小化KL散度就相当于最大化ELBO，因为虽然<span class="math inline">\(\log p(\mathbf{x})\)</span>无法求得，但在给定<span class="math inline">\(q(\mathbf{z})\)</span>下它是一个常数，所以对<span class="math inline">\(q(\mathbf{z})\)</span>的导数为0.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{ELBO}(q) &amp;=\mathbb{E}[\log p(\mathbf{z})]+\mathbb{E}[\log p(\mathbf{x} \mid \mathbf{z})]-\mathbb{E}[\log q(\mathbf{z})] \\
+&amp;=\mathbb{E}[\log p(\mathbf{x} \mid \mathbf{z})]-\mathrm{KL}(q(\mathbf{z}) \| p(\mathbf{z}))
+\end{aligned}
+\]</span> 重写ELBO后可以看到，第一项是似然的期望，它促使模型将它的隐藏变量集中于可以解释观察数据的配置上，第二项是隐变量变分分布与先验分布的KL divergence的相反数，它促使变分分布接近于先验分布，所以变分模型的目标函数是似然函数与先验分布的一种平衡。此外，上式的第一项正是EM算法中优化的expected complete log-likelihood。<br />
+为什么这式被称为evidence lower bound？<br />
+因为KL散度的非负性，所以对于任何<span class="math inline">\(q(\mathbf{z})\)</span>都有<span class="math inline">\(\log p(\mathbf{x}) \geq \operatorname{ELBO}(q)\)</span></p>
+<h2 id="the-mean-field-variational-family">The mean-field variational family</h2>
+<p>将优化目标转化为最大化ELBO之后，我们要选择合适的变分族，而这一函数族的复杂度也决定了优化的复杂度。在这里我们引入平均场变分族(mean-field variational family)，它假设隐变量之间都是相互独立的，这一假设是一个较强的假设，但我们可以将相互关联的隐变量归为一组，进而转化为相互独立的各组隐变量。引入这一假设之后就有： <span class="math display">\[
+q(\mathbf{z})=\prod_{j=1}^{m} q_{j}\left(z_{j}\right)
+\]</span> 变分族的选择是与观测数据<span class="math inline">\(x\)</span>无关的，在ELBO或者KL散度中才将数据与隐变量建立联系。<br />
+根据条件概率分布的链式法则我们有<span class="math inline">\(p\left(z_{1: m}, x_{1: n}\right)=p\left(x_{1: n}\right) \prod_{j=1}^{m} p\left(z_{j} \mid z_{1:(j-1)}, x_{1: n}\right)\)</span>。<br />
+变分分布的期望为<span class="math inline">\(E\left[\log q\left(z_{1: m}\right)\right]=\sum_{j=1}^{m} E_{j}\left[\log q\left(z_{j}\right)\right]\)</span>，代入ELBO的定义式就有 <span class="math display">\[
+E L B O=\log p\left(x_{1: n}\right)+\sum_{j=1}^{m} E\left[\log p\left(z_{j} \mid z_{1:(j-1)}, x_{1: n}\right)\right]-E_{j}\left[\log q\left(z_{j}\right)\right]
+\]</span></p>
+<h2 id="coordinate-ascent-mean-field-variational-inference">Coordinate ascent mean-field variational inference</h2>
+<p>CAVI是针对该优化问题的一个常用算法，它迭代优化每一项隐变量变分分布，保持另外的不变。具体而言，当我们将ELBO对<span class="math inline">\(z_{k}\)</span>求导并令导数为0时，有： <span class="math display">\[
+\frac{d E L B O}{d q\left(z_{k}\right)}=E_{-k}\left[\log p\left(z_{k} \mid z_{-k}, x\right)\right]-\log q\left(z_{k}\right)-1=0
+\]</span> 也就是说 <span class="math display">\[
+q_{j}^{*}\left(z_{j}\right) \propto \exp \left\{\mathbb{E}_{-j}\left[\log p\left(z_{j} \mid \mathbf{z}_{-j}, \mathbf{x}\right)\right]\right\}
+\]</span></p>
+<p><img src="/images/vimcmc/1.png" title="算法伪代码" /></p>
+<p>从ELBO导数到具体坐标上升法的更新法则需要较冗长的推导过程，在此省略了。事实上对于变分推断最出圈的变分自编码器中也不涉及梯度变分的步骤，因此这里也就不具体介绍。</p>
+<h1 id="再回首">再回首</h1>
+<p>最先接触变分推断是在大二的暑期，而现在再去回忆起变分推断时，首先想到的便是论文中intractable和estimation这两个词。在我看到这整个过程的核心点在于后验无法直接计算，进而利用另一个分布<span class="math inline">\(q\)</span>进行近似，以及后续的优化问题和ELBO。无独有偶，EM算法中的核心推导部分也设计到了其中的ELBO项。这些算法背后都有着坚实而严谨的数学支撑，而我关注的另一个近似推断的算法SVGD也是由一个早已被数学家提出的stein discrepancy产生的想法。虽然在生成模型上GAN的风头早已盖过了VAE，但仅关注模型跑分的人又怎么会理解VAE中的奇妙的思想。周志华老师在深度森林的路上走出了自己独特的道路，相信未来AI的发展也不会仅限于深度神经网络这一条道路。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -1072,7 +1838,7 @@ y=\mu(\boldsymbol{x})+\epsilon * \sigma^{2}(\boldsymbol{x})
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1094,7 +1860,7 @@ y=\mu(\boldsymbol{x})+\epsilon * \sigma^{2}(\boldsymbol{x})
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
