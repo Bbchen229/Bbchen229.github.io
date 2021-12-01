@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="GNN," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Chen's Homepage" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="图卷积网络作为图神经网络之一，具有非常广泛的应用。因此网上也有非常多的关于GCN的介绍，但是各种博客看的多了搞得我脑壳嗡嗡的，而刚好最近的一个工作涉及到GCN的内核，因此借助这篇博客整理对GCN进行整理。 在介绍GCN先介绍几篇文献： Semi-Supervised Classification with Graph Convolutional Networks-首次提出GCN的论文（ICLR20">
+<meta property="og:type" content="article">
+<meta property="og:title" content="就叫“深入浅出图卷积(GCN)”吧">
+<meta property="og:url" content="http://example.com/2021/11/28/gcn/index.html">
+<meta property="og:site_name" content="Chen&#39;s Homepage">
+<meta property="og:description" content="图卷积网络作为图神经网络之一，具有非常广泛的应用。因此网上也有非常多的关于GCN的介绍，但是各种博客看的多了搞得我脑壳嗡嗡的，而刚好最近的一个工作涉及到GCN的内核，因此借助这篇博客整理对GCN进行整理。 在介绍GCN先介绍几篇文献： Semi-Supervised Classification with Graph Convolutional Networks-首次提出GCN的论文（ICLR20">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/gcn/1.png">
+<meta property="og:image" content="http://example.com/images/gcn/2.png">
+<meta property="og:image" content="http://example.com/images/gcn/2.png">
+<meta property="article:published_time" content="2021-11-28T10:35:25.000Z">
+<meta property="article:modified_time" content="2021-12-01T16:20:32.675Z">
+<meta property="article:author" content="Chen jiayuan">
+<meta property="article:tag" content="GNN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/gcn/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2021/11/28/gcn/"/>
+
+
+
+
+
+  <title>就叫“深入浅出图卷积(GCN)”吧 | Chen's Homepage</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    
+    <a target="_blank" rel="noopener" href="https://github.com/Bbchen229" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#70B7FD; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Chen's Homepage</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello AI</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/28/gcn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">就叫“深入浅出图卷积(GCN)”吧</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-28T18:35:25+08:00">
+                2021-11-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Preliminary-AI/" itemprop="url" rel="index">
+                    <span itemprop="name">Preliminary AI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>图卷积网络作为图神经网络之一，具有非常广泛的应用。因此网上也有非常多的关于GCN的介绍，但是各种博客看的多了搞得我脑壳嗡嗡的，而刚好最近的一个工作涉及到GCN的内核，因此借助这篇博客整理对GCN进行整理。</p>
+<p>在介绍GCN先介绍几篇文献：<br />
+Semi-Supervised Classification with Graph Convolutional Networks-首次提出GCN的论文（ICLR2017)<br />
+Data Analytics on Graphs-图机器学习的教材<br />
+<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/54504471" class="uri">https://www.zhihu.com/question/54504471</a>-介绍GCN的博客</p>
+<h2 id="gnn-message-passing">GNN &amp; Message Passing</h2>
+<p>GNN作为一种graph embedding的手段，可以借助节点特征的message passing提取图结构信息 <span class="math display">\[\begin{aligned} \mathbf{h}_{u}^{(k+1)} &amp;=\operatorname{UPDATE}^{(k)}\left(\mathbf{h}_{u}^{(k)}, \text { AGGREGATE }^{(k)}\left(\left\{\mathbf{h}_{v}^{(k)}, \forall v \in \mathcal{N}(u)\right\}\right)\right) \\ &amp;=\operatorname{UPDATE}^{(k)}\left(\mathbf{h}_{u}^{(k)}, \mathbf{m}_{\mathcal{N}(u)}^{(k)}\right) \end{aligned}\]</span></p>
+<p><img src="/images/gcn/1.png" title="GNN Framework" /> GNN进行k轮迭代，每轮包括一个聚合（aggregate）和更新（update）操作。聚合来获取邻节点的信息，而后更新节点的自身特征。这种多轮message passaging的机制使得图的结构信息以及邻节点特征被提取到节点的特征中。广义上来说，GCN也是GNN中的一种。GCN的message passaging非常的简单。从下式（最基础形式的GCN）可以看出，GCN借助边信息对节点信息进行聚合。 <span class="math display">\[
+f\left(H^{(l)}, A\right)=\sigma\left(A H^{(l)} W^{(l)}\right)
+\]</span></p>
+<h2 id="gnn-cnn">GNN &amp; CNN</h2>
+<p>对于图像来说，卷积核可以作为图像中的特征提取器（为了防止图和图像这两个词的太过接近导致可能出现的问题，下文提到图时将用graph）。但是这种卷积操作无法直接用在Graph上，为什么？<br />
+由于图像与graph的数据特性和卷积操作的特性。首先，图像具有局部平移不变性(local translational invariance)，使得卷积核能够对图像矩阵进行扫描卷积；而graph作为非欧空间的数据 (Non Euclidean Structure)，每个节点邻接点的各异导致传统CNN操作无法应用。第二，卷积核是参数共享的，且可以实现层次化特征提取-卷积层可以在前一层的基础上提取更高阶的特征；而graph的层数加深则是使节点获取更广的感受野。</p>
+<h2 id="spectrum">Spectrum</h2>
+<p>参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/120311352" class="uri">https://zhuanlan.zhihu.com/p/120311352</a><br />
+在空间域上的图卷积碰壁并不意味着在图上没法进行操作，我们可以从频域中进行分析。</p>
+<h3 id="图的拉普拉斯矩阵">图的拉普拉斯矩阵</h3>
+<p>首先定义几个概念：<br />
+在图上最基本的拉普拉斯矩阵Laplacian matrix为： <span class="math display">\[
+\mathbf{L}=\mathbf{D}-\mathbf{A}
+\]</span> 其中<span class="math inline">\(\mathbf{D}\)</span>为度矩阵，<span class="math inline">\(\mathbf{A}\)</span>为邻接矩阵。拉普拉斯矩阵有一些基本的性质：对称 (<span class="math inline">\(\mathbf{L}^{T}=\mathbf{L}\)</span>)；半正定 (<span class="math inline">\(\mathbf{x}^{\top} \mathbf{L} \mathbf{x} \geq 0, \forall \mathbf{x} \in \mathbb{R}^{|\mathcal{V}|}\)</span>)，这也意味着拉普拉斯矩阵的特征值都是非负的：<span class="math inline">\(0=\lambda_{|\mathcal{V}|} \leq \lambda_{|\mathcal{V}|-1} \leq \ldots \leq \lambda_{1}\)</span>。 <span class="math display">\[
+\begin{aligned}
+\mathbf{x}^{\top} \mathbf{L} \mathbf{x} &amp;=\frac{1}{2} \sum_{u \in \mathcal{V}} \sum_{v \in \mathcal{V}} \mathbf{A}[u, v](\mathbf{x}[u]-\mathbf{x}[v])^{2} \\
+&amp;=\sum_{(u, v) \in \mathcal{E}}(\mathbf{x}[u]-\mathbf{x}[v])^{2}
+\end{aligned}
+\]</span> 另外，对称规范化拉普拉斯矩阵symmetric normalized Laplacian定义如下，这是GCN相关工作中比较常用的。 <span class="math display">\[
+\mathbf{L}_{\mathrm{sym}}=\mathbf{D}^{-\frac{1}{2}} \mathbf{L} \mathbf{D}^{-\frac{1}{2}}
+\]</span></p>
+<h3 id="拉普拉斯算子">拉普拉斯算子</h3>
+<p>接下来我们来一步步理解为什么要这样定义图的拉普拉斯矩阵。对于空间中的任意函数<span class="math inline">\(f\)</span>来说， <span class="math display">\[
+\Delta f=\nabla^{2} f=\nabla \cdot \nabla f =\sum_{i=1}^{n} \frac{\partial^{2} f}{\partial x_{i}^{2}}
+\]</span> 拉普拉斯算子 (Laplacian)是欧式空间中的函数梯度的散度 (Divergence)对应的微分算子。在n维空间中计算的是函数各个维度二阶偏导的和。在二维空间中，可以近似为差分的计算 <span class="math display">\[
+\begin{aligned}
+\Delta f(x, y) &amp;=\frac{\partial^{2} f}{\partial x^{2}}+\frac{\partial^{2} f}{\partial y^{2}} \\
+&amp;=[f(x+1, y)+f(x-1, y))-2 f(x, y)]+[f(x, y+1)+f(x, y-1))-2 f(x, y)] \\
+&amp;=f(x+1, y)+f(x-1, y))+f(x, y+1)+f(x, y-1))-4 f(x, y)
+\end{aligned}
+\]</span> 上式事实上就是在图像上作用拉普拉斯卷积核 <span class="math display">\[
+\begin{array}{|r|r|r|}
+\hline 0 &amp; 1 &amp; 0 \\
+\hline 1 &amp; -4 &amp; 1 \\
+\hline 0 &amp; 1 &amp; 0 \\
+\hline
+\end{array}
+\]</span> 因此拉普拉斯算子可以理解为——在所有自由度上进行微小变化后所获得的增益。<br />
+而将其推广到有N节点的graph上时，<span class="math inline">\(f\)</span>维度最高为N，<span class="math inline">\(f=\left(f_{1}, \ldots, f_{N}\right)\)</span>。其中<span class="math inline">\(f_{i}\)</span> 表示函数<span class="math inline">\(f\)</span>在网络图中节点i处的函数值, 类比<span class="math inline">\(f(x, y)\)</span>为函数<span class="math inline">\(f\)</span>在 <span class="math inline">\((\mathrm{x}, \mathrm{y})\)</span>的函数值。<br />
+因此当拉普拉斯算子作用在加权graph（边权重为<span class="math inline">\(w_{i j}\)</span>）上时，借助差分近似后有： <span class="math display">\[
+\begin{aligned}
+\Delta \boldsymbol{f}_{i} &amp;=\sum_{j \in N_{i}} \frac{\partial f_{i}}{\partial j^{2}} \\
+&amp; \approx \sum_{j} w_{i j}\left(f_{i}-f_{j}\right) \\
+&amp;=\sum_{j} w_{i j}\left(f_{i}-f_{j}\right) \\
+&amp;=\left(\sum_{j} w_{i j}\right) f_{i}-\sum_{j} w_{i j} f_{j} \\
+&amp;=d_{i} f_{i}-w_{i:} f
+\end{aligned}
+\]</span> 对于任意<span class="math inline">\(i \in N\)</span>都成立，所以就得到了： <span class="math display">\[
+\begin{aligned}
+\Delta f=\left(\begin{array}{c}
+\Delta f_{1} \\
+\vdots \\
+\Delta f_{N}
+\end{array}\right) &amp;=\left(\begin{array}{cc}
+d_{1} f_{1}-w_{1:} f \\
+\vdots \\
+d_{N} f_{N}-w_{N:} f
+\end{array}\right) \\
+&amp;=\left(\begin{array}{ccc}
+d_{1} &amp; \cdots &amp; 0 \\
+\vdots &amp; \ddots &amp; \vdots \\
+0 &amp; \cdots &amp; d_{N}
+\end{array}\right) f-\left(\begin{array}{c}
+w_{1:} \\
+\vdots \\
+w_{N:}
+\end{array}\right) f \\
+&amp;=\operatorname{diag}\left(d_{i}\right) f-\mathbf{W} f \\
+&amp;=(\mathbf{D}-\mathbf{W}) f \\
+&amp;=\mathbf{L} f
+\end{aligned}
+\]</span> 这就意味着，对由图节点特征构成的向量<span class="math inline">\(f\)</span>做拉普拉斯等价于图拉普拉斯矩阵与向量<span class="math inline">\(f\)</span>进行点积。</p>
+<h3 id="graph-fourier-transformer">Graph Fourier Transformer</h3>
+<p>拉普拉斯矩阵的特征分解 <span class="math display">\[
+\mathbf{L} \mathbf{u}_{\mathbf{k}}=\lambda_{k} \mathbf{u}_{\mathbf{k}}
+\]</span> 继而进行正交相似对角化后就得到 <span class="math display">\[
+\mathbf{L}=\mathbf{U} \mathbf{\Lambda} \mathbf{U}^{-1}=\mathbf{U}\left(\begin{array}{ccc}
+\lambda_{1} &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \\
+&amp; &amp; \lambda_{n}
+\end{array}\right) \mathbf{U^{-1}}=\mathbf{U}\boldsymbol{\Lambda} \mathbf{U}^{T}
+\]</span> 其中<span class="math inline">\(\boldsymbol{\Lambda}\)</span> 为特征值构成对角矩阵, <span class="math inline">\(\mathbf{U}\)</span> 为特征向量构成的正交矩阵。</p>
+<p>在这里补充一条性质 <span class="math display">\[\Delta e^{-i \omega t} =\frac{\partial^{2} e^{-i \omega t}}{\partial t^{2}}= -\omega^{2} e^{-i \omega t}\]</span> 这符合特征方程<span class="math inline">\(AV=\lambda V\)</span>的定义，也就是说<span class="math inline">\(e^{-i \omega t}\)</span>是拉普拉斯算子的特征函数</p>
+<p>把传统的傅里叶变换以及卷积迁移到Graph上来, 核心工作其实就是把<strong>拉普拉斯算子的特征函数<span class="math inline">\(e^{-i \omega t}\)</span></strong> 变为Graph对应的<strong>拉普拉斯矩阵的特征向量</strong>。 傅立叶变化是信号函数<span class="math inline">\(f(t)\)</span>与基函数<span class="math inline">\(e^{-i \omega t}\)</span>的内积 <span class="math display">\[
+\mathcal{F}_{T}(\omega)=\int_{-\infty}^{+\infty} f(t) e^{-i \omega t} d t
+\]</span> 因此对于Graph我们就可以定义 <span class="math display">\[
+F\left(\lambda_{l}\right)=\hat{f}\left(\lambda_{l}\right)=\sum_{i=1}^{N} f(i) u_{l}^{*}(i)
+\]</span> 其中<span class="math inline">\(f\)</span>是graph上的N维向量，<span class="math inline">\(f(i)\)</span>对应于graph上的第i个顶点，<span class="math inline">\(u_{l}(i)\)</span>表示第l个特征向量的第i个分量。特征值<span class="math inline">\(\lambda_l\)</span>（频率）下的<span class="math inline">\(f\)</span>的graph傅立叶变换就是与<span class="math inline">\(\lambda_l\)</span>对应的特征向量<span class="math inline">\(u_{l}\)</span>进行内积运算。将上式推广到矩阵形式，就有 <span class="math display">\[
+\left(\begin{array}{c}
+\hat{f}\left(\lambda_{1}\right) \\
+\hat{f}\left(\lambda_{2}\right) \\
+\vdots \\
+\hat{f}\left(\lambda_{N}\right)
+\end{array}\right)=\left(\begin{array}{cccc}
+u_{1}(1) &amp; u_{1}(2) &amp; \ldots &amp; u_{1}(N) \\
+u_{2}(1) &amp; u_{2}(2) &amp; \ldots &amp; u_{2}(N) \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+u_{N}(1) &amp; u_{N}(2) &amp; \ldots &amp; u_{N}(N)
+\end{array}\right)\left(\begin{array}{c}
+f(1) \\
+f(2) \\
+\vdots \\
+f(N)
+\end{array}\right)
+\]</span> <span class="math display">\[
+\hat{f} = U^T f
+\]</span></p>
+<p>图上的傅立叶逆变换类似于传统傅立叶逆变换的对频率求积分： <span class="math display">\[
+f(i)=\sum_{l=1}^{N} \hat{f}\left(\lambda_{l}\right) u_{l}(i)
+\]</span> <span class="math display">\[f=U \hat{f}\]</span></p>
+<h2 id="gcn">GCN</h2>
+<p>上文从百草园讲到三味书屋，终于要讲到了本文的主角-GCN。在上面graph傅立叶变换的基础上，我们可以将卷积推广到graph上。 <span class="math display">\[
+f * h=\mathcal{F}^{-1}[\hat{f}(\omega) \hat{h}(\omega)]=\frac{1}{2 \Pi} \int \hat{f}(\omega) \hat{h}(\omega) e^{i \omega t} d \omega
+\]</span> 类比到graph上，函数<span class="math inline">\(f\)</span>与卷积核<span class="math inline">\(h\)</span>在graph上的卷积 <span class="math display">\[
+(f * h)_{G}=U\left(\begin{array}{lll}
+\hat{h}\left(\lambda_{1}\right) &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \hat{h}\left(\lambda_{n}\right)
+\end{array}\right) U^{T} f
+\]</span> 式中<span class="math inline">\(\hat{h}\left(\lambda_{l}\right)=\sum_{i=1}^{N} h(i) u_{l}^{*}(i)\)</span>是根据需要设计的卷积核<span class="math inline">\(h\)</span>在graph上的傅立叶变换。 图表示学习中用的定义为 <span class="math display">\[
+(f * h)_{G}=U\left(\left(U^{T} h\right) \odot\left(U^{T} f\right)\right)
+\]</span> <span class="math inline">\(\odot\)</span> 表示Hadamard product，对两个维度相同的向量、矩阵进行对应位置的逐元素乘积。</p>
+<p>将神经网络与graph卷积结合，只需令卷积核变为可学习的参数，也就得到 <span class="math display">\[
+y_{\text {output }}=\sigma\left(U \left(\begin{array}{lll}
+\theta_{1} &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \theta_{n}
+\end{array}\right) U^{T} x\right)
+\]</span> 我们将卷积核记为<span class="math inline">\(g(\Lambda)\)</span> (<span class="math inline">\(\Lambda\)</span>就是大写的<span class="math inline">\(\lambda\)</span>)。<br />
+这种图卷积被称为<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1312.6203">第一代图卷积</a>，但这类图卷积计算开销非常大，且卷积核有n个参数，这种图卷积很难处理工业级的数据。 <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1606.09375.pdf">第二代图卷积</a>使用了polynomial filter <span class="math display">\[
+g_{\theta}(\Lambda)=\sum_{k=0}^{K-1} \theta_{k} \Lambda^{k}=\left(\begin{array}{ccc}
+\sum_{j=0}^{K} \alpha_{j} \lambda_{1}^{j} &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \\
+&amp; &amp; &amp; \sum_{j=0}^{K} \alpha_{j} \lambda_{n}^{j}
+\end{array}\right)
+\]</span> 其中<span class="math inline">\(\theta \in \mathbb{R}^{K}\)</span>是多项式系数向量。进而可以推出 <span class="math display">\[
+U \sum_{j=0}^{K} \alpha_{j} \Lambda^{j} U^{T}=\sum_{j=0}^{K} \alpha_{j} U \Lambda^{j} U^{T}=\sum_{j=0}^{K} \alpha_{j} L^{j}
+\]</span> <span class="math display">\[y_{\text {output }}=\sigma\left(\sum_{j=0}^{K-1} \alpha_{j} L^{j} x\right)\]</span> 此时，我们计算图卷积运算就不需要再乘上特征向量矩阵<span class="math inline">\(U\)</span>，而是直接使用拉普拉斯矩阵<span class="math inline">\(L\)</span>的k 次方（K远小于n），这样就避免了进行特征分解。而我们可以事先计算好<span class="math inline">\(L^K\)</span> ，这样就只需要计算矩阵相乘。 此外，高阶拉普拉斯可以用切比雪夫展开来近似，因此卷积核还可以用切比雪夫多项式来表示 <span class="math display">\[
+g_{\theta}(\Lambda)=\sum_{k=0}^{K-1} \theta_{k} T_{k}(\tilde{\Lambda})
+\]</span> 而将切比雪夫多项式的阶数限制为2的时候就得到在下游任务中常用的图卷积公式： <span class="math display">\[
+H^{(l+1)}=\sigma\left(\widetilde{D}^{-\frac{1}{2}} \widetilde{A} \widetilde{D}^{-\frac{1}{2}} H^{(l)} W^{(l)}\right)
+\]</span> 上式中，<span class="math inline">\(\widetilde{A}=A+I, \mathrm{~A}\)</span>为邻接矩阵, <span class="math inline">\(I\)</span>为单位矩阵, 所以<span class="math inline">\(\widetilde{A}\)</span> 为添加自连接的邻接矩阵;<span class="math inline">\(W^{(l)}\)</span> 为神经网络第<span class="math inline">\(l\)</span>层的权重矩阵; <span class="math inline">\(\sigma(\cdot)\)</span>是激活函数</p>
+<h2 id="gcn-self-attention">GCN &amp; Self-attention</h2>
+<p>上面从频域分析graph convolution，当我们从空间域上分析得到的卷积公式时，可以看出它仍是一种message passing机制。 <span class="math display">\[
+A  H^{(l)}  W^{(l)}
+\]</span> 上式可以分为两个步骤，首先是<span class="math inline">\(H\)</span>与参数矩阵<span class="math inline">\(W\)</span>做一个线性映射，而后与邻节点及其边信息进行聚合汇总。这一框架在某种意义上说与self- attention是非常类似的。</p>
+<p>self- attention包含query、key、value；其中输入的query与每个key计算相似度，而后得到一个注意力系数<span class="math inline">\(\alpha\)</span>，再由注意力系数对value进行加权求和输出最终的结果。抛开邻节点后，这两者的计算机制可以说非常类似，都可以被囊括在message passing这一框架下，而self-attention也可以理解为在完成图（所有节点都相连）上的GCN。而Transformer以及GNN在NLP中的广泛应用也从某种意义上说明了两者之间存在某种相似性。</p>
+<h2 id="gcn应用">GCN应用</h2>
+<h3 id="textgcn">TextGCN</h3>
+<p><img src="/images/gcn/2.png" title="TextGCN" /> 论文<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1809.05679v3">Graph Convolutional Networks for Text Classification</a>所构建的TextGCN将GCN用于文本分类中，在电影评价、新闻等数据集上都取得了不错的表现。<br />
+如上图所示，模型将语料库中的每一篇文档和语料库中词作为节点，联合构建了一个异构图，再借助GCN进行特征传播，得到每个文档节点的embedding后进行softmax分类。<br />
+文章中节点都使用one-hot vector进行初始化，而文档-词边、词-词边分别用TF-IDF、PMI赋以不同的权重，而最终得到的分类准确率比传统的CNN、LSTM等网络效果要高，足以证明GCN在NLP任务中的潜力。此外，后续用BERT进行节点初始化的BERTGCN也是目前的文本分类的SOTA模型。</p>
+<h3 id="st-gcn">ST-GCN</h3>
+<p><img src="/images/gcn/2.png" title="ST-GCN" /> <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1801.07455.pdf">ST-GCN</a>可以说是GCN在骨骼行为识别里面的开山之作。</p>
+<h3 id="sgc">SGC</h3>
+<p>[](/images/gcn/3.png ' Simplifying Graph Convolutional Networks (SGC)') 作者将图卷积层中的激活函数去掉，得到了SGC在许多NLP任务上更优的结果，且模型速度有了极大的提升。</p>
+<h2 id="再回首">再回首</h2>
+<p>回顾一下上文的内容，首先GCN是GNN的一种，从公式上看聚合函数采用的是图的拉普拉斯矩阵。当我们从频域上分析图的拉普拉斯矩阵及其特征分解之后可以发现，拉普拉斯矩阵的特征向量可以作为傅里叶变换的基、特征值表示频率，从而就可以定义图上的傅立叶变换，进而扩展到卷积操作。而将图卷积与神经网络结合后，借助多项式优化后就得到了现在常用的卷积公式。而从空间域中看，图卷积本质上也就是一种信息传播机制，借助边的权重信息对邻节点的特征做限制后传播、聚合、更新节点原本的特征。</p>
+<p>在频域分析过程中我们可以得到，在由Graph确定的<span class="math inline">\(n\)</span>维空间中，越小的特征值 <span class="math inline">\(\lambda_{l}\)</span> 表明：拉普拉斯矩阵 <span class="math inline">\(L\)</span> 其所对应的基 <span class="math inline">\(u_{l}\)</span> 上的分量、&quot;信息&quot;越少、高频部分。所以图卷积有时候也被认知为是图上的高斯平滑，一种滤波的过程，这也导出了图卷积中的一大问题：over-smooshing。当图卷积层数加深时，图上节点自身的特征会因为不断的传播后导致自身的特征消失，所有节点的特征会越来越接近，进而使得下游任务准确率下降。</p>
+<h3 id="gcn-vs-cnn">GCN vs CNN</h3>
+<p>GCN可以退化为CNN...TODO</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>I do not accept rewards, but you can donate to the public welfare of China.</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt=" Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GNN/" rel="tag"><i class="fa fa-tag"></i> GNN</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/11/23/pd7/" rel="next" title="Two are Better than One — Joint Entity and Relation Extraction with Table-Sequence Encoders [EMNLP2020]">
+                <i class="fa fa-chevron-left"></i> Two are Better than One — Joint Entity and Relation Extraction with Table-Sequence Encoders [EMNLP2020]
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/touxiang.JPG"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Bbchen229" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1109441357@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#gnn-message-passing"><span class="nav-number">1.</span> <span class="nav-text">GNN &amp; Message Passing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gnn-cnn"><span class="nav-number">2.</span> <span class="nav-text">GNN &amp; CNN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#spectrum"><span class="nav-number">3.</span> <span class="nav-text">Spectrum</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E7%9A%84%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E7%9F%A9%E9%98%B5"><span class="nav-number">3.1.</span> <span class="nav-text">图的拉普拉斯矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%89%E6%99%AE%E6%8B%89%E6%96%AF%E7%AE%97%E5%AD%90"><span class="nav-number">3.2.</span> <span class="nav-text">拉普拉斯算子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#graph-fourier-transformer"><span class="nav-number">3.3.</span> <span class="nav-text">Graph Fourier Transformer</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gcn"><span class="nav-number">4.</span> <span class="nav-text">GCN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gcn-self-attention"><span class="nav-number">5.</span> <span class="nav-text">GCN &amp; Self-attention</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gcn%E5%BA%94%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">GCN应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#textgcn"><span class="nav-number">6.1.</span> <span class="nav-text">TextGCN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#st-gcn"><span class="nav-number">6.2.</span> <span class="nav-text">ST-GCN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sgc"><span class="nav-number">6.3.</span> <span class="nav-text">SGC</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%8D%E5%9B%9E%E9%A6%96"><span class="nav-number">7.</span> <span class="nav-text">再回首</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#gcn-vs-cnn"><span class="nav-number">7.1.</span> <span class="nav-text">GCN vs CNN</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chen jiayuan</span>
+
+  
+</div>
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

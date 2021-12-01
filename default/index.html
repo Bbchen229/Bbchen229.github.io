@@ -261,6 +261,449 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/28/gcn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/11/28/gcn/" itemprop="url">就叫“深入浅出图卷积(GCN)”吧</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-28T18:35:25+08:00">
+                2021-11-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Preliminary-AI/" itemprop="url" rel="index">
+                    <span itemprop="name">Preliminary AI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>图卷积网络作为图神经网络之一，具有非常广泛的应用。因此网上也有非常多的关于GCN的介绍，但是各种博客看的多了搞得我脑壳嗡嗡的，而刚好最近的一个工作涉及到GCN的内核，因此借助这篇博客整理对GCN进行整理。</p>
+<p>在介绍GCN先介绍几篇文献：<br />
+Semi-Supervised Classification with Graph Convolutional Networks-首次提出GCN的论文（ICLR2017)<br />
+Data Analytics on Graphs-图机器学习的教材<br />
+<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/54504471" class="uri">https://www.zhihu.com/question/54504471</a>-介绍GCN的博客</p>
+<h2 id="gnn-message-passing">GNN &amp; Message Passing</h2>
+<p>GNN作为一种graph embedding的手段，可以借助节点特征的message passing提取图结构信息 <span class="math display">\[\begin{aligned} \mathbf{h}_{u}^{(k+1)} &amp;=\operatorname{UPDATE}^{(k)}\left(\mathbf{h}_{u}^{(k)}, \text { AGGREGATE }^{(k)}\left(\left\{\mathbf{h}_{v}^{(k)}, \forall v \in \mathcal{N}(u)\right\}\right)\right) \\ &amp;=\operatorname{UPDATE}^{(k)}\left(\mathbf{h}_{u}^{(k)}, \mathbf{m}_{\mathcal{N}(u)}^{(k)}\right) \end{aligned}\]</span></p>
+<p><img src="/images/gcn/1.png" title="GNN Framework" /> GNN进行k轮迭代，每轮包括一个聚合（aggregate）和更新（update）操作。聚合来获取邻节点的信息，而后更新节点的自身特征。这种多轮message passaging的机制使得图的结构信息以及邻节点特征被提取到节点的特征中。广义上来说，GCN也是GNN中的一种。GCN的message passaging非常的简单。从下式（最基础形式的GCN）可以看出，GCN借助边信息对节点信息进行聚合。 <span class="math display">\[
+f\left(H^{(l)}, A\right)=\sigma\left(A H^{(l)} W^{(l)}\right)
+\]</span></p>
+<h2 id="gnn-cnn">GNN &amp; CNN</h2>
+<p>对于图像来说，卷积核可以作为图像中的特征提取器（为了防止图和图像这两个词的太过接近导致可能出现的问题，下文提到图时将用graph）。但是这种卷积操作无法直接用在Graph上，为什么？<br />
+由于图像与graph的数据特性和卷积操作的特性。首先，图像具有局部平移不变性(local translational invariance)，使得卷积核能够对图像矩阵进行扫描卷积；而graph作为非欧空间的数据 (Non Euclidean Structure)，每个节点邻接点的各异导致传统CNN操作无法应用。第二，卷积核是参数共享的，且可以实现层次化特征提取-卷积层可以在前一层的基础上提取更高阶的特征；而graph的层数加深则是使节点获取更广的感受野。</p>
+<h2 id="spectrum">Spectrum</h2>
+<p>参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/120311352" class="uri">https://zhuanlan.zhihu.com/p/120311352</a><br />
+在空间域上的图卷积碰壁并不意味着在图上没法进行操作，我们可以从频域中进行分析。</p>
+<h3 id="图的拉普拉斯矩阵">图的拉普拉斯矩阵</h3>
+<p>首先定义几个概念：<br />
+在图上最基本的拉普拉斯矩阵Laplacian matrix为： <span class="math display">\[
+\mathbf{L}=\mathbf{D}-\mathbf{A}
+\]</span> 其中<span class="math inline">\(\mathbf{D}\)</span>为度矩阵，<span class="math inline">\(\mathbf{A}\)</span>为邻接矩阵。拉普拉斯矩阵有一些基本的性质：对称 (<span class="math inline">\(\mathbf{L}^{T}=\mathbf{L}\)</span>)；半正定 (<span class="math inline">\(\mathbf{x}^{\top} \mathbf{L} \mathbf{x} \geq 0, \forall \mathbf{x} \in \mathbb{R}^{|\mathcal{V}|}\)</span>)，这也意味着拉普拉斯矩阵的特征值都是非负的：<span class="math inline">\(0=\lambda_{|\mathcal{V}|} \leq \lambda_{|\mathcal{V}|-1} \leq \ldots \leq \lambda_{1}\)</span>。 <span class="math display">\[
+\begin{aligned}
+\mathbf{x}^{\top} \mathbf{L} \mathbf{x} &amp;=\frac{1}{2} \sum_{u \in \mathcal{V}} \sum_{v \in \mathcal{V}} \mathbf{A}[u, v](\mathbf{x}[u]-\mathbf{x}[v])^{2} \\
+&amp;=\sum_{(u, v) \in \mathcal{E}}(\mathbf{x}[u]-\mathbf{x}[v])^{2}
+\end{aligned}
+\]</span> 另外，对称规范化拉普拉斯矩阵symmetric normalized Laplacian定义如下，这是GCN相关工作中比较常用的。 <span class="math display">\[
+\mathbf{L}_{\mathrm{sym}}=\mathbf{D}^{-\frac{1}{2}} \mathbf{L} \mathbf{D}^{-\frac{1}{2}}
+\]</span></p>
+<h3 id="拉普拉斯算子">拉普拉斯算子</h3>
+<p>接下来我们来一步步理解为什么要这样定义图的拉普拉斯矩阵。对于空间中的任意函数<span class="math inline">\(f\)</span>来说， <span class="math display">\[
+\Delta f=\nabla^{2} f=\nabla \cdot \nabla f =\sum_{i=1}^{n} \frac{\partial^{2} f}{\partial x_{i}^{2}}
+\]</span> 拉普拉斯算子 (Laplacian)是欧式空间中的函数梯度的散度 (Divergence)对应的微分算子。在n维空间中计算的是函数各个维度二阶偏导的和。在二维空间中，可以近似为差分的计算 <span class="math display">\[
+\begin{aligned}
+\Delta f(x, y) &amp;=\frac{\partial^{2} f}{\partial x^{2}}+\frac{\partial^{2} f}{\partial y^{2}} \\
+&amp;=[f(x+1, y)+f(x-1, y))-2 f(x, y)]+[f(x, y+1)+f(x, y-1))-2 f(x, y)] \\
+&amp;=f(x+1, y)+f(x-1, y))+f(x, y+1)+f(x, y-1))-4 f(x, y)
+\end{aligned}
+\]</span> 上式事实上就是在图像上作用拉普拉斯卷积核 <span class="math display">\[
+\begin{array}{|r|r|r|}
+\hline 0 &amp; 1 &amp; 0 \\
+\hline 1 &amp; -4 &amp; 1 \\
+\hline 0 &amp; 1 &amp; 0 \\
+\hline
+\end{array}
+\]</span> 因此拉普拉斯算子可以理解为——在所有自由度上进行微小变化后所获得的增益。<br />
+而将其推广到有N节点的graph上时，<span class="math inline">\(f\)</span>维度最高为N，<span class="math inline">\(f=\left(f_{1}, \ldots, f_{N}\right)\)</span>。其中<span class="math inline">\(f_{i}\)</span> 表示函数<span class="math inline">\(f\)</span>在网络图中节点i处的函数值, 类比<span class="math inline">\(f(x, y)\)</span>为函数<span class="math inline">\(f\)</span>在 <span class="math inline">\((\mathrm{x}, \mathrm{y})\)</span>的函数值。<br />
+因此当拉普拉斯算子作用在加权graph（边权重为<span class="math inline">\(w_{i j}\)</span>）上时，借助差分近似后有： <span class="math display">\[
+\begin{aligned}
+\Delta \boldsymbol{f}_{i} &amp;=\sum_{j \in N_{i}} \frac{\partial f_{i}}{\partial j^{2}} \\
+&amp; \approx \sum_{j} w_{i j}\left(f_{i}-f_{j}\right) \\
+&amp;=\sum_{j} w_{i j}\left(f_{i}-f_{j}\right) \\
+&amp;=\left(\sum_{j} w_{i j}\right) f_{i}-\sum_{j} w_{i j} f_{j} \\
+&amp;=d_{i} f_{i}-w_{i:} f
+\end{aligned}
+\]</span> 对于任意<span class="math inline">\(i \in N\)</span>都成立，所以就得到了： <span class="math display">\[
+\begin{aligned}
+\Delta f=\left(\begin{array}{c}
+\Delta f_{1} \\
+\vdots \\
+\Delta f_{N}
+\end{array}\right) &amp;=\left(\begin{array}{cc}
+d_{1} f_{1}-w_{1:} f \\
+\vdots \\
+d_{N} f_{N}-w_{N:} f
+\end{array}\right) \\
+&amp;=\left(\begin{array}{ccc}
+d_{1} &amp; \cdots &amp; 0 \\
+\vdots &amp; \ddots &amp; \vdots \\
+0 &amp; \cdots &amp; d_{N}
+\end{array}\right) f-\left(\begin{array}{c}
+w_{1:} \\
+\vdots \\
+w_{N:}
+\end{array}\right) f \\
+&amp;=\operatorname{diag}\left(d_{i}\right) f-\mathbf{W} f \\
+&amp;=(\mathbf{D}-\mathbf{W}) f \\
+&amp;=\mathbf{L} f
+\end{aligned}
+\]</span> 这就意味着，对由图节点特征构成的向量<span class="math inline">\(f\)</span>做拉普拉斯等价于图拉普拉斯矩阵与向量<span class="math inline">\(f\)</span>进行点积。</p>
+<h3 id="graph-fourier-transformer">Graph Fourier Transformer</h3>
+<p>拉普拉斯矩阵的特征分解 <span class="math display">\[
+\mathbf{L} \mathbf{u}_{\mathbf{k}}=\lambda_{k} \mathbf{u}_{\mathbf{k}}
+\]</span> 继而进行正交相似对角化后就得到 <span class="math display">\[
+\mathbf{L}=\mathbf{U} \mathbf{\Lambda} \mathbf{U}^{-1}=\mathbf{U}\left(\begin{array}{ccc}
+\lambda_{1} &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \\
+&amp; &amp; \lambda_{n}
+\end{array}\right) \mathbf{U^{-1}}=\mathbf{U}\boldsymbol{\Lambda} \mathbf{U}^{T}
+\]</span> 其中<span class="math inline">\(\boldsymbol{\Lambda}\)</span> 为特征值构成对角矩阵, <span class="math inline">\(\mathbf{U}\)</span> 为特征向量构成的正交矩阵。</p>
+<p>在这里补充一条性质 <span class="math display">\[\Delta e^{-i \omega t} =\frac{\partial^{2} e^{-i \omega t}}{\partial t^{2}}= -\omega^{2} e^{-i \omega t}\]</span> 这符合特征方程<span class="math inline">\(AV=\lambda V\)</span>的定义，也就是说<span class="math inline">\(e^{-i \omega t}\)</span>是拉普拉斯算子的特征函数</p>
+<p>把传统的傅里叶变换以及卷积迁移到Graph上来, 核心工作其实就是把<strong>拉普拉斯算子的特征函数<span class="math inline">\(e^{-i \omega t}\)</span></strong> 变为Graph对应的<strong>拉普拉斯矩阵的特征向量</strong>。 傅立叶变化是信号函数<span class="math inline">\(f(t)\)</span>与基函数<span class="math inline">\(e^{-i \omega t}\)</span>的内积 <span class="math display">\[
+\mathcal{F}_{T}(\omega)=\int_{-\infty}^{+\infty} f(t) e^{-i \omega t} d t
+\]</span> 因此对于Graph我们就可以定义 <span class="math display">\[
+F\left(\lambda_{l}\right)=\hat{f}\left(\lambda_{l}\right)=\sum_{i=1}^{N} f(i) u_{l}^{*}(i)
+\]</span> 其中<span class="math inline">\(f\)</span>是graph上的N维向量，<span class="math inline">\(f(i)\)</span>对应于graph上的第i个顶点，<span class="math inline">\(u_{l}(i)\)</span>表示第l个特征向量的第i个分量。特征值<span class="math inline">\(\lambda_l\)</span>（频率）下的<span class="math inline">\(f\)</span>的graph傅立叶变换就是与<span class="math inline">\(\lambda_l\)</span>对应的特征向量<span class="math inline">\(u_{l}\)</span>进行内积运算。将上式推广到矩阵形式，就有 <span class="math display">\[
+\left(\begin{array}{c}
+\hat{f}\left(\lambda_{1}\right) \\
+\hat{f}\left(\lambda_{2}\right) \\
+\vdots \\
+\hat{f}\left(\lambda_{N}\right)
+\end{array}\right)=\left(\begin{array}{cccc}
+u_{1}(1) &amp; u_{1}(2) &amp; \ldots &amp; u_{1}(N) \\
+u_{2}(1) &amp; u_{2}(2) &amp; \ldots &amp; u_{2}(N) \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+u_{N}(1) &amp; u_{N}(2) &amp; \ldots &amp; u_{N}(N)
+\end{array}\right)\left(\begin{array}{c}
+f(1) \\
+f(2) \\
+\vdots \\
+f(N)
+\end{array}\right)
+\]</span> <span class="math display">\[
+\hat{f} = U^T f
+\]</span></p>
+<p>图上的傅立叶逆变换类似于传统傅立叶逆变换的对频率求积分： <span class="math display">\[
+f(i)=\sum_{l=1}^{N} \hat{f}\left(\lambda_{l}\right) u_{l}(i)
+\]</span> <span class="math display">\[f=U \hat{f}\]</span></p>
+<h2 id="gcn">GCN</h2>
+<p>上文从百草园讲到三味书屋，终于要讲到了本文的主角-GCN。在上面graph傅立叶变换的基础上，我们可以将卷积推广到graph上。 <span class="math display">\[
+f * h=\mathcal{F}^{-1}[\hat{f}(\omega) \hat{h}(\omega)]=\frac{1}{2 \Pi} \int \hat{f}(\omega) \hat{h}(\omega) e^{i \omega t} d \omega
+\]</span> 类比到graph上，函数<span class="math inline">\(f\)</span>与卷积核<span class="math inline">\(h\)</span>在graph上的卷积 <span class="math display">\[
+(f * h)_{G}=U\left(\begin{array}{lll}
+\hat{h}\left(\lambda_{1}\right) &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \hat{h}\left(\lambda_{n}\right)
+\end{array}\right) U^{T} f
+\]</span> 式中<span class="math inline">\(\hat{h}\left(\lambda_{l}\right)=\sum_{i=1}^{N} h(i) u_{l}^{*}(i)\)</span>是根据需要设计的卷积核<span class="math inline">\(h\)</span>在graph上的傅立叶变换。 图表示学习中用的定义为 <span class="math display">\[
+(f * h)_{G}=U\left(\left(U^{T} h\right) \odot\left(U^{T} f\right)\right)
+\]</span> <span class="math inline">\(\odot\)</span> 表示Hadamard product，对两个维度相同的向量、矩阵进行对应位置的逐元素乘积。</p>
+<p>将神经网络与graph卷积结合，只需令卷积核变为可学习的参数，也就得到 <span class="math display">\[
+y_{\text {output }}=\sigma\left(U \left(\begin{array}{lll}
+\theta_{1} &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \theta_{n}
+\end{array}\right) U^{T} x\right)
+\]</span> 我们将卷积核记为<span class="math inline">\(g(\Lambda)\)</span> (<span class="math inline">\(\Lambda\)</span>就是大写的<span class="math inline">\(\lambda\)</span>)。<br />
+这种图卷积被称为<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1312.6203">第一代图卷积</a>，但这类图卷积计算开销非常大，且卷积核有n个参数，这种图卷积很难处理工业级的数据。 <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1606.09375.pdf">第二代图卷积</a>使用了polynomial filter <span class="math display">\[
+g_{\theta}(\Lambda)=\sum_{k=0}^{K-1} \theta_{k} \Lambda^{k}=\left(\begin{array}{ccc}
+\sum_{j=0}^{K} \alpha_{j} \lambda_{1}^{j} &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \\
+&amp; &amp; &amp; \sum_{j=0}^{K} \alpha_{j} \lambda_{n}^{j}
+\end{array}\right)
+\]</span> 其中<span class="math inline">\(\theta \in \mathbb{R}^{K}\)</span>是多项式系数向量。进而可以推出 <span class="math display">\[
+U \sum_{j=0}^{K} \alpha_{j} \Lambda^{j} U^{T}=\sum_{j=0}^{K} \alpha_{j} U \Lambda^{j} U^{T}=\sum_{j=0}^{K} \alpha_{j} L^{j}
+\]</span> <span class="math display">\[y_{\text {output }}=\sigma\left(\sum_{j=0}^{K-1} \alpha_{j} L^{j} x\right)\]</span> 此时，我们计算图卷积运算就不需要再乘上特征向量矩阵<span class="math inline">\(U\)</span>，而是直接使用拉普拉斯矩阵<span class="math inline">\(L\)</span>的k 次方（K远小于n），这样就避免了进行特征分解。而我们可以事先计算好<span class="math inline">\(L^K\)</span> ，这样就只需要计算矩阵相乘。 此外，高阶拉普拉斯可以用切比雪夫展开来近似，因此卷积核还可以用切比雪夫多项式来表示 <span class="math display">\[
+g_{\theta}(\Lambda)=\sum_{k=0}^{K-1} \theta_{k} T_{k}(\tilde{\Lambda})
+\]</span> 而将切比雪夫多项式的阶数限制为2的时候就得到在下游任务中常用的图卷积公式： <span class="math display">\[
+H^{(l+1)}=\sigma\left(\widetilde{D}^{-\frac{1}{2}} \widetilde{A} \widetilde{D}^{-\frac{1}{2}} H^{(l)} W^{(l)}\right)
+\]</span> 上式中，<span class="math inline">\(\widetilde{A}=A+I, \mathrm{~A}\)</span>为邻接矩阵, <span class="math inline">\(I\)</span>为单位矩阵, 所以<span class="math inline">\(\widetilde{A}\)</span> 为添加自连接的邻接矩阵;<span class="math inline">\(W^{(l)}\)</span> 为神经网络第<span class="math inline">\(l\)</span>层的权重矩阵; <span class="math inline">\(\sigma(\cdot)\)</span>是激活函数</p>
+<h2 id="gcn-self-attention">GCN &amp; Self-attention</h2>
+<p>上面从频域分析graph convolution，当我们从空间域上分析得到的卷积公式时，可以看出它仍是一种message passing机制。 <span class="math display">\[
+A  H^{(l)}  W^{(l)}
+\]</span> 上式可以分为两个步骤，首先是<span class="math inline">\(H\)</span>与参数矩阵<span class="math inline">\(W\)</span>做一个线性映射，而后与邻节点及其边信息进行聚合汇总。这一框架在某种意义上说与self- attention是非常类似的。</p>
+<p>self- attention包含query、key、value；其中输入的query与每个key计算相似度，而后得到一个注意力系数<span class="math inline">\(\alpha\)</span>，再由注意力系数对value进行加权求和输出最终的结果。抛开邻节点后，这两者的计算机制可以说非常类似，都可以被囊括在message passing这一框架下，而self-attention也可以理解为在完成图（所有节点都相连）上的GCN。而Transformer以及GNN在NLP中的广泛应用也从某种意义上说明了两者之间存在某种相似性。</p>
+<h2 id="gcn应用">GCN应用</h2>
+<h3 id="textgcn">TextGCN</h3>
+<p><img src="/images/gcn/2.png" title="TextGCN" /> 论文<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1809.05679v3">Graph Convolutional Networks for Text Classification</a>所构建的TextGCN将GCN用于文本分类中，在电影评价、新闻等数据集上都取得了不错的表现。<br />
+如上图所示，模型将语料库中的每一篇文档和语料库中词作为节点，联合构建了一个异构图，再借助GCN进行特征传播，得到每个文档节点的embedding后进行softmax分类。<br />
+文章中节点都使用one-hot vector进行初始化，而文档-词边、词-词边分别用TF-IDF、PMI赋以不同的权重，而最终得到的分类准确率比传统的CNN、LSTM等网络效果要高，足以证明GCN在NLP任务中的潜力。此外，后续用BERT进行节点初始化的BERTGCN也是目前的文本分类的SOTA模型。</p>
+<h3 id="st-gcn">ST-GCN</h3>
+<p><img src="/images/gcn/2.png" title="ST-GCN" /> <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1801.07455.pdf">ST-GCN</a>可以说是GCN在骨骼行为识别里面的开山之作。</p>
+<h3 id="sgc">SGC</h3>
+<p>[](/images/gcn/3.png ' Simplifying Graph Convolutional Networks (SGC)') 作者将图卷积层中的激活函数去掉，得到了SGC在许多NLP任务上更优的结果，且模型速度有了极大的提升。</p>
+<h2 id="再回首">再回首</h2>
+<p>回顾一下上文的内容，首先GCN是GNN的一种，从公式上看聚合函数采用的是图的拉普拉斯矩阵。当我们从频域上分析图的拉普拉斯矩阵及其特征分解之后可以发现，拉普拉斯矩阵的特征向量可以作为傅里叶变换的基、特征值表示频率，从而就可以定义图上的傅立叶变换，进而扩展到卷积操作。而将图卷积与神经网络结合后，借助多项式优化后就得到了现在常用的卷积公式。而从空间域中看，图卷积本质上也就是一种信息传播机制，借助边的权重信息对邻节点的特征做限制后传播、聚合、更新节点原本的特征。</p>
+<p>在频域分析过程中我们可以得到，在由Graph确定的<span class="math inline">\(n\)</span>维空间中，越小的特征值 <span class="math inline">\(\lambda_{l}\)</span> 表明：拉普拉斯矩阵 <span class="math inline">\(L\)</span> 其所对应的基 <span class="math inline">\(u_{l}\)</span> 上的分量、&quot;信息&quot;越少、高频部分。所以图卷积有时候也被认知为是图上的高斯平滑，一种滤波的过程，这也导出了图卷积中的一大问题：over-smooshing。当图卷积层数加深时，图上节点自身的特征会因为不断的传播后导致自身的特征消失，所有节点的特征会越来越接近，进而使得下游任务准确率下降。</p>
+<h3 id="gcn-vs-cnn">GCN vs CNN</h3>
+<p>GCN可以退化为CNN...TODO</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/23/pd7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/11/23/pd7/" itemprop="url">Two are Better than One — Joint Entity and Relation Extraction with Table-Sequence Encoders [EMNLP2020]</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-23T22:09:00+08:00">
+                2021-11-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言">前言</h1>
+<p>最近似乎吃到了一个瓜</p>
+<blockquote>
+<p>如何看待EMNLP'21的文章涉嫌抄袭EMNLP'20上的文章?<br />
+本人在阅读EMNLP2021的文章时，偶然发现一篇名为Seeking Common but Distinguishing Difference, A Joint Aspect-based Sentiment Analysis Model的文章，这篇文章的内容与EMNLP2020上的一篇文章Two are Better than One: Joint Entity and Relation Extraction with Table-Sequence Encoders高度相似。</p>
+</blockquote>
+<p>先不谈到底有没有抄袭事件，我们来看一看20年和21这两篇文章的所做的工作</p>
+<h1 id="emnlp20">EMNLP'20</h1>
+<h1 id="emnlp21">EMNLP'21</h1>
+<h1 id="p.s.">p.s.</h1>
+<p>最近尝试复现旷视的<a href="/2021/10/26/pd5/" title="ML-GCN">ML-GCN</a>也遇到了大无语事件，其一是用了好几个版本的Pytorch都无法较好的收敛，看网友的一些讨论说居然要用19年特定的0.3.1版本；其二就是ML-GCN中最主要的模块GCN对模型的准确率没有任何贡献，去掉该模块反而有更好的效果。😅<br />
+怪不得会有人用“魔改”这种略带侮辱性的词来形容AI的科研。希望能有越来越多的人做有意义的科研，也希望“独角兽”们和“master”们把挣钱和科研分开。“挣钱嘛，不寒碜“ （让子弹飞赶紧申遗），但既然想挣钱就别往科研里钻，整些无意义灌水甚至是剽窃他人的成果。<br />
+当然，抛开环境现状不谈来批判某些个体的行为似乎有些耍流氓。还记得大二时候导师跟我和zb说要做一个一身正气的科研工作者。（虽然现在也说不准以后是进学术界还是工业界）国家快速发展总会留下一些弊病，希望能从高校老师和学生开始，逐渐构建一片净土，让热爱学术的人能够坚定不移的走下去。至少以后学术造假等事件曝光时，我们看到的主角不应该是中国人的名字。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/18/svgd-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1869,356 +2312,11 @@ VOLT对比BPE、MUV search更加高效</p>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/09/p1-position-encoding/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/10/09/p1-position-encoding/" itemprop="url">Encoding Word Order in Complex Embeddings [ICLR2020]</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-10-09T21:29:54+08:00">
-                2021-10-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
-                    <span itemprop="name">Paper_daily</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1912.12333.pdf">Encoding Word Order in Complex Embeddings</a><br />
-Code: <a target="_blank" rel="noopener" href="https://github.com/iclr-complex-order/complex-order">link</a></p>
-<h2 id="概要">概要</h2>
-<p>针对位置编码提出的改进，切入点新颖高效且为位置编码带来了一定的具体意义和可解释性。传统的位置嵌入捕获单个单词的位置，而不是单个单词位置之间的有序关系(例如邻接关系或优先级)。本文提出的方法建模单词的全局绝对位置和它们的顺序关系，将以前定义为独立向量的词嵌入推广到变量(位置)上的连续词函数。每个单词的表示会随着位置的增加而移动。因此，在连续函数中，不同位置的词表示可以相互关联。将这些函数的通解推广到复值域，得到了更丰富的表示。作者在文本分类、机器翻译和语言模型方面进行实验，取得了良好的表现。</p>
-<h2 id="positional-encoding">Positional encoding</h2>
-<p>Positional encoding 位置编码在transformer中用于存储位置信息（由于self-attention没法获取序列位置的信息），此外BERT中encoding部分也包含了位置编码。对于位置编码，本能的想法是针对序列中的每个位置必须是独一无二的，且不受序列长度的影响。常见的positional encoding的方法有:</p>
-<ul>
-<li>绝对（正弦）位置编码（Sinusoidal Position Encoding）</li>
-<li>相对位置编码（Relative Position Representations）</li>
-<li>可学习位置编码</li>
-</ul>
-<h3 id="正弦位置编码">正弦位置编码</h3>
-<p>Transformer中使用的就是这种编码，实际上具体编码过程使用了正弦和余弦。具体公式为： <span class="math display">\[
-\begin{aligned}
-P E_{(p o s, 2 i)} &amp;=\sin \left(p o s / 10000^{2 i / d_{\text {model }}} \right) \\
-P E_{(p o s, 2 i+1)} &amp;=\cos \left(p o s / 10000^{2 i / d_{\text {model }}} \right)
-\end{aligned}
-\]</span> 其中<span class="math inline">\(d_{model}\)</span>为输入词向量的维度。如d(model)=128,那么位置3对应的位置向量为 <span class="math display">\[
-\left[\sin \left(3 / 10000^{0 / 128}\right), \cos \left(3 / 10000^{1 / 128}\right), \sin \left(3 / 10000^{2 / 28}\right), \cos \left(3 / 10000^{3 / 28}\right), \ldots\right]
-\]</span> 在具体的应用时可能前一部分用正弦后一部分用余弦。</p>
-<p><img src="/images/pe4.png" title="Bert中的位置编码" /></p>
-<h3 id="相对位置编码">相对位置编码</h3>
-<p>Todo<br />
-<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1803.02155">Self-Attention with Relative Position Representations</a></p>
-<h3 id="可学习位置编码">可学习位置编码</h3>
-<p>Todo</p>
-<h2 id="intro">Intro</h2>
-<p>本文的重点在于建模文本信息中额外的词的内部顺序和相邻关系，对比原本位置编码方式仅编码词的位置。模型将之前定义为独立向量的词嵌入扩展为位置自变量上的连续函数。在一个连续函数中，不同位置的词表示可以相互关联。</p>
-<p><img src="/images/pe1.png" /></p>
-<h2 id="methodology">Methodology</h2>
-<p>类似于Word Embedding，位置编码（PE）定义了一个映射关系，将词的序列索引映射为一个向量。<span class="math inline">\(f_{n e}: \mathbb{N} \rightarrow \mathbb{R}^{D}\)</span>。最终某个词的embedding通常表示为为词向量和位置向量的和： <span class="math display">\[f(j, p o s)=f_{w e}(j)+f_{p e}(p o s)\]</span></p>
-<p>论文中提出了一个位置独立问题（position independence problem），即位置编码无法捕获相邻词以及其顺序之间的潜在关系。而当后续用于特征处理的网络对这类信息不敏感时，这一问题就会限制整个模型的表达能力。相对位置编码针对这一问题进行了一定的研究，但其无法涵盖整个序列域。</p>
-<h3 id="性质">性质</h3>
-<p>论文指出了在位置编码中建立词序模型所必需的性质。<br />
-由于位置向量中每个维度的值都是根据离散的位置index得到的，这使得位置间有序关系建模变得困难，因此需要根据位置索引构建一个连续的函数（以在每个维度中表示一个特定的单词？） <span class="math display">\[
-f(j, \text { pos })=\boldsymbol{g}_{j}(\text { pos }) \in \mathbb{R}^{D}
-\]</span> <span class="math inline">\(g_j\)</span>即<span class="math inline">\(\boldsymbol{g}_{w e}(j) \in(\mathcal{F})^{D}\)</span>，词<span class="math inline">\(w_j\)</span>在pos位置可以表示为 <span class="math display">\[
-\left[g_{j, 1}(\operatorname{pos}), g_{j, 2}(\operatorname{pos}), \ldots, g_{j, D}(\text { pos })\right] \in \mathbb{R}^{D}
-\]</span> 当词<span class="math inline">\(w_j\)</span>从pos位置转到pos’位置时，只需要改变自变量的值而不需要改变映射函数<span class="math inline">\(g_j\)</span>。</p>
-<h3 id="函数">函数</h3>
-<p>由于实数也被囊括在复数域中，且前人有相关工作（详见论文原文Section2.2）验证了复数域所具有的更强大的表达能力，作者将模型拓展到了复数域。对于理想的映射函数，论文中提出了两条性质，即:</p>
-<ul>
-<li>Position-free offset transformation</li>
-<li>Boundedness</li>
-</ul>
-<p>变换函数<span class="math inline">\(Transform\)</span>需满足对于任何pos，有 <span class="math display">\[
-g(p o s+n)=\operatorname{Transform}_{n}(g(p o s))
-\]</span> 满足等式的变换函数被称为witness，而满足这一条件的映射函数<span class="math inline">\(g_j\)</span>则被称为<em>linearly witnessed</em>。规定Transform <span class="math inline">\((n\)</span>, pos <span class="math inline">\()=\)</span> Transform <span class="math inline">\(_{n}(\)</span> pos <span class="math inline">\()=w(n)\)</span>。另外，映射函数<span class="math inline">\(g_j\)</span>需要有界。</p>
-<p>而后作者证明了满足上述性质的映射函数唯一解为 <span class="math display">\[
-g(p o s)=z_{2} z_{1}^{p o s} \text { for } z_{1}, z_{2} \in \mathbb{C} \text { with }\left|z_{1}\right| \leq 1
-\]</span> 对于任意的 <span class="math inline">\(z \in \mathbb{C}\)</span>, 我们可以写成 <span class="math inline">\(z=r e^{i \theta}=r(\cos \theta+i \sin \theta)\)</span>，因此上式可写为： <span class="math display">\[g(p o s)=z_{2} z_{1}^{p o s}=r_{2} e^{i \theta_{2}}\left(r_{1} e^{i \theta_{1}}\right)^{p o s}=r_{2} r_{1}^{p o s} e^{i\left(\theta_{2}+\theta_{1} p o s\right)} \quad$ subject to $\left|r_{1}\right| \leq 1\]</span></p>
-<p>(...跳过证明和优化过程)</p>
-<p>最终的位置编码函数<span class="math inline">\(f(j\)</span>, pos <span class="math inline">\()\)</span>为 <img src="/images/pe2.png" /> <span class="math inline">\(j\)</span>代表单词（索引），<span class="math inline">\(pos\)</span>表示位置索引。<br />
-对于embedding中的每一维度，都有各自的参数，振幅r、频率p、初相<span class="math inline">\(\theta\)</span>，这些参数是trainable的。此外，周期/频率决定了单词对位置的敏感程度。当周期很短，则说明嵌入将对position高度敏感。注意，振幅、频率是与postion（自变量）无关的，与单词和维度有关。此时，word embedding可以用这些参数来表示（维度与positional embedding维度相同）。</p>
-<h2 id="实验">实验</h2>
-<p>作者在文本分类、机器翻译和语言模型几个任务上进行了实验，分别用Fasttext、LSTM、CNN、Transformer作为模型的backbone，而后使用不同的位置编码方法以及本文的Complex-order编码方法进行embedding，对比几个实验结果均取得了可观的提升。而计算开销（时间）上并没有显著的增加。 <img src="/images/pe3.png" title="部分实验结果" /> 实验基于tensorflow，目前没有pytorch版本，笔者将会尝试将其迁移到pytorch框架下并开源。</p>
-<h2 id="相关工作">相关工作</h2>
-<p>Vanilla Position Embeddings<br />
-Trigonometric Position Embeddings<br />
-Todo</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/29/textGCN/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/09/29/textGCN/" itemprop="url">Improved GCN for Text Classification [GNN]</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-09-29T22:24:53+08:00">
-                2021-09-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Research/" itemprop="url" rel="index">
-                    <span itemprop="name">Research</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <center>
-<font size = 4> <strong>TextRGNN: Residual Graph Neural Networks for Text Classification</strong></font>
-</center>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/default/page/2/">2</a><a class="extend next" rel="next" href="/default/page/2/">&gt;</a>
+    <span class="page-number current">1</span><a class="page-number" href="/default/page/2/">2</a><a class="page-number" href="/default/page/3/">3</a><a class="extend next" rel="next" href="/default/page/2/">&gt;</a>
   </nav>
 
 
@@ -2269,7 +2367,7 @@ Todo</p>
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

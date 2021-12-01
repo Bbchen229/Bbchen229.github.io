@@ -66,7 +66,7 @@
 
 
 
-  <meta name="keywords" content="SVGD," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -79,17 +79,16 @@
 
 
 
-<meta name="description" content="关于SVGD的内容，这一篇博客中大致做了简单的介绍，包括从上到下的数学推导和简单的逻辑链。但整个贝叶斯推断背后还有许多思想，且SVGD背后也隐藏的一些思维过程。这篇Blog将作为SVGD相关内容的补充以及涉及到的知识体系的简要归纳。 SVGD实验 拟合高斯分布 贝叶斯神经网络">
+<meta name="description" content="前言 最近似乎吃到了一个瓜  如何看待EMNLP&#39;21的文章涉嫌抄袭EMNLP&#39;20上的文章? 本人在阅读EMNLP2021的文章时，偶然发现一篇名为Seeking Common but Distinguishing Difference, A Joint Aspect-based Sentiment Analysis Model的文章，这篇文章的内容与EMNLP2020上的一篇文章Two are">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SVGD补充">
-<meta property="og:url" content="http://example.com/2021/11/18/svgd-2/index.html">
+<meta property="og:title" content="Two are Better than One — Joint Entity and Relation Extraction with Table-Sequence Encoders [EMNLP2020]">
+<meta property="og:url" content="http://example.com/2021/11/23/pd7/index.html">
 <meta property="og:site_name" content="Chen&#39;s Homepage">
-<meta property="og:description" content="关于SVGD的内容，这一篇博客中大致做了简单的介绍，包括从上到下的数学推导和简单的逻辑链。但整个贝叶斯推断背后还有许多思想，且SVGD背后也隐藏的一些思维过程。这篇Blog将作为SVGD相关内容的补充以及涉及到的知识体系的简要归纳。 SVGD实验 拟合高斯分布 贝叶斯神经网络">
+<meta property="og:description" content="前言 最近似乎吃到了一个瓜  如何看待EMNLP&#39;21的文章涉嫌抄袭EMNLP&#39;20上的文章? 本人在阅读EMNLP2021的文章时，偶然发现一篇名为Seeking Common but Distinguishing Difference, A Joint Aspect-based Sentiment Analysis Model的文章，这篇文章的内容与EMNLP2020上的一篇文章Two are">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2021-11-18T02:03:58.000Z">
-<meta property="article:modified_time" content="2021-11-18T05:41:21.352Z">
+<meta property="article:published_time" content="2021-11-23T14:09:00.000Z">
+<meta property="article:modified_time" content="2021-11-25T02:31:32.830Z">
 <meta property="article:author" content="Chen jiayuan">
-<meta property="article:tag" content="SVGD">
 <meta name="twitter:card" content="summary">
 
 
@@ -120,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://example.com/2021/11/18/svgd-2/"/>
+  <link rel="canonical" href="http://example.com/2021/11/23/pd7/"/>
 
 
 
 
 
-  <title>SVGD补充 | Chen's Homepage</title>
+  <title>Two are Better than One — Joint Entity and Relation Extraction with Table-Sequence Encoders [EMNLP2020] | Chen's Homepage</title>
   
 
 
@@ -265,7 +264,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/18/svgd-2/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/23/pd7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -282,7 +281,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">SVGD补充</h1>
+          <h1 class="post-title" itemprop="name headline">Two are Better than One — Joint Entity and Relation Extraction with Table-Sequence Encoders [EMNLP2020]</h1>
         
 
         <div class="post-meta">
@@ -294,8 +293,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-18T10:03:58+08:00">
-                2021-11-18
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-23T22:09:00+08:00">
+                2021-11-23
               </time>
             
 
@@ -304,28 +303,6 @@
             
           </span>
 
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
-                    <span itemprop="name">Paper_daily</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -354,10 +331,19 @@
       
 
       
-        <p>关于<a href="/2021/11/09/svgd/" title="SVGD">SVGD</a>的内容，这一篇博客中大致做了简单的介绍，包括从上到下的数学推导和简单的逻辑链。但整个贝叶斯推断背后还有许多思想，且SVGD背后也隐藏的一些思维过程。这篇Blog将作为SVGD相关内容的补充以及涉及到的知识体系的简要归纳。</p>
-<h1 id="svgd实验">SVGD实验</h1>
-<h2 id="拟合高斯分布">拟合高斯分布</h2>
-<h2 id="贝叶斯神经网络">贝叶斯神经网络</h2>
+        <h1 id="前言">前言</h1>
+<p>最近似乎吃到了一个瓜</p>
+<blockquote>
+<p>如何看待EMNLP'21的文章涉嫌抄袭EMNLP'20上的文章?<br />
+本人在阅读EMNLP2021的文章时，偶然发现一篇名为Seeking Common but Distinguishing Difference, A Joint Aspect-based Sentiment Analysis Model的文章，这篇文章的内容与EMNLP2020上的一篇文章Two are Better than One: Joint Entity and Relation Extraction with Table-Sequence Encoders高度相似。</p>
+</blockquote>
+<p>先不谈到底有没有抄袭事件，我们来看一看20年和21这两篇文章的所做的工作</p>
+<h1 id="emnlp20">EMNLP'20</h1>
+<h1 id="emnlp21">EMNLP'21</h1>
+<h1 id="p.s.">p.s.</h1>
+<p>最近尝试复现旷视的<a href="/2021/10/26/pd5/" title="ML-GCN">ML-GCN</a>也遇到了大无语事件，其一是用了好几个版本的Pytorch都无法较好的收敛，看网友的一些讨论说居然要用19年特定的0.3.1版本；其二就是ML-GCN中最主要的模块GCN对模型的准确率没有任何贡献，去掉该模块反而有更好的效果。😅<br />
+怪不得会有人用“魔改”这种略带侮辱性的词来形容AI的科研。希望能有越来越多的人做有意义的科研，也希望“独角兽”们和“master”们把挣钱和科研分开。“挣钱嘛，不寒碜“ （让子弹飞赶紧申遗），但既然想挣钱就别往科研里钻，整些无意义灌水甚至是剽窃他人的成果。<br />
+当然，抛开环境现状不谈来批判某些个体的行为似乎有些耍流氓。还记得大二时候导师跟我和zb说要做一个一身正气的科研工作者。（虽然现在也说不准以后是进学术界还是工业界）国家快速发展总会留下一些弊病，希望能从高校老师和学生开始，逐渐构建一片净土，让热爱学术的人能够坚定不移的走下去。至少以后学术造假等事件曝光时，我们看到的主角不应该是中国人的名字。</p>
 
       
     </div>
@@ -397,12 +383,6 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/SVGD/" rel="tag"><i class="fa fa-tag"></i> SVGD</a>
-          
-        </div>
-      
 
       
       
@@ -412,8 +392,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/11/16/kernel/" rel="next" title="Kernels and Hilbert Space">
-                <i class="fa fa-chevron-left"></i> Kernels and Hilbert Space
+              <a href="/2021/11/18/svgd-2/" rel="next" title="SVGD补充">
+                <i class="fa fa-chevron-left"></i> SVGD补充
               </a>
             
           </div>
@@ -422,8 +402,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/11/23/pd7/" rel="prev" title="Two are Better than One — Joint Entity and Relation Extraction with Table-Sequence Encoders [EMNLP2020]">
-                Two are Better than One — Joint Entity and Relation Extraction with Table-Sequence Encoders [EMNLP2020] <i class="fa fa-chevron-right"></i>
+              <a href="/2021/11/28/gcn/" rel="prev" title="就叫“深入浅出图卷积(GCN)”吧">
+                就叫“深入浅出图卷积(GCN)”吧 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -583,7 +563,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#svgd%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.</span> <span class="nav-text">SVGD实验</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%9F%E5%90%88%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83"><span class="nav-number">1.1.</span> <span class="nav-text">拟合高斯分布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">1.2.</span> <span class="nav-text">贝叶斯神经网络</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#emnlp20"><span class="nav-number">2.</span> <span class="nav-text">EMNLP&#39;20</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#emnlp21"><span class="nav-number">3.</span> <span class="nav-text">EMNLP&#39;21</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#p.s."><span class="nav-number">4.</span> <span class="nav-text">p.s.</span></a></li></ol></div>
             
 
           </div>
@@ -789,26 +769,6 @@
   
 
   
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-        }
-      });
-    </script>
-
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 
