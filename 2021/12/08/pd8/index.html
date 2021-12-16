@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Text Classification," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Chen's Homepage" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="本文介绍的内容包含多篇基于图神经网络进行文本分类的论文，从提出GCN后的简单应用到去年ACL上的TextING以及今年的BertGCN，GNN在文本分类上取得了非常好的效果。 Graph Convolutional Networks for Text Classification Text Level Graph Neural Network for Text Classification Eve">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Every Document Owns Its Structure - Inductive Text Classification via Graph Neural Networks [ACL2020]">
+<meta property="og:url" content="http://example.com/2021/12/08/pd8/index.html">
+<meta property="og:site_name" content="Chen&#39;s Homepage">
+<meta property="og:description" content="本文介绍的内容包含多篇基于图神经网络进行文本分类的论文，从提出GCN后的简单应用到去年ACL上的TextING以及今年的BertGCN，GNN在文本分类上取得了非常好的效果。 Graph Convolutional Networks for Text Classification Text Level Graph Neural Network for Text Classification Eve">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/gcn/2.png">
+<meta property="og:image" content="http://example.com/images/pd8/2.png">
+<meta property="og:image" content="http://example.com/images/pd8/3.png">
+<meta property="og:image" content="http://example.com/images/pd8/4.png">
+<meta property="og:image" content="http://example.com/images/pd8/1.png">
+<meta property="article:published_time" content="2021-12-08T05:49:22.000Z">
+<meta property="article:modified_time" content="2021-12-14T13:04:34.134Z">
+<meta property="article:author" content="Chen jiayuan">
+<meta property="article:tag" content="Text Classification">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/gcn/2.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2021/12/08/pd8/"/>
+
+
+
+
+
+  <title>Every Document Owns Its Structure - Inductive Text Classification via Graph Neural Networks [ACL2020] | Chen's Homepage</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    
+    <a target="_blank" rel="noopener" href="https://github.com/Bbchen229" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#70B7FD; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Chen's Homepage</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello AI</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/08/pd8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Every Document Owns Its Structure - Inductive Text Classification via Graph Neural Networks [ACL2020]</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-12-08T13:49:22+08:00">
+                2021-12-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
+                    <span itemprop="name">Paper_daily</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文介绍的内容包含多篇基于图神经网络进行文本分类的论文，从提出GCN后的简单应用到去年ACL上的TextING以及今年的BertGCN，GNN在文本分类上取得了非常好的效果。</p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1809.05679">Graph Convolutional Networks for Text Classification</a><br />
+<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1910.02356v2">Text Level Graph Neural Network for Text Classification</a><br />
+<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2004.13826v1">Every Document Owns Its Structure - Inductive Text Classification via Graph Neural Networks</a><br />
+<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2105.05727">BertGCN: Transductive Text Classification by Combining GCN and BERT</a></p>
+<h1 id="text-classification">Text Classification</h1>
+<p>文本分类的应用非常广泛，包括Sentiment Analysis、News Categorization、Topic Analysis甚至是Question Answering等。而automatic text classification方法大致可以被归为两类：基于规则的^rule-based以及基于机器学习的^数据驱动的。</p>
+<p>基于规则的文本分类需要先验知识，包括pre-defined rules、domain knowledge等。而基于机器学习的方法则是借助标注数据集。通常我们可以把机器学习文本分类的步骤归为两步，首先是文本特征提取，而后将特征输入分类器进行分类。而发展到现在，基于神经网络的文本分类模型大致也随着深度学习的发展从前馈神经网络到CNN、RNN以及attention、transformer到如今pre-trained model如BERT等。</p>
+<p>前馈神经网络进行文本分类通常将文本作为bag of words；RNN则把文本作为词的序列；CNN用于训练提取文本中的关键短语、词组等进行匹配分类；attention机制能识别文本中相互关联的词，可以嵌入到其他深度学习模型中；至于transformer以及BERT这类大规模预训练模型，则是“大力出奇迹”。</p>
+<p>而本文的重点，则是基于GNN-图神经网络的文本分类方法。借助图神经网络进行文本中句法、语义解析树之类的图结构信息挖掘，进而进行文本分类。另外经过下文的介绍我们还能发现，基于GNN的模型能与其他深度神经网络进行级联并进行联合训练，进而有效提升分类准确率。<br />
+基于图神经网络的文本分类模型的差异大致体现在三个方面：图的构建、节点嵌入的初始化、图神经网络。</p>
+<h1 id="textgcn">TextGCN</h1>
+<p>Graph Convolutional Networks for Text Classification<br />
+<img src="/images/gcn/2.png" title="Framework of TextGCN" /> TextGCN为AAAI2018的论文，现在很多人看到这篇文章的时候可能会感叹“这也能发？”，但事实上这篇论文是最先构建了transductiive的基于GNN进行文本分类的框架，并取得了非常好的表现。</p>
+<p>模型整体的框架如上图所示，包括图的构建和图神经网络两个模块。其中图神经网络由简单的两层卷积层构成。另一方面，图节点的特征初始化用one-hot vector，输入的信息仅为边信息和节点的结构信息，而其在分类结果上取得的准确率也反映了GNN应用文本分类的合理性。 <span class="math display">\[
+Z=\operatorname{softmax}\left(\tilde{A} \operatorname{ReLU}\left(\tilde{A} X W_{0}\right) W_{1}\right)
+\]</span></p>
+<p>对于构图方面，模型基于整个语料库构建一个异构图，图中的节点包括文档节点和词节点。而这两类节点之间的边，word-word、doc-word定义如下 <span class="math display">\[
+A_{i j}=\left\{\begin{array}{ll}
+\operatorname{PMI}(i, j) &amp; i, j \text { are words, } \operatorname{PMI}(i, j)&gt;0 \\
+\operatorname{TF}-\operatorname{IDF}_{i j} &amp; i \text { is document, } j \text { is word } \\
+1 &amp; i=j \\
+0 &amp; \text { otherwise }
+\end{array}\right.
+\]</span> 其中词i与j之间的PMI (point-wise mutual information) 计算为 <span class="math display">\[
+\begin{aligned}
+\operatorname{PMI}(i, j) &amp;=\log \frac{p(i, j)}{p(i) p(j)} \\
+p(i, j) &amp;=\frac{\# W(i, j)}{\# W} \\
+p(i) &amp;=\frac{\# W(i)}{\# W}
+\end{aligned}
+\]</span> <span class="math inline">\(\#W(i,j)\)</span>代表滑窗中两个词共现次数。另外，图中的词节点会将语料库统计后的低频词过滤掉。至于为什么选择PMI以及TF-IDF这两个指标作为边权重，作者提到是从实验的结果出发作出的选择。 <img src="/images/pd8/2.png" title="Results: TextGCN" /></p>
+<h1 id="text-level-gnn">Text-level GNN</h1>
+<p>Text Level Graph Neural Network for Text Classification [ENMLP2019]<br />
+TextGCN模型跟大部分直推式GNN模型一样，应用时存在明显的缺陷，即没有办法进行在线测试。当我们要输入的新文本进行分类时，需要将文本加入语料库后重新构建graph训练，这就会带来极大的开销。而这篇Text-level GNN则是构建基于文本级别的图，使得基于GNN的文本分类模型提供在线测试的功能，虽然模型依旧是Transductive。 <img src="/images/pd8/3.png" title="Text-level GNN" /> Text-level图的构建如上图所示，其中词与词之间连接的边权重以及词的embedding为整个语料库全局共享，保存在全局矩阵中（上图的两个矩阵），另外文档中的每个词不止和相邻的词存在边，而由一个超参数控制多跳邻居。</p>
+<p>在图神经网络模块，虽然论文中介绍的是non-spectral message passing mechanism，但事实上与TextGCN本质上是一样的，不过边的权重会在训练过程中进行更新。 <span class="math display">\[
+\begin{aligned}
+\mathbf{M}_{\mathbf{n}} &amp;=\max _{a \in \mathcal{N}_{n}^{p}} e_{a n} \mathbf{r}_{\mathbf{a}} \\
+\mathbf{r}_{\mathbf{n}}^{\prime} &amp;=\left(1-\eta_{n}\right) \mathbf{M}_{\mathbf{n}}+\eta_{n} \mathbf{r}_{\mathbf{n}}
+\end{aligned}
+\]</span> 上式中<span class="math inline">\(r\)</span>代表节点特征，<span class="math inline">\(\eta_{n}\)</span>为可训练的参数。<br />
+最后，使用文本中的所有词的embedding进行类别的推断；而在TextGCN中则是直接使用文档节点的embedding进行分类。 <span class="math display">\[
+y_{i}=\operatorname{softmax}\left(\operatorname{Relu}\left(\mathbf{W} \sum_{n \in N_{i}} \mathbf{r}_{\mathbf{n}}^{\prime}+\mathbf{b}\right)\right)
+\]</span></p>
+<p>在这里简单对Corpus-level GNN（TextGCN）和Text-level GNN进行简单的比较。首先两者在下游任务的准确率上有较小的差异，其中后者略胜一筹，不过后者使用了Glove词向量进行初始化，所以事实上将TextGCN使用一些小技巧后两者的准确率是非常接近的。不过Text-level GNN优越性体现在其能够提供在线测试上，当输入新文档进行分类时，它的计算开销会远小于TextGCN。而对于它使用的MPM神经网络而不是GCN，是因为MPM更适合它的构图模式，而不是MPM比常规的GCN更强的信息提取能力。Text-level使得全局的边权重必须成为可训练的参数，而MPM中的另一个可训练的参数<span class="math inline">\(\eta_{n}\)</span>实质上与GCN中结合<span class="math inline">\(I\)</span>的拉普拉斯矩阵<span class="math inline">\(L\)</span>是一致的。</p>
+<h1 id="texting">TextING</h1>
+<p>Every Document Owns Its Structure: Inductive Text Classification via Graph Neural Networks<br />
+上文的两个模型以及后续的BertGCN都是transductive，而本文的TextING则是inducive模型。论文发表在ACL2020上，也就是博客标题。 <img src="/images/pd8/4.png" title="TextING" /> 模型针对每篇文档构建一个图，以词共现作为边节点，借助滑窗（size 3）构建图。节点嵌入用Glove进行初始化。 模型的图神经网络模块使用了Gated Graph Neural Networks(GGNN)和图注意力(GAT)。 <span class="math display">\[
+\begin{aligned}
+\mathbf{a}^{t} &amp;=\mathbf{A h}^{t-1} \mathbf{W}_{a} \\
+\mathbf{z}^{t} &amp;=\sigma\left(\mathbf{W}_{z} \mathbf{a}^{t}+\mathbf{U}_{z} \mathbf{h}^{t-1}+\mathbf{b}_{z}\right) \\
+\mathbf{r}^{t} &amp;=\sigma\left(\mathbf{W}_{r} \mathbf{a}^{t}+\mathbf{U}_{r} \mathbf{h}^{t-1}+\mathbf{b}_{r}\right) \\
+\tilde{\mathbf{h}}^{t} &amp;=\tanh \left(\mathbf{W}_{h} \mathbf{a}^{t}+\mathbf{U}_{h}\left(\mathbf{r}^{t} \odot \mathbf{h}^{t-1}\right)+\mathbf{b}_{h}\right) \\
+\mathbf{h}^{t} &amp;=\tilde{\mathbf{h}}^{t} \odot \mathbf{z}^{t}+\mathbf{h}^{t-1} \odot\left(1-\mathbf{z}^{t}\right)
+\end{aligned}
+\]</span></p>
+<p>上式中<span class="math inline">\(h\)</span>表示节点embedding，<span class="math inline">\(a\)</span>代表接受的信息，<span class="math inline">\(z\)</span>和<span class="math inline">\(r\)</span>分别代表更新和遗忘。而后将节点借助readout模块输出为graph-level的embedding： <span class="math display">\[
+\begin{array}{l}
+\mathbf{h}_{v}=\sigma\left(f_{1}\left(\mathbf{h}_{v}^{t}\right)\right) \odot \tanh \left(f_{2}\left(\mathbf{h}_{v}^{t}\right)\right) \\
+\mathbf{h}_{\mathcal{G}}=\frac{1}{|\mathcal{V}|} \sum_{v \in \mathcal{V}} \mathbf{h}_{v}+\text { Maxpooling }\left(\mathbf{h}_{1} \ldots \mathbf{h}_{\mathcal{V}}\right)
+\end{array}
+\]</span></p>
+<p>上文提到的两个模型中GNN并没有attention模块，这是由于TextGCN的PMI、TF-IDF信息会损失，另一方面Text-level GNN全局的边权重也不应该引入文本图中的attention机制进行更新。</p>
+<p>将上文的三个模型进行简单的对比，可以隐约感到存在一个图的构建与图神经网络之间的trade-off。前两个模型的图构建过程都嵌入了大量的信息（先验信息、全局信息），而他们的图神经网络都非常简单。事实上我曾在TextGCN上做过一些实验，尝试把GAT融入到信息传播过程中，发现准确率会有明显下降。而TextING的构图过程中的信息仅是词节点的共现所包含的上下文信息和结构信息，因此它可以接受更复杂的信息传播和聚合过程。这也使得TextING可以面对新词和新输入的文本直接进行分类。</p>
+<h1 id="bertgcn">BertGCN</h1>
+<p>BertGCN: Transductive Text Classification by Combining GCN and BERT<br />
+BertGCN是由香侬科技提出，发表在ACL2021上的文章，也是目前文本分类的SOTA模型。不过这篇文章的贡献主要是工程上的。另外，不妨排列组合一下将Bert与TextING结合，应该能取得更好的结果XD（虽然在R8上的结果已经非常接近100了）。<br />
+回顾TextGCN，模型中图节点初始化用的是one-hot向量，而BertGCN则是用Bert进行embedding的初始化，另外将Bert与GNN两个模块进行联合训练，取得了很好的表现。</p>
+<p>两者的结合存在两个问题，一是难收敛：BERT与GCN处理数据的方式不同、模型大小不同；二是GCN是在整个图上运算，而BERT过大的模型无法一次全部加载图中所有结点，这就给BertGCN的训练带来阻碍。 针对第一个问题，模型使用了Interpolating损失。 <span class="math display">\[
+Z=\lambda Z_{\mathrm{GCN}}+(1-\lambda) Z_{\mathrm{BERT}}, Z_{\mathrm{BERT}}=\operatorname{softmax}(W X)
+\]</span> 当<span class="math inline">\(\lambda=1\)</span>时，BERT模块没有更新；当<span class="math inline">\(\lambda=0\)</span>时，GCN模块没有更新；当<span class="math inline">\(\lambda \in (0,1)\)</span>时，两个模块都能得到更新，并且通过调节<span class="math inline">\(\lambda\)</span>实现BertGCN整体模块的快速收敛。<br />
+对于无法整图训练这一问题，BertGNN提出了一个Memory Bank用于保存所有节点特征，每次从中加载batch进行训练并更新，其他保持不变。将整个语料库中的文档特征分批更新，为了防止异步更新带来的不一致性，模型在训练Bert模型时采用了小学习率。</p>
+<p><img src="/images/pd8/1.png" title="Results: BertGCN" /></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>I do not accept rewards, but you can donate to the public welfare of China.</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt=" Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Text-Classification/" rel="tag"><i class="fa fa-tag"></i> Text Classification</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/11/28/gcn/" rel="next" title="就叫“深入浅出图卷积(GCN)”吧">
+                <i class="fa fa-chevron-left"></i> 就叫“深入浅出图卷积(GCN)”吧
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/touxiang.JPG"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Bbchen229" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1109441357@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#text-classification"><span class="nav-number">1.</span> <span class="nav-text">Text Classification</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#textgcn"><span class="nav-number">2.</span> <span class="nav-text">TextGCN</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#text-level-gnn"><span class="nav-number">3.</span> <span class="nav-text">Text-level GNN</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#texting"><span class="nav-number">4.</span> <span class="nav-text">TextING</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#bertgcn"><span class="nav-number">5.</span> <span class="nav-text">BertGCN</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chen jiayuan</span>
+
+  
+</div>
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

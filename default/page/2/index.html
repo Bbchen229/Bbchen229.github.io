@@ -261,6 +261,246 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/10/pd2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/10/10/pd2/" itemprop="url">Vocabulary Learning via Optimal Transport for Neural Machine Translation [ACL2021]</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-10-10T18:22:13+08:00">
+                2021-10-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
+                    <span itemprop="name">Paper_daily</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2012.15671.pdf">Vocabulary Learning via Optimal Transport for Neural Machine Translation</a><br />
+ACL2021 Best paper Code: <a target="_blank" rel="noopener" href="https://github.com/Jingjing-NLP/VOLT">link</a></p>
+<p>这篇也就是被ICLR2021拒了后被评为ACL2021 best paper的文章，来自字节跳动的AI Lab。</p>
+<h2 id="related-work">Related Work</h2>
+<h3 id="subword-model">Subword model</h3>
+<p>英文中传统分词方法基于空格进行tokenization。但这一方法面临OOV (Out Of Vocabulary)问题和同一单词的不同形态造成的冗余。因此如今BERT等模型多使用Subword模型，它的划分粒度介于词与字符之间。主流的(指某些中文网站上有博客介绍的）Subword model有Byte Pair Encoding (BPE), WordPiece和Unigram Language Model。</p>
+<h3 id="byte-pair-encodingbpe">Byte-Pair-Encoding(BPE)</h3>
+<p>&quot;Neural machine translation of rare words with subword units.&quot;arXiv preprint arXiv:1508.07909(2015).<br />
+BPE算法被用于处理NMT (Neural Machine Translation)任务中的OOV问题。<br />
+BPE是一种自下而上的压缩算法。将单词作为单词片段处理（word pieces），以便于处理未出现单词。</p>
+<blockquote>
+<p>we adopt BPE generated tokens as the token candidates.</p>
+</blockquote>
+<p>论文提出的算法要先用BPE...</p>
+<h2 id="概要">概要</h2>
+<p>机器翻译中，token vocabulary对最终结果会产生很大的影响。论文研究了词表的评价指标以及如何不通过训练直接找到最优的词表。文章的主要内容包括 1. 从信息论角度分析词表的作用 2.借助Optimal transport来找到最佳token词典 3. 更小的词表but更高的BLEU。</p>
+<h2 id="intro">Intro</h2>
+<p>词汇量（vocabulary size）会影响机器翻译任务的绩效，而通过遍历搜索来寻找最优的词汇量需要极高的计算开销，因此现有的研究大多采用统一的大小，如30k-40k。BPE通过选择频率最高的sub-words做为词典的token以进行数据压缩，以此减少熵。</p>
+<p>语料熵随着词汇量的增加而减少，有利于模型学习。另一方面，过多的字符会导致字符稀疏化，这会损害模型学习。本文通过同时考虑熵和词汇量大小来探索自动词汇化，需要找到一个合适的目标函数来同时优化它们。其次，假设给出了适当的度量，由于指数搜索空间（<span class="math inline">\(2^N\)</span>)，解决这种离散优化问题仍然具有挑战性。</p>
+<p>针对上述问题，论文提出VOcabulary Learning approach via optimal Transport, VOLT——最优传输的词汇学习方法</p>
+<p>总的来说，论文的目标是1.得到“简洁而不臃肿”的词汇表 —— entropy-size trade off 2. 优化搜索过程。</p>
+<h2 id="marginal-utility-of-vocabularization-muv">Marginal Utility of Vocabularization (MUV)</h2>
+<p>借用经济学中的边际效应的概念，以词汇的边际效应（MUV）作为衡量标准， 然后将目标转向在可处理的时间复杂度中最大化 MUV。 <img src="/images/pd2_3.png" title="vocabulary的边际效益（没有显示给出MUV）" /></p>
+<p>在经济学中，边际效应用于平衡收益和成本，因此论文使用 MUV 来平衡熵（收益）和词汇量（成本）。也就是从成本（大小）的增加中获得多大的收益（熵）。</p>
+<p><img src="/images/pd2_1.png" title="MUV 与三分之二翻译任务的下游性能相关" /></p>
+<h3 id="definition-of-muv">Definition of MUV</h3>
+<p>MUV 表示熵对大小的负导数 <span class="math display">\[
+\mathcal{M}_{v(k+m)}=\frac{-\left(\mathcal{H}_{v(k+m)}-\mathcal{H}_{v(k)}\right)}{m}
+\]</span> 其中 <span class="math inline">\(v(k), v(k+m)\)</span> 是两个分别带有 <span class="math inline">\(k\)</span> 和 <span class="math inline">\(k+m\)</span> 个字符的词汇。<span class="math inline">\(\mathcal{H}_{v}\)</span> 表示词汇表 <span class="math inline">\(v\)</span> 语料库的樀，它由字符樀的总和定义。用字符的平均长度对熵进行归一化来避免字符长度的影响。最终的熵定义为： <span class="math display">\[
+\mathcal{H}_{v}=-\frac{1}{l_{v}} \sum_{j \in v} P(j) \log P(j)
+\]</span> <span class="math inline">\(P(i)\)</span> 是训练语料库中token <span class="math inline">\(i\)</span> 的相对频率, <span class="math inline">\(l_{v}\)</span> 是词汇表 <span class="math inline">\(v\)</span> 中token的平均长度。</p>
+<h3 id="preliminary-results">Preliminary Results</h3>
+<p>为了验证 MUV 作为词汇化衡量标准的有效性，作者对来自 TED 的 45 个语言对进行了实验，并计算了 MUV 和 BLEU 分数之间的Spearman相关系数(<span class="math inline">\(\rho\)</span>)。Spearman 得分为 0.4。</p>
+<blockquote>
+<p>We believe that it is a good signal to show MUV matters</p>
+</blockquote>
+<p>有了MUV作为评价指标，我们有两个选择来获得最终词表：搜索和学习。作者认为基于学习是更高效的，因此进一步探索了一种基于学习的解决方案 VOLT。（当然最终借助实验比较了 MUV-Search 和 VOLT的性能。）</p>
+<h2 id="maximizing-muv-via-optimal-transport">Maximizing MUV via Optimal Transport</h2>
+<h3 id="优化问题">优化问题</h3>
+<p>首先引入一个辅助变量<span class="math inline">\(S\)</span>，<span class="math inline">\(\boldsymbol{S}=\{k, 2 \cdot k, \ldots,(t-1) \cdot k, \cdots\}\)</span>。 <span class="math inline">\(S\)</span>是一个递增序列，对于每个时间戳t，<span class="math inline">\(S[t]\)</span>代表<strong>不多于<span class="math inline">\(S[t]\)</span>个词条的词表集合</strong>。引入这一变量，根据递推关系来计算任意一个词表的MUV（借助前一个时间戳s[t-1]上的词表递进计算）</p>
+<p><span class="math inline">\(k\)</span>代表前后两个词表<span class="math inline">\(v(t)\)</span>和<span class="math inline">\(v(t-1)\)</span>之间的大小差（size gap）。我们的目标是找到MUV最高的<span class="math inline">\(v[t]\)</span> <span class="math display">\[
+\begin{array}{l}
+\underset{t}{\arg \max } \underset{v(t-1) \in \mathbb{V}_{\boldsymbol{S}[t-1]}, v(t) \in \mathbb{V}_{S[t]}}{\arg \max } \mathcal{M}_{v(t)}= \\
+\underset{t}{\arg \max } \underset{v(t-1) \in \mathbb{V}_{\boldsymbol{S}[t-1]}, v(t) \in \mathbb{V}_{S[t]}}{\arg \max }-\frac{1}{k}\left[\mathcal{H}_{v(t)}-\mathcal{H}_{v(t-1)}\right]
+\end{array}
+\]</span> <span class="math inline">\(\mathbb{V}_{\boldsymbol{S}[t-1]}\)</span>和 <span class="math inline">\(\mathbb{V}_{\boldsymbol{S}[t]}\)</span>表示两个词表的集合，其中每个词表大小的上界为<span class="math inline">\(s[t-1]\)</span>和<span class="math inline">\(s[t]\)</span></p>
+<blockquote>
+<p>The inner arg max represents that the target is to find the vocabulary from <span class="math inline">\(\mathbb{V}_{\boldsymbol{S}[t]}\)</span> with the maximum MUV scores. The outer arg max means that the target is to enumerate all timesteps and find the vocabulary with the maximum MUV scores.</p>
+</blockquote>
+<p>遍历t，遍历<span class="math inline">\(\mathbb{V}_{\boldsymbol{S}[t-1]}\)</span>。<br />
+（词表越大熵越小）上述公式意味着从v(t-1)这个词表，增加i个词/tokens之后，期望新得到的v(t)词表的熵降低的最多。即两个词表对应的熵的差值越大越好。</p>
+<blockquote>
+<p>Due to exponential search space, we propose to optimize its upper bound: <span class="math display">\[
+\underset{t}{\arg \max } \frac{1}{k}\left[\underset{v(t) \in \mathbb{V}_{S[t]}}{\arg \max } \mathcal{H}_{v(t)}-\underset{v(t-1) \in \mathbb{V}_{S[t-11}}{\arg \max } \mathcal{H}_{v(t-1)}\right]
+\]</span></p>
+</blockquote>
+<p>(论文ArXiv上的前一版本中写的还是lower bound...而最新版放的是upper bound...)<br />
+anyway至此整个方法可以分成两个步骤：</p>
+<ul>
+<li>每个时间步t上，寻找最优的词表（按照最大化熵来寻找）</li>
+<li>枚举每个时间步t，并输出满足上一个公式的词表（对应的就是时间步t的”最优词表“）</li>
+</ul>
+<p>step1的目标就是最大化： <span class="math display">\[
+\underset{v(t) \in \mathbb{V}_{\boldsymbol{S}[t]}}{\arg \max }-\frac{1}{l_{v(t)}} \sum_{j \in v(t)} P(j) \log P(j)
+\]</span> <span class="math inline">\(l_{v}\)</span>是每个token的平均字符长度，<span class="math inline">\(P(j)\)</span>是token j的概率（频率）</p>
+<blockquote>
+<p>However, notice that this problem is in general intractable due to the extensive vocabulary size. Therefore, we instead propose a relaxation in the formulation of discrete optimal transport, which can then be solved efficiently via the Sinkhorn algorithm</p>
+</blockquote>
+<p>借助最优传输OT的思想，松弛原优化问题，进而用信息论中的Sinkhorn algorithm求解。</p>
+<h3 id="optimal-transport-不太懂">Optimal Transport （不太懂）</h3>
+<p><img src="/images/pd2_2.png" title="寻找一个从“character分布、单字分布”到“词表词条分布”的一个最优的运输矩阵的过程" /></p>
+<ul>
+<li>每个transport matrix对应一个词表；</li>
+<li>transport matrix决定有多少chars被“运输”到token候选（词条候选）；</li>
+<li>长度为0的tokens（包含0个chars)，不会被增加到词表。</li>
+</ul>
+<p>不同的”运输矩阵“会带来不同的”运输开销”。而最优化运输（路径）问题的目标就是寻找一个“运输矩阵“，使得”运输开销“(即，负熵)最小化。</p>
+<p>目标函数： <span class="math display">\[
+\begin{array}{c}
+\min _{v \in \mathbb{V}_{S[t]}} \frac{1}{l_{v}} \sum_{j \in v} P(j) \log P(j) \\
+\text { s.t. } \quad P(j)=\frac{\operatorname{Token}(j)}{\sum_{j \in v} \operatorname{Token}(j)}, l_{v}=\frac{\sum_{j \in v} \operatorname{len}(j)}{|v|}
+\end{array}
+\]</span></p>
+<p>近似(obtain a tractable lower bound of entropy) - 启发式规则(最长词条匹配原则) - 变换为两部分损失</p>
+<p>复杂的推导后得到： <span class="math display">\[
+\min _{\boldsymbol{P} \in \mathbb{R}^{m \times n}}\langle\boldsymbol{P}, \boldsymbol{D}\rangle-\gamma H(\boldsymbol{P})
+\]</span></p>
+<p><span class="math display">\[
+\boldsymbol{D}(j, i)=\left\{\begin{array}{ll}
+-\log P(i \mid j)=+\infty, &amp; \text { if } i \notin j \\
+-\log P(i \mid j)=-\log \frac{1}{\operatorname{len}(j)}, &amp; \text { otherwise }
+\end{array}\right.
+\]</span></p>
+<p><img src="/images/pd2_4.png" title="算法（不太复杂）" /></p>
+<h2 id="实验">实验</h2>
+<p>3个数据集上NMT任务的BLEU比较（双语语料、多语语料等）<br />
+VOLT对比BPE、MUV search更加高效</p>
+<p>最后，全论文的核心应该是MUV的提出以及用OT进行优化这一trick，实验结果也比较solid，虽然最终的算法并不复杂，但是OT部分Sinkhorn算法需要较强的信息论背景，本CS专业看了半年仍是一脸懵。<br />
+指路一篇介绍Sinkhorn算法的链接： <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1803.00567.pdf" class="uri">https://arxiv.org/pdf/1803.00567.pdf</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/09/p1-position-encoding/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1615,179 +1855,6 @@ Todo</p>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/25/dae/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/09/25/dae/" itemprop="url">DAE for Action Quality Assessment(AQA)  [CV]</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-09-25T23:21:47+08:00">
-                2020-09-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Research/" itemprop="url" rel="index">
-                    <span itemprop="name">Research</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><font  size=5>Auto-Encoding Score Distribution Regression for Action Quality Assessment</font></p>
-<p><em>Action quality assessment (AQA) from videos is a challenging vision task since the relation between videos and action scores is difficult to model. Thus, action quality assessment has been widely studied in the literature. Traditionally, AQA task is treated as a regression problem to learn the underlying mappings between videos and action scores. More recently, the method of uncertainty score distribution learning (USDL) made success due to the introduction of label distribution learning (LDL). But USDL does not apply to dataset with continuous labels and needs a fixed variance in training. In this paper, to address the above problems, we further develop Distribution Auto-Encoder (DAE). DAE takes both advantages of regression algorithms and label distribution learning (LDL). Specifically, it encodes videos into distributions and uses the reparameterization trick in variational auto-encoders (VAE) to sample scores, which establishes a more accurate mapping between videos and scores. Meanwhile, a combined loss is constructed to accelerate the training of DAE. DAE-MT is further proposed to deal with AQA on multi-task datasets. We evaluate our DAE approach on MTL-AQA and JIGSAWS datasets. Experimental results on public datasets demonstrate that our method achieves state-of- the-arts under the Spearman’s Rank Correlation: 0.9449 on MTL-AQA and 0.73 on JIGSAWS.</em></p>
-<h2 id="aqa">AQA</h2>
-<p>Action Quality Accessment (AQA) automatically scores the quality of actions by analyzing features extracted from videos and images. It’s different from conventional action recognition problem. In the past few years, much work has been devoted to different AQA tasks, such as healthcare, sports video analysis and many others.</p>
-<h2 id="related-work">Related Work</h2>
-<p>Parmar <em>et al.</em> [1] proposed C3D-SVR and C3D-LSTM to predict the score of the Olympic events. Additionally, incremental-label training method was introduced to train the LSTM model based on the hypothesis that the final score is an aggregation of the sequential sub-action scores.</p>
-<p>Tang <em>et al.</em> noticed the underlying ambiguity of action scores and then proposed an improved approach: uncertainty-aware score distribution learning (USDL) [2] to address this problem. USDL is designed based on label distribution learning (LDL), a general learning paradigm to solve problems with uncertainty and answer how much each label describes the instance.</p>
-<h2 id="methoddae">Method:DAE</h2>
-<p><img src="/images/dae1.png" title="The pipeline of DAE architecture contains two segments: video features extraction network (orange) and label distribution encoding network (pink)." /></p>
-<h3 id="video-feature-extraction">Video Feature Extraction</h3>
-<p>The input video is divided into n small clips by down-sampling. Then the clips are sent into I3D ConvNets for extracting features. The final features are synthesized by three fully-connected layers.</p>
-<h3 id="auto-encoder-for-distribution-learning">Auto-Encoder for Distribution Learning</h3>
-<p>Compared with the regression-based method and the label distribution learning method, our approach combines the two methods’ characteristics comprehensively. The action features are encoded into score distribution, and the final result is sampled from the auto-encoders output. This architecture en- ables learning a continuous distribution without loss in training procedure and quantifies the uncertainty of action score with high accuracy.</p>
-<p>The encoder uses a simple but quite an efficient neural network, namely multi-layered perceptrons (MLPs), to encode mean and variance simultaneously. The input 1024-dimensional feature vector x is encoded into the parameters <span class="math inline">\(μ(x)\)</span> and <span class="math inline">\(σ^2(x)\)</span> via a neural network.</p>
-<p>We take the action score as a random variable. Treating the action score as a random variable, we need to learn its score distribution and then sample the predicted score from the obtained distribution. <span class="math display">\[
-p\left(y ; \mu(\boldsymbol{x}), \sigma^{2}(\boldsymbol{x})\right)=\frac{1}{\sqrt{2 \pi \sigma^{2}(\boldsymbol{x})}} \exp \left(-\frac{(y-\mu(\boldsymbol{x}))^{2}}{2 \sigma^{2}(\boldsymbol{x})}\right)
-\]</span></p>
-<p>To generate a sample from Gaussian distributed y as the predicted score and make full use of the two parameters in the score distribution at the same time, we invoke the reparameterization trick. According to reparameterization trick in VAE [3], assume that <span class="math inline">\(z\)</span> is a random variable, and <span class="math inline">\(z \sim q(z ; \phi), \phi\)</span> is its parameter. We can express <span class="math inline">\(z\)</span> as a deterministic variable, <span class="math inline">\(z=g(\epsilon ; \phi), \epsilon\)</span> is an auxiliary variable with independent marginal <span class="math inline">\(p(\epsilon)\)</span>, and <span class="math inline">\(g(\cdot ; \phi)\)</span> is a deterministic function parameterized by <span class="math inline">\(\phi\)</span>.<br />
-<span class="math display">\[
-y=\mu(\boldsymbol{x})+\epsilon * \sigma^{2}(\boldsymbol{x})
-\]</span></p>
-<h2 id="experiments">Experiments</h2>
-<p>We use Spearman’s rank correlation to measure the performance of our methods between the ground-truth and predicted score series. Spearman’s correlation is defined as: <span class="math display">\[
-\rho=\frac{\sum_{i}\left(p_{i}-\bar{p}\right)\left(q_{i}-\bar{q}\right)}{\sqrt{\sum_{i}\left(p_{i}-\bar{p}\right)^{2} \sum_{i}\left(q_{i}-\bar{q}\right)^{2}}}
-\]</span> <img src="/images/dae2.png" title="The results on JIGSAWS." /> <img src="/images/dae3.png" title="The results on MTL-AQA." /></p>
-<p><img src="/images/dae4.png" title="Comparison of different distribution of different videos on MTL-AQA dataset." /></p>
-<p>References (incomplete)<br />
-[1] What and How Well You Performed? A Multitask Learning Approach to Action Quality Assessment<br />
-[2] Uncertainty-aware score distribution learning for action quality assessment<br />
-[3] Auto-encoding variational bayes</p>
-<p>Cooperate with zby (seu) supervisor: xyf (seu)<br />
-<a target="_blank" rel="noopener" href="https://github.com/InfoX-SEU/DAE-AQA">Github link</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1843,7 +1910,7 @@ y=\mu(\boldsymbol{x})+\epsilon * \sigma^{2}(\boldsymbol{x})
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">23</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1865,7 +1932,7 @@ y=\mu(\boldsymbol{x})+\epsilon * \sigma^{2}(\boldsymbol{x})
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

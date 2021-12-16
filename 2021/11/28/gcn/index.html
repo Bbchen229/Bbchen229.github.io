@@ -88,9 +88,10 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/images/gcn/1.png">
 <meta property="og:image" content="http://example.com/images/gcn/2.png">
-<meta property="og:image" content="http://example.com/images/gcn/2.png">
+<meta property="og:image" content="http://example.com/images/gcn/4.png">
+<meta property="og:image" content="http://example.com/images/gcn/3.png">
 <meta property="article:published_time" content="2021-11-28T10:35:25.000Z">
-<meta property="article:modified_time" content="2021-12-01T16:20:32.675Z">
+<meta property="article:modified_time" content="2021-12-02T01:53:08.111Z">
 <meta property="article:author" content="Chen jiayuan">
 <meta property="article:tag" content="GNN">
 <meta name="twitter:card" content="summary">
@@ -369,7 +370,7 @@ Data Analytics on Graphs-图机器学习的教材<br />
 f\left(H^{(l)}, A\right)=\sigma\left(A H^{(l)} W^{(l)}\right)
 \]</span></p>
 <h2 id="gnn-cnn">GNN &amp; CNN</h2>
-<p>对于图像来说，卷积核可以作为图像中的特征提取器（为了防止图和图像这两个词的太过接近导致可能出现的问题，下文提到图时将用graph）。但是这种卷积操作无法直接用在Graph上，为什么？<br />
+<p>对于图像来说，nxn的卷积核可以作为图像中的特征提取器（为了防止图和图像这两个词的太过接近导致可能出现的问题，下文提到图时将用graph）。但是这种卷积操作无法直接用在Graph上，为什么？<br />
 由于图像与graph的数据特性和卷积操作的特性。首先，图像具有局部平移不变性(local translational invariance)，使得卷积核能够对图像矩阵进行扫描卷积；而graph作为非欧空间的数据 (Non Euclidean Structure)，每个节点邻接点的各异导致传统CNN操作无法应用。第二，卷积核是参数共享的，且可以实现层次化特征提取-卷积层可以在前一层的基础上提取更高阶的特征；而graph的层数加深则是使节点获取更广的感受野。</p>
 <h2 id="spectrum">Spectrum</h2>
 <p>参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/120311352" class="uri">https://zhuanlan.zhihu.com/p/120311352</a><br />
@@ -389,7 +390,7 @@ f\left(H^{(l)}, A\right)=\sigma\left(A H^{(l)} W^{(l)}\right)
 <h3 id="拉普拉斯算子">拉普拉斯算子</h3>
 <p>接下来我们来一步步理解为什么要这样定义图的拉普拉斯矩阵。对于空间中的任意函数<span class="math inline">\(f\)</span>来说， <span class="math display">\[
 \Delta f=\nabla^{2} f=\nabla \cdot \nabla f =\sum_{i=1}^{n} \frac{\partial^{2} f}{\partial x_{i}^{2}}
-\]</span> 拉普拉斯算子 (Laplacian)是欧式空间中的函数梯度的散度 (Divergence)对应的微分算子。在n维空间中计算的是函数各个维度二阶偏导的和。在二维空间中，可以近似为差分的计算 <span class="math display">\[
+\]</span> 拉普拉斯算子 (Laplacian)是欧式空间中的函数梯度的散度 (Divergence)对应的微分算子。在n维空间中计算的是函数各个维度二阶偏导的和。在二维空间中，可以<strong>近似</strong>为差分的计算 <span class="math display">\[
 \begin{aligned}
 \Delta f(x, y) &amp;=\frac{\partial^{2} f}{\partial x^{2}}+\frac{\partial^{2} f}{\partial y^{2}} \\
 &amp;=[f(x+1, y)+f(x-1, y))-2 f(x, y)]+[f(x, y+1)+f(x, y-1))-2 f(x, y)] \\
@@ -404,7 +405,7 @@ f\left(H^{(l)}, A\right)=\sigma\left(A H^{(l)} W^{(l)}\right)
 \end{array}
 \]</span> 因此拉普拉斯算子可以理解为——在所有自由度上进行微小变化后所获得的增益。<br />
 而将其推广到有N节点的graph上时，<span class="math inline">\(f\)</span>维度最高为N，<span class="math inline">\(f=\left(f_{1}, \ldots, f_{N}\right)\)</span>。其中<span class="math inline">\(f_{i}\)</span> 表示函数<span class="math inline">\(f\)</span>在网络图中节点i处的函数值, 类比<span class="math inline">\(f(x, y)\)</span>为函数<span class="math inline">\(f\)</span>在 <span class="math inline">\((\mathrm{x}, \mathrm{y})\)</span>的函数值。<br />
-因此当拉普拉斯算子作用在加权graph（边权重为<span class="math inline">\(w_{i j}\)</span>）上时，借助差分近似后有： <span class="math display">\[
+因此当拉普拉斯算子作用在加权graph（<strong>边权重为</strong><span class="math inline">\(w_{i j}\)</span>）上时，借助差分近似后有： <span class="math display">\[
 \begin{aligned}
 \Delta \boldsymbol{f}_{i} &amp;=\sum_{j \in N_{i}} \frac{\partial f_{i}}{\partial j^{2}} \\
 &amp; \approx \sum_{j} w_{i j}\left(f_{i}-f_{j}\right) \\
@@ -448,7 +449,7 @@ w_{N:}
 &amp; &amp; \lambda_{n}
 \end{array}\right) \mathbf{U^{-1}}=\mathbf{U}\boldsymbol{\Lambda} \mathbf{U}^{T}
 \]</span> 其中<span class="math inline">\(\boldsymbol{\Lambda}\)</span> 为特征值构成对角矩阵, <span class="math inline">\(\mathbf{U}\)</span> 为特征向量构成的正交矩阵。</p>
-<p>在这里补充一条性质 <span class="math display">\[\Delta e^{-i \omega t} =\frac{\partial^{2} e^{-i \omega t}}{\partial t^{2}}= -\omega^{2} e^{-i \omega t}\]</span> 这符合特征方程<span class="math inline">\(AV=\lambda V\)</span>的定义，也就是说<span class="math inline">\(e^{-i \omega t}\)</span>是拉普拉斯算子的特征函数</p>
+<p>在这里补充一条性质 <span class="math display">\[\Delta e^{-i \omega t} =\frac{\partial^{2} e^{-i \omega t}}{\partial t^{2}}= -\omega^{2} e^{-i \omega t}\]</span> 从广义上来看，这符合特征方程<span class="math inline">\(AV=\lambda V\)</span>的定义，也就是说<span class="math inline">\(e^{-i \omega t}\)</span>是拉普拉斯算子的特征函数</p>
 <p>把传统的傅里叶变换以及卷积迁移到Graph上来, 核心工作其实就是把<strong>拉普拉斯算子的特征函数<span class="math inline">\(e^{-i \omega t}\)</span></strong> 变为Graph对应的<strong>拉普拉斯矩阵的特征向量</strong>。 傅立叶变化是信号函数<span class="math inline">\(f(t)\)</span>与基函数<span class="math inline">\(e^{-i \omega t}\)</span>的内积 <span class="math display">\[
 \mathcal{F}_{T}(\omega)=\int_{-\infty}^{+\infty} f(t) e^{-i \omega t} d t
 \]</span> 因此对于Graph我们就可以定义 <span class="math display">\[
@@ -520,9 +521,9 @@ A  H^{(l)}  W^{(l)}
 如上图所示，模型将语料库中的每一篇文档和语料库中词作为节点，联合构建了一个异构图，再借助GCN进行特征传播，得到每个文档节点的embedding后进行softmax分类。<br />
 文章中节点都使用one-hot vector进行初始化，而文档-词边、词-词边分别用TF-IDF、PMI赋以不同的权重，而最终得到的分类准确率比传统的CNN、LSTM等网络效果要高，足以证明GCN在NLP任务中的潜力。此外，后续用BERT进行节点初始化的BERTGCN也是目前的文本分类的SOTA模型。</p>
 <h3 id="st-gcn">ST-GCN</h3>
-<p><img src="/images/gcn/2.png" title="ST-GCN" /> <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1801.07455.pdf">ST-GCN</a>可以说是GCN在骨骼行为识别里面的开山之作。</p>
+<p><img src="/images/gcn/4.png" title="ST-GCN" /> <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1801.07455.pdf">ST-GCN</a>可以说是GCN在骨骼行为识别里面的开山之作。</p>
 <h3 id="sgc">SGC</h3>
-<p>[](/images/gcn/3.png ' Simplifying Graph Convolutional Networks (SGC)') 作者将图卷积层中的激活函数去掉，得到了SGC在许多NLP任务上更优的结果，且模型速度有了极大的提升。</p>
+<p><img src="/images/gcn/3.png" title="Simplifying Graph Convolutional Networks (SGC)" /> 作者将图卷积层中的激活函数去掉，得到了SGC在许多NLP任务上更优的结果，且模型速度有了极大的提升。</p>
 <h2 id="再回首">再回首</h2>
 <p>回顾一下上文的内容，首先GCN是GNN的一种，从公式上看聚合函数采用的是图的拉普拉斯矩阵。当我们从频域上分析图的拉普拉斯矩阵及其特征分解之后可以发现，拉普拉斯矩阵的特征向量可以作为傅里叶变换的基、特征值表示频率，从而就可以定义图上的傅立叶变换，进而扩展到卷积操作。而将图卷积与神经网络结合后，借助多项式优化后就得到了现在常用的卷积公式。而从空间域中看，图卷积本质上也就是一种信息传播机制，借助边的权重信息对邻节点的特征做限制后传播、聚合、更新节点原本的特征。</p>
 <p>在频域分析过程中我们可以得到，在由Graph确定的<span class="math inline">\(n\)</span>维空间中，越小的特征值 <span class="math inline">\(\lambda_{l}\)</span> 表明：拉普拉斯矩阵 <span class="math inline">\(L\)</span> 其所对应的基 <span class="math inline">\(u_{l}\)</span> 上的分量、&quot;信息&quot;越少、高频部分。所以图卷积有时候也被认知为是图上的高斯平滑，一种滤波的过程，这也导出了图卷积中的一大问题：over-smooshing。当图卷积层数加深时，图上节点自身的特征会因为不断的传播后导致自身的特征消失，所有节点的特征会越来越接近，进而使得下游任务准确率下降。</p>
@@ -591,6 +592,10 @@ A  H^{(l)}  W^{(l)}
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/12/08/pd8/" rel="prev" title="Every Document Owns Its Structure - Inductive Text Classification via Graph Neural Networks [ACL2020]">
+                Every Document Owns Its Structure - Inductive Text Classification via Graph Neural Networks [ACL2020] <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -671,7 +676,7 @@ A  H^{(l)}  W^{(l)}
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">23</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -693,7 +698,7 @@ A  H^{(l)}  W^{(l)}
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
