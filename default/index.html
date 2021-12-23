@@ -261,6 +261,193 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/21/pd9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/12/21/pd9/" itemprop="url">QUINE'S EMPIRICAL ASSUMPTIONS [1968]</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-12-21T20:09:17+08:00">
+                2021-12-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
+                    <span itemprop="name">Paper_daily</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言">前言</h1>
+<h2 id="絮絮叨叨">絮絮叨叨</h2>
+<p>为什么会突然看一篇60年代的文章？要从几天前我从学校图书馆借了一本叫《数学之美》的书说起。首先安利一下这本书，这书薄薄的似乎只有100页，但是书的作者的文学素养和专业知识让AI问题及其背后的数学充满了浪漫主义色彩。然后在书里刚开始关于自然语言处理的相关介绍中，我看到了一个名字-Noam Chomsky （乔姆斯基）。当时我并没有听说过他，于是就去搜索了一下，搜索结果几个关键词抓住了我的眼球：xxxx创始人、最伟大的学者之一。so, who is he?</p>
+<h2 id="从规则到统计">从“规则”到“统计”</h2>
+<p>自然语言处理作为人工智能下的子领域，自然也陪伴着人工智能走过几个“春季”与“冬季”。具体而言，NLP从早起的基于规则到如今的基于统计，背后不仅是深度学习技术的发展，也是其从“理想主义”为主流到“经验主义”占主导的转变过程。</p>
+<blockquote>
+<p>基于统计的自然语言处理是哲学中的经验主义，基于规则的自然语言处理是哲学中的理性主义。在哲学领域中经验主义与理性主义的斗争一直是此消彼长，这种矛盾与斗争也反映在具体科学上，如自然语言处理。 早期的自然语言处理具有鲜明的经验主义色彩。如1913年马尔科夫提出马尔科夫随机过程与马尔科夫模型的基础就是“手工查频”，具体说就是统计了《欧根·奥涅金》长诗中元音与辅音出现频度；1948年香农把离散马尔科夫的概率模型应用于语言的自动机，同时采用手工方法统计英语字母的频率。<br />
+然而这种经验主义到了乔姆斯基时出现了转变。<br />
+1956年乔姆斯基借鉴香农的工作，把有限状态机作用刻画语法的工具，建立了自然语言的有限状态模型，具体来说就是用“代数”和“集合”将语言转化为符号序列，建立了一大堆有关语法的数学模型。这些工作非常伟大，为自然语言和形式语言找到了一种统一的数学描述理论，一个叫做“形式语言理论”的新领域诞生了。但乔老爷子干完这一票之后，挥一挥衣袖，说了一句“有限状态模型不适合用来描述自然语言”。 随后老爷子又补了一刀“应当认识到‘句子的概率’这个概念，在任何已知术语的解释中，都是一个无用的概念”。 -------《统计自然语言处理》</p>
+</blockquote>
+<p>从如今language model在NLP中的表现来看这句“应当认识到‘句子的概率’这个概念，在任何已知术语的解释中，都是一个无用的概念”是非常的离谱，而网上的几篇博客（内容几乎一模一样😅）说这句如此绝对的话来源于<em>QUINE'S EMPIRICAL ASSUMPTIONS</em>这篇文章。因此本着对伟人的尊重和求真务实的态度，我就决定去读一下这篇文章。另外这篇文章是在springer出版的书籍。不过在说这篇文章的内容之前还需要补充介绍几个名词</p>
+<h2 id="willard-van-orman-quine-avram-noam-chomsky">Willard Van Orman Quine &amp; Avram Noam Chomsky</h2>
+<p>这里我们首先简单的介绍一下两个人。<br />
+WVO Quine就是文章标题中的这个Quine，文章中从他的作品<em>word and object</em>开始谈起。直接检索Willard Van Orman Quine会发现百度百科并没有收录这个词条，不过wikipedia倒是有。简单来说，Quine是美国一位著名的哲学家，主张经验主义，另外他倡导Semantic holism-语义整体论。语义整体论可以简单理解为语言的某个部分，无论是术语还是完整的句子，只能通过它与更大语言部分的关系来理解。</p>
+<p>Avram Noam Chomsky也就是乔姆斯基（任在世），是美国哲学家，麻省理工学院语言学的荣誉退休教授。乔姆斯基的《句法结构》被认为是20世纪理论语言学研究上最伟大的贡献。<br />
+《句法结构》（Syntactic Structures）是乔姆斯基介绍转换生成语法的《语言学理论的逻辑结构》一书的精华版。这一理论认为说话的方式（词序）遵循一定的句法，这种句法是以形式的语法为特征的，具体而言就是一种不受语境影响并带有转换生成规则的语法。儿童被假定为天生具有适用于所有人类语言的基本语法结构的知识。这种与生俱来的知识通常被称作普遍语法理论。</p>
+<h2 id="humean-theory">Humean Theory</h2>
+<p>休谟（David Hume）是苏格兰不可知论哲学家。他认为人的认知是有局限的。在休谟看来，我们所能认知的“自我”，其实只是感知，人的感知受人的感官局限。休谟认为，因果关系是人的理念，我们倾向于把某种序列中理念间的必然联系归于这种因果关系的本质。也就是说，因果只是我们头脑中的理念而已，两个客体造成恒定感知，比如每天我们看到太阳升起——天就亮了，我们就会把二者视为因果关系。但并不是自然界真的存在因果关系。</p>
+<h1 id="正文">正文</h1>
+<p>这篇文章是对奎恩经验主义假设的解读，不过这篇文章阅读下来非常晦涩，因为作者在叙述Quine的理论时会通过各种逗号断句或小括号来表达自己的观点，所以文章的内容没有结构化的组织（就这还语言学家呢，就这就这），另外这一篇十多页的文章居然一个小标题都没有。</p>
+<p>首先quine的理论来源于Humean theory of language acquisition，他认为人们对于语言的知识可以被表示为a network of linguistic，这也意味着人类的theory，比如chemistry这种二级学科或者基础的学科都可以被表示为a fabric of sentences variously associated to one another。进而人类所有的知识都可以用这些结构来描述。quine的理论中提到了“language”和“theory”。乔姆斯基指出理论与语言是相互渗透的，另外理论还涵盖了common-sense和belief。</p>
+<blockquote>
+<p>Beneath the uniformity that unites us in communication there is a chaotic <strong>personal diversity of connections</strong>, and, for each of us, <strong>the connections continue to evolve</strong>. No two of us learn our language alike, nor, in a sense, does any finish learning it while he lives.</p>
+</blockquote>
+<p>奎因表示如果语言是通过<strong>条件反应的机制相互关联</strong>并<strong>与外部刺激相关联</strong>的句子网络，那么一个人对言语行为的倾向可以根据这种网络来表征。按照这种语言的抽象形式，我们如何从语言中获取知识？奎恩提出了一个prelinguistic quality space，其中定义了距离度量（意味着可以度量相似度）。简单来说，在这个空间的某个维度上来看red ball， yellow ball之间的距离比red kerchief要近。这一想法似乎是背离经验主义的，因为这种质量空间可以想象和定义得到的，而非学习得到的。</p>
+<p>然而，奎因在他关于语言是如何学习的假说中回到了经典的经验主义概念。与他认为语言是一个句子网络的观点相一致，他列举了学习句子的三种可能机制。首先，句子可以通过“直接条件反射”到“适当的非语言刺激”来学习，也就是说，通过在适当的条件下重复配对句子和刺激；第二，通过句子与句子的关联；第三，新句子可以通过“类比合成”产生，不过这种类比指的并不是类似英语语法规则的东西，而是在固定的上下文中用一个词代替一个类似的词（“手”、“脚”）。他认为一种语言是相关句子的有限网络，有些也与刺激相关，因为这只是两个假定的机制所产生的结构，具有实质性内容的语言学习。</p>
+<p>但是乔姆斯基认为语言是句子的无限集合构成的。由假定的机制推导出的网络必定是有限的（对应上文的学习句子的机制），它只会包含人们曾经接触过的句子。</p>
+<blockquote>
+<p>Presumably, a complex of dispositions is a structure that can be represented as a set of probabilities for utterances in certain definable 'circumstances' or 'situations'. But it must be recognized that the notion 'probability of a sentence' is an entirely useless one, under any known interpreta- tion of this term.</p>
+</blockquote>
+<p>这里乔姆斯基给出了这句话——句子的概率是没有意义的。他举例说“birds fly”或者“Tuesday follows Monday”这两个英语下句子的概率对日语中产生这两个句子的概率没有意义。他认为probability relative to a situation没有任何意义。如果complex of dispositions是由根据经验观察确定的，那么只有少数传统的问候语、陈词滥调等才有可能与语言的倾向相关联，因为在技术意义上，在任何合理的语料库或数据集中，很少有其他句子可能具有非空的相对频率。且随着语料库的增加，任何给定句子的频率都会无限制地减少。 有人可能会设想用其他方法根据经验为句子分配概率，但乔姆斯基认为，没有一种方法可以避免这些困难。因此，如果一种语言被理解为在正常情况下作出反应的复杂倾向（奎恩的经验主义假说），那么它不仅是有限的、而且非常“小”。</p>
+<p>Quine在提出“言语倾向”时指出了翻译的不确定性问题，简单来说可以理解为每个人的说话习惯几乎没有相似之处，因此根本无法建立与这种倾向相一致的翻译手册。对于理论和语言的有限性假设带来的问题，乔姆斯基提出语言是人类头脑的先天属性所带来的，存在一种“普遍语法”。</p>
+<p>到这里，我们简单的概括一下前文提到的大概内容，即Quine的理论和乔姆斯基的看法:</p>
+<blockquote>
+<p>We are left with the fact that Quine develops his explicit notion of 'language' and 'theory' within a narrowly conceived Humean framework (except for the possible intrusion of a rich system of innate ideas), and that he characterizes language learning (&quot;learning of sentences&quot;) in a way consistent with this narrow interpretation, although the conclusion that <strong>a language (or theory) is a finite fabric of sentences, constructed pairwise by training, or a set of sentences with empirically detectable probabilities of being produced</strong> (hence a nearly empty set) is incompatible with various truisms to which Quine would certainly agree.</p>
+</blockquote>
+<p>Quine依靠他关于知识获取和语言学习的经验主义假设来支持他的一些主要哲学结论。一个重要的例子可以说明这一点。知识的基础是从某些证据上做“分析假设”。对Quine来说，一个关键点是，在基本语言和“常识知识”的情况下，分析假设的正确性并不是“客观问题”，它可以是“对或错”。这些分析假设是超越了 “任何一个本地人的言语行为倾向所隐含的任何东西”。因此，当我们在翻译、学习一门语言时，我们自然而然地会使用这些分析性假设（知识）与母语进行类比。也就是说在Quine的经验主义观点建模下超越言语倾向的知识（分析假设）是一个主观的概念，而这就会带来“翻译的不确定性”。</p>
+<p>另外，Quine对基于数据的分析假设的构建和基于数据的“观察句子的刺激意义”的假设进行了鲜明的区分。他指出，后者只涉及“正常感应”类型的不确定性。显然，包含真值功能连接词的句子的翻译（类似地，学习和理解）中涉及的归纳推理也是如此。在这些情况下，归纳法将我们引向“真正的假设”，这与“分析假设”截然不同（在讨论翻译的不确定性时提到的“分析假设”）。因此，Quine认为“<strong>正常归纳</strong>”与“<strong>假设形成或理论建构</strong>”之间存在区别，前者不涉及严重的认识论问题，后者确实涉及此类问题。毫无疑问，这种区别是可以区分的；然而，Quine没有具体说明“正常归纳”所基于的先验属性。这里，乔姆斯基认为大脑天生具有允许从“正常归纳”到“真实假设”的属性，但不允许“理论建构”和一些可能受到狭隘限制的“分析假设”。也就是说，他认为在经验主义下根据数据进行归纳而后得到一个假设的真值（对或错）这个过程是合理，但是直接归纳知识这一过程是不合理的。<br />
+因此，一般来说关于语言不可能有一套固定的“分析假设”。我们需要为每种语言（更准确地说，为每种语言的每一个说话者）建立一套新的分析，因为语言的形式没有任何普遍性。</p>
+<p>这里还是强调了乔姆斯基对于统计自然语言处理的观点，他认为每种语言，每个说话者的说话倾向会导致无法建立一套普遍的“分析假设”。因此乔姆斯基认为，当我们学习一门语言时，我们并不是在“学习句子”或通过训练获得“行为技能”。相反，我们以某种方式发展了某些原则（当然是无意识的），这些原则决定了许多句子的形式和意义。</p>
+<h1 id="转换生成语法">转换生成语法</h1>
+<p>在乔姆斯基的《句法结构》一书中，他提出了转换生成语法理论，他认为语言是人类特有的一种先天机制，不仅应该研究语言行为，而且应该研究语言能力，转换-生成语法就是关于语言能力的理论。具体而言，乔姆斯基认为语法主要包括基础和转换两个部分，基础部分生成深层结构，深层结构通过转换得到表层结构，语义部分属于深层结构，它为深层结构作出语义解释。语音部分属于表层结构并为表层结构作出语音解释。强调从认知学的角度对人类语言共性的解释，区分先天的语言能力和后天的语言知识，认为语言有生成能力，是有限规则的无限使用，转换则是生成的重要手段。</p>
+<p>他的思想对当时主流的结构主义语言学产生了重要的影响。他的理论包含了几个关键的思想，首先是语义学是独立于语法学之外的，合乎语法的并不一定有意义。另外，他认为语言能力就像行走一样，是人与生俱来的理解语言及遣词造句的能力。</p>
+<p>转换生成语法自创立以来, 就以对语言现象的解释充分性为目标, 试图建立一套能像数理公式般进行形式运算推理的规则来解释自然语言。期间虽经反复的修改否定再修改, 每一次都会有新的理论突破, 但其研究的对象、方法和原则却始终如一, 从而极大的推动了当代语言学的发展, 并为语言研究开辟了一条新的道路, 展现了一个全新的发展方向。<br />
+比如说，基于规则的句法剖析主要是使用Chomsky的上下文无关语法。在上下文无关语法的基础上, 学者们提出了自顶向下分析法、自底向上分析法、左角分析法、CYK算法、Earley 算法、线图分析法等行之有效的剖析技术。</p>
+<p>关于基于规则的自然语言处理在工业界中的应用，可以参考这个链接 https://www.zhihu.com/question/30748126</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/08/pd8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2038,254 +2225,6 @@ A_{1}=\text { BiAttention }\left(A_{0}, E_{M}\right)
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/18/gnn-nlp/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/10/18/gnn-nlp/" itemprop="url">A Survey of Graph Neural Networks in Natural Language Processing [Arxiv]</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-10-18T13:58:53+08:00">
-                2021-10-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
-                    <span itemprop="name">Paper_daily</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>截止2021年初，关于现有的图神经网络应用在自然语言处理领域的综述<br />
-link: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.06090">Graph Neural Networks for Natural Language Processing: A Survey</a></p>
-<p>另外，本篇博客还包含另外几篇图相关的综述性文章内容：<br />
-Graph Representation Learning<br />
-Geometric Deep Learning</p>
-<p>对于图的机器学习，非常容易想到的就是节点分类，边预测、以及图层级的分类等。对于传统的NLP问题，我们将输入的文本序列表示为图结构时，就可以借助图深度学习技术进行处理。整篇综述根据这一思路从图构造、图表示学习、基于图的Encoder-Decoder模型三方面进行介绍。</p>
-<h2 id="图构造">图构造</h2>
-<p>对于AI处理的数据类型，大概可以分类3类：Euclidean Structure、Sequence Structure、Graph Structure。<br />
-Eucildean data比如图，Sequence data如文本，这类数据都有一个特点：规则，即排列整齐；而图结构这类非欧几何数据，样本是不规则的，每个样本的邻居节点数量都是不同的，因此图像中的卷积操作就无法在图结构中应用。</p>
-<p>针对输入的数据，包括文本、树等，我们根据一定的规则自动化构造构建不同类型的图，如无向图、有向图、多关系图、异构图并使用特点的GNN结构来进行学习。</p>
-<h3 id="静态图构建">静态图构建</h3>
-<p>利用规则或现有的关系解析工具在文本预处理时构造图结构，常见的静态图构建有：</p>
-<ul>
-<li><p>Dependency Graph<br />
-依赖图可以用于捕捉给定句子中两个主语之间的关系。对于给定的句子，可以借助现有的解析工具包得到dependency parsing tree，而后抽取出依赖关系，构建dependency graph</p></li>
-<li><p>Constituency Graph<br />
-语言学中constituency relation指符合短语结构语法的关系，比如主语NP和谓语VP的关系 <img src="/images/pd3_1.png" /></p></li>
-<li><p>Information Extraction Graph<br />
-IE Graph抽取出文本中跨越不同句的结构化的信息。构建IE图首先要提取三元组，而后通过不同三元组间共同参数来确定相同含义的实体进行合并，从而减少节点的数量，消除模糊性。 <img src="/images/pd3_2.png" /></p></li>
-<li><p>Knowledge Graph<br />
-知识图谱能捕获实体以及关系，被广泛用于推理、关系抽取等任务中。知识图谱可以作为文本到embedding之间的一个精练且可解释的中间表示。KG可以表示为 <span class="math inline">\(\mathcal{G}(\mathcal{V}, \mathcal{E})\)</span>，由三元组<span class="math inline">\(\left(e_{1}, r e l, e_{2}\right)\)</span>。KG在不同的下游任务中起不同的作用，如机器翻译可以用于数据增强，阅读理解中用于构建子图。 <img src="/images/pd3_3.png" /></p></li>
-<li><p>Co-occurrence Graph</p></li>
-</ul>
-<p>共现关系描述了两个词在固定大小的上下文窗口内共现的频率，而后单词和词与词间共现频率构建图。<br />
-除了上述几类图构建方法外，针对具体的任务还有很多不同的图构造方法。</p>
-<h3 id="动态图构建">动态图构建</h3>
-<p>静态图可以将数据的部分先验知识编码到图中，但是这需要大量的人力试验以及领域专业知识，且容易包含噪声。另外，静态图的构建是基于构建者自身的经验，得到的并不一定是对于某一下游任务最优的图。<br />
-而动态图则是动态学习图结构（加权邻接矩阵），图构造模块和后续图表示学习一起针对下游任务联合优化。图结构学习也是机器学习领域研究的热点问题 <img src="/images/pd3_4.png" alt="动态图构建方法" /></p>
-<p><strong>Graph similarity metric learning</strong><br />
-图结构学习可以转化为节点相似度度量问题 (相似度矩阵<span class="math inline">\(S\)</span>)，对于相似度度量函数，可以分为两类：</p>
-<ul>
-<li>基于节点嵌入的相似度度量学习</li>
-<li>基于结构感知的相似度度量学习</li>
-</ul>
-<p><em>基于节点嵌入的相似度函数</em>通过计算嵌入空间中节点的成对相似度来学习加权邻接矩阵。常见的度量函数包括基于注意力的度量函数和基于余弦的度量函数。 <span class="math display">\[
-S_{i, j}=\operatorname{ReLU}\left(\vec{W} \vec{v}_{i}\right)^{T} \operatorname{ReLU}\left(\vec{W} \vec{v}_{j}\right)
-\]</span> 上式为基于注意力的度量函数，<span class="math inline">\(\vec{W}\)</span>为可学习的权重。类似的，基于cosine的度量函数为： <span class="math display">\[
-\begin{aligned}
-S_{i, j}^{p} &amp;=\cos \left(\vec{w}_{p} \odot \vec{v}_{i}, \vec{w}_{p} \odot \vec{v}_{j}\right) \\
-S_{i, j} &amp;=\frac{1}{m} \sum_{p=1}^{m} S_{i j}^{p}
-\end{aligned}
-\]</span></p>
-<p><em>基于结构感知的相似性函数</em>在节点信息之外还考虑了边的信息，如 <span class="math display">\[
-S_{i, j}^{l}=\operatorname{softmax}\left(\vec{u}^{T} \tanh \left(\vec{W}\left[\vec{h}_{i}^{l}, \vec{h}_{j}^{l}, \vec{v}_{i}, \vec{v}_{j}, \vec{e}_{i, j}\right]\right)\right)
-\]</span> 其中<span class="math inline">\(\vec{v}_{i}\)</span> 代表节点i的embedding， <span class="math inline">\(i\vec{e}_{i, j}\)</span> 代表边的embedding $ _{i}^{l}$ 代表节点i在GNN中第i层的embedding， <span class="math inline">\(\vec{u}\)</span>和<span class="math inline">\(\vec{W}\)</span> 是可训练的权重。</p>
-<p><strong>Graph sparsification</strong><br />
-现实世界中大多数的图都是稀疏图，而通过相似度度量函数会得到任意两个节点之间的边，最终生成一个全连通图，这会极大增大开销，并引入噪声，因此需要进行图稀疏化处理。常用的方法包括取k个相似度最高的邻节点，或者给节点间的相似度设定一个阈值。</p>
-<p>另外，静态图和动态图也可以结合起来，既可以加速训练，提高稳定性，也能提高下游任务的表现 <span class="math display">\[
-\widetilde{A}=\lambda L^{(0)}+(1-\lambda) \mathrm{f}(A)
-\]</span> 上式中<span class="math inline">\(L^{(0)}\)</span>表示静态图结构，<span class="math inline">\(\mathrm{f}(A)\)</span>表示可学习的动态图结构。</p>
-<h2 id="图表示学习">图表示学习</h2>
-<p>由于图的类型多种多样，如同构图、异构图、多关系图等等，这些不同的图上进行图表示学习的具体模型或有出入，但总体的步骤和思路基本类似。下面介绍的图表示学习方法是基于同构图，且节点与节点之间仅有一条无向边。</p>
-<h3 id="basic-gnn">Basic GNN</h3>
-<p>图神经网络对图中的节点进行embedding，并根据需求给出最终的node embedding或graph embedding。图神经网络的特征传播总体可以分成两个步骤，包括聚合-Aggregation和更新-Update。 <span class="math display">\[
-\mathbf{m}_{\mathcal{N}(u)}=\operatorname{AGGREGATE}^{(k)}\left(\left\{\mathbf{h}_{v}^{(k)}, \forall v \in \mathcal{N}(u)\right\}\right)
-\]</span> <span class="math display">\[
-\operatorname{UPDATE}\left(\mathbf{h}_{u}, \mathbf{m}_{\mathcal{N}(u)}\right)=\sigma\left(\mathbf{W}_{\text {self }} \mathbf{h}_{u}+\mathbf{W}_{\operatorname{neigh}} \mathbf{m}_{\mathcal{N}(u)}\right)
-\]</span></p>
-<p>其中<span class="math inline">\(\mathcal{N}(u)\)</span>表示节点<span class="math inline">\(u\)</span>的邻节点，<span class="math inline">\(\mathbf{h}_{u}\)</span>则代表节点特征，<span class="math inline">\(\mathbf{W}\)</span>为可学习的权重矩阵。</p>
-<h3 id="aggregation">Aggregation</h3>
-<p>聚合操作将节点的邻节点特征进行汇总，常用的方法包括：</p>
-<ul>
-<li><p>Normalization：最基本的聚合方法就是对邻节点embedding求平均，并针对节点的度进行归一化 <span class="math display">\[
-\mathbf{m}_{\mathcal{N}(u)}=\frac{\sum_{v \in \mathcal{N}(u)} \mathbf{h}_{v}}{|\mathcal{N}(u)|}
-\]</span></p></li>
-<li>Pooling：基于MLP这类的置换不变(permutation invariant)网络进行聚合，通用的pooling aggregator可以表示为： <span class="math display">\[
-\mathbf{m}_{\mathcal{N}(u)}=\operatorname{MLP}_{\theta}\left(\sum_{v \in N(u)} \operatorname{MLP}_{\phi}\left(\mathbf{h}_{v}\right)\right)
-\]</span> 另一种Janossy pooling则是赋予邻节点一个次序，并使用对于时序敏感的函数进行聚合 <span class="math display">\[
-\mathbf{m}_{\mathcal{N}(u)}=\operatorname{MLP}_{\theta}\left(\frac{1}{|\Pi|} \sum_{\pi \in \Pi} \rho_{\phi}\left(\mathbf{h}_{v_{1}}, \mathbf{h}_{v_{2}}, \ldots, \mathbf{h}_{v_{|\mathcal{N}(u)|}}\right)_{\pi_{i}}\right)
-\]</span></li>
-<li><p>Attention： 对邻节点分配不同的权重，权重可以基于邻节点的embedding，也可以基于边的权值 <span class="math display">\[
-\mathbf{m}_{\mathcal{N}(u)}=\sum_{v \in \mathcal{N}(u)} \alpha_{u, v} \mathbf{h}_{v}
-\]</span> <span class="math display">\[
-\alpha_{u, v}=\frac{\exp \left(\mathbf{a}^{\top}\left[\mathbf{W h}_{u} \oplus \mathbf{W h}_{v}\right]\right)}{\sum_{v^{\prime} \in \mathcal{N}(u)} \exp \left(\mathbf{a}^{\top}\left[\mathbf{W h}_{u} \oplus \mathbf{W h}_{v^{\prime}}\right]\right)}
-\]</span></p></li>
-</ul>
-<h3 id="updates">Updates</h3>
-<p>在经过多层图神经网络后，某些节点自身的特性会因为不断聚合邻节点的信息而淡化或被抹去，这就导致深度图神经网络的over-smoothing问题。<br />
-为缓解over-smoothing问题的一些技巧，比如Concatenation和Skip-Connections等在节点信息聚合后的更新操作入手。 <span class="math display">\[
-\text { UPDATE }_{\text {concat }}\left(\mathbf{h}_{u}, \mathbf{m}_{\mathcal{N}(u)}\right)=\left[\text { UPDATE }_{\text {base }}\left(\mathbf{h}_{u}, \mathbf{m}_{\mathcal{N}(u)}\right) \oplus \mathbf{h}_{u}\right]
-\]</span></p>
-<h3 id="graph-convolutional-networks-gcn">Graph Convolutional Networks (GCN)</h3>
-<p>图卷积就如同CV中的卷积，被提出后受到了广泛关注和研究。欧氏空间中的离散卷积我们很好理解，而对于非欧数据中的卷积，它的提出流程可以概括为：图信号处理GSP学者提出图的Fourier Transformation，进而得到Graph convolution，从而拓展到神经网络的图卷积网络。</p>
-<p>图的卷积定义在spectral domain，相应的邻接矩阵<span class="math inline">\(A\)</span>用图的Laplacian 矩阵<span class="math inline">\(L\)</span>替代。<span class="math inline">\(L = D - A\)</span>，<span class="math inline">\(D\)</span>为度矩阵。把传统的傅里叶变换以及卷积迁移到Graph上, 核心工作就是把拉普拉斯算子的特征函数 <span class="math inline">\(e^{-i \omega t}\)</span> 变为Graph对应的拉普拉斯矩阵的特征向量。这其中具体的推导过程在此不再赘述。基本的GCN中第k层可以写为下式： <span class="math display">\[
-\mathbf{H}^{(k)}=\sigma\left(\tilde{\mathbf{A}} \mathbf{H}^{(k-1)} \mathbf{W}^{(k)}\right)
-\]</span> 其中<span class="math inline">\(\tilde{\mathbf{A}}=(\mathbf{D}+\mathbf{I})^{-\frac{1}{2}}(\mathbf{I}+\mathbf{A})(\mathbf{D}+\mathbf{I})^{-\frac{1}{2}}\)</span>，是拉普拉斯矩阵的一个变形形式。</p>
-<h3 id="graphsage">GraphSAGE</h3>
-<p>GraphSAGE这一图模型是归纳式 (inductive) 学习。不同于之前的transducer模型，GraphSAGE的目标不是学习到每个节点的embedding，而是学习生成embedding的聚合函数。 <img src="/images/pd3_5.png" /> 整个框架如上图所示，包括采样、聚合、预测三个步骤。在采样时会选择恒定数量的邻节点，且不仅仅选择1-hop的节点，而是考虑multi-hop。</p>
-<h2 id="基于图的encoder-decoder模型">基于图的Encoder-Decoder模型</h2>
-<p>Encoder-Decoder是深度学习模型中非常常见的架构，因此到了图深度学习领域，图到树、graph-graph等模型也应运而生。</p>
-<h3 id="graph-to-sequence-model">Graph-to-Sequence Model</h3>
-<p>这类模型通常用GNN作为Encoder，RNN/Transformer作为Decoder。此外，这类模型中多使用CNN进行节点特征初始化，用于捕捉GNN不敏感的连续词的潜在信息。这类模型在多关系图或异构图的处理上有所局限。</p>
-<h3 id="graph-to-tree-model">Graph-to-Tree Model</h3>
-<p>类似端到端的模型，在NLP任务中，树也具有很强大的表达能力。由于树广义上来讲也是一种图，因此Graph-Tree这类模型的核心在于借助self-attention进行获取局部邻节点的权重，再由decoder 生成包含语义的tree结构。这类模型的应用比如语义解析、数学应用问题（模型输出为由树来表示的方程）。</p>
-<h3 id="graph-to-graph-model">Graph-to-Graph Model</h3>
-<figure>
-<img src="/images/pd3_6.png" alt="图的生成式模型(VAE)" /><figcaption>图的生成式模型(VAE)</figcaption>
-</figure>
-<h2 id="补充">补充</h2>
-<h3 id="图神经网络在nlp中的下游任务">图神经网络在NLP中的下游任务</h3>
-<p>已有的基于图相关技术的NLP任务包括自然语言生成、机器翻译、情感分类、文本分类、知识图谱补全、信息抽取（命名实体识别、关系抽取）、自然语言推理、解数学问题（文本）等</p>
-<h3 id="关于图的semi-supervised">关于图的semi-supervised</h3>
-<p>对于监督学习，如一个分类问题，我们的样本需要满足i.i.d assumption：样本之间是独立同分布的（不然还需要建模样本之间的联系）。然而在图结构上做诸如节点分类问题时，节点之间相互联系，且这些联系在节点分类中起到了重要的作用。因此基于图的很多深度学习是semi-supervised。这意味着在训练图模型时，我们利用了测试节点的信息，但不包括label。</p>
-<h3 id="深度学习模型的迁移">深度学习模型的迁移</h3>
-<p>近几年随着图神经网络的兴起，许多人都涌向这块处女地，深度学习模型中的一些经典思想和模型也被迁移到图相关的模型中，比如基于self-attention的GAT、GraphGAN、Graph Transformer等。另外，在NLP落地的经典搜索、广告、推荐算法中，图神经网络也被广泛应用。<br />
-<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1711.08267">GraphGAN: Graph Representation Learning with Generative Adversarial Nets</a><br />
-<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1911.07470.pdf">Graph Transformer for Graph-to-Sequence Learning</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2341,7 +2280,7 @@ S_{i, j}^{l}=\operatorname{softmax}\left(\vec{u}^{T} \tanh \left(\vec{W}\left[\v
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-count">24</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
