@@ -261,6 +261,167 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/23/maxp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/10/23/maxp/" itemprop="url">2021 MAXP命题赛 基于DGL的图机器学习任务</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-10-23T15:33:06+08:00">
+                2021-10-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Project/" itemprop="url" rel="index">
+                    <span itemprop="name">Project</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>使用<a target="_blank" rel="noopener" href="https://www.dgl.ai/">Deep Graph Library (DGL)</a>进行图节点分类任务，使用的图数据是基于微软学术文献生成的论文关系图，其中的节点是论文，边是论文间的引用关系。整个图包括约150万个节点，2000万条边。节点包含300维的特征，来自论文的标题和摘要等内容。节点属于约50个类别。<br />
+比赛地址: <a target="_blank" rel="noopener" href="https://biendata.xyz/competition/maxp_dgl/">MAXP</a></p>
+<p><img src="/images/maxp/1.png" title="比赛数据集" /></p>
+<h2 id="数据预处理">数据预处理</h2>
+<p>根据所给的数据集，我们需要读取节点及其对应的特征，以及边。根据论文id构建对应的节点id，并分配他们的特征和类别。读取边之后发现存在部分论文没有出现在论文数据中，这部分的节点id分配到最后，这类论文没有类别和特征，这些点的特征可以选择用邻节点特征均值进行赋值。节点特征使用Numpy保存为.npy格式，方便后续读取。<br />
+对train文件中的数据进行Train/Valid分割，用于模型评估（9:1），将train/valid/test节点id和labels等数据保存为二进制文件方便快速读取 <img src="/images/maxp/3.png" /></p>
+<h2 id="图构建">图构建</h2>
+<p>根据上面的到的原论文id-引用论文id以及他们对应的节点id，借助DGL包构建论文引用关系图。 <img src="/images/maxp/2.png" title="构图" /> <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">g = dgl.graph((u,v))</span><br><span class="line">g.nodes() <span class="comment">#获取节点id</span></span><br><span class="line">g.edges() <span class="comment">#获取边对应的节点（输出的是两个tensor）</span></span><br><span class="line">g.ndata(<span class="string">&#x27;feature&#x27;</span>) <span class="comment">#访问节点属性</span></span><br><span class="line">g.edata <span class="comment">#访问边属性</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="model_baseline">Model_baseline</h2>
+<p>预处理和构图之后，我们模型输入的数据包括： <img src="/images/maxp/4.png" /></p>
+<p>竞赛的baseline包括三个模型：</p>
+<ul>
+<li>graphsage</li>
+<li>graphconvolution</li>
+<li>graphattention</li>
+</ul>
+<p>其中各个网络由DGL.nn模块调库搭建。经过初步调参后发现网络深度为3层时三个模型结果最好，其中graphsage表现最好，在验证集上准确率接近54。 <img src="/images/maxp/5.png" title="可视化效果" /></p>
+<h2 id="proposed-model">Proposed model</h2>
+<p>数据中的节点特征已经给定，因此只能改变模型的网络结构，我参考了2020 acl的论文：Every Document Owns Its Structure: Inductive Text Classification via Graph Neural Networks 所用的网络架构，具体采用的是三层图卷积后连接一层图注意力，并在图卷积与attention直接增加了skip-connection。在验证集上的到准确率为55+，目前排行榜上前10，后续将会做进一步调参来得到更好的结果。<br />
+另外，根据给定的特征直接使用MLP等前向传播网络虽然无法利用引用信息，但可以用来辅助最终的分类。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/18/gnn-nlp/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1792,175 +1953,6 @@ Todo</p>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/16/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/08/16/hello-world/" itemprop="url">Markdown语法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-08-16T22:25:40+08:00">
-                2021-08-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/" itemprop="url" rel="index">
-                    <span itemprop="name">杂七杂八</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>由于Hexo博客的撰写需要用Markdown，虽然比Latex要简单点，但是平时用的比较少，这些杂七杂八的语法很难一下子全部记住，因此在这页博客中记录一下</p>
-<h2 id="文字">文字</h2>
-<h3 id="标题">标题</h3>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 一级标题</span><br><span class="line">## 二级标题</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-<h3 id="居中">居中</h3>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;center&gt;这一行需要居中&lt;/center&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="字体">字体</h3>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">**（）** 加粗</span><br><span class="line">*（）* 斜体</span><br><span class="line">～～（）～～ 删除线</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;font face= “黑体” color=red size=7&gt;字体设置&lt;/font&gt; #size 1-7，浏览器默认3</span><br></pre></td></tr></table></figure>
-<h2 id="引用">引用</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;这是引用文字</span><br></pre></td></tr></table></figure>
-<h2 id="分割线">分割线</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">***</span><br></pre></td></tr></table></figure>
-<h2 id="图片">图片</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![图片alt](图片地址 &#x27;&#x27;图片title&#x27;&#x27;)</span><br></pre></td></tr></table></figure>
-<p>图片alt就是显示在图片下面的文字，相当于对图片内容的解释。 图片title是图片的标题，当鼠标移到图片上时显示的内容。title可加可不加</p>
-<h2 id="链接">链接</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[超链接名](超链接地址 &quot;超链接title&quot;)</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">站内链接</span><br><span class="line">&#123;% post_link [博客名] title %&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="页内跳转">页内跳转</h2>
-<p>分成两部：定义锚点、使用markdown语法跳转 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;span id=&quot;jump&quot;&gt; （跳转到的地方） &lt;/span&gt;</span><br><span class="line">[点击跳转](#jump)</span><br></pre></td></tr></table></figure></p>
-<h2 id="列表">列表</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- 列表内容</span><br><span class="line">+ 列表内容</span><br><span class="line">1. 列表内容</span><br></pre></td></tr></table></figure>
-<h2 id="代码">代码</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">`代码内容`</span><br><span class="line">\``` (防止打不出加个\转义一下)</span><br><span class="line">  代码...</span><br><span class="line">  代码...</span><br><span class="line">  代码...</span><br><span class="line">\```</span><br></pre></td></tr></table></figure>
-<h2 id="数学公式">数学公式</h2>
-<p>公式、希腊字母、上标下标等基本语法与latex类似，可参考<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a0aa94ef8ab2">markdown数学公式</a></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">正文中$...$</span><br><span class="line">单行显示$$...$$</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2016,7 +2008,7 @@ Todo</p>
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -2098,7 +2090,7 @@ Todo</p>
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

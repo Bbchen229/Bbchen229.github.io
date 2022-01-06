@@ -43,6 +43,31 @@
   </entry>
   
   <entry>
+    <title>Gel Candy Evaluation 凝胶糖果测评</title>
+    <link href="http://example.com/2021/12/20/candies/"/>
+    <id>http://example.com/2021/12/20/candies/</id>
+    <published>2021-12-20T06:25:28.000Z</published>
+    <updated>2022-01-05T03:20:44.092Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="abstract">Abstract</h1><p>Todo</p><h1 id="introduction">Introduction</h1><p>改革开放以来，人民生活水平日益提升，人们的物质文化生活也越来越丰富多彩。糖果作为小孩子最爱的零食，种类也越来越丰富。在跟王同学一起在研讨间学习的这段时间，在去往图书馆的路上，我偶尔会从天猫超市[1]或者苏果超市[2]买一包软糖给王同学，希望糖果的甜能为她备战考研的枯燥时光中带来些许快乐。由于笔者在这段时间中有点咳嗽，医生叮嘱不可以吃甜食，因此在测评过程中每包糖果我也只吃了几颗（有时一转眼整包就被某人吃完了），但是保证了每一类糖果中包含的每种味道都吃过。下面将对两个超市中售卖的几种凝胶糖果进行测评和打分。对于糖果的评价指标，由于笔者才疏学浅，只能使用个人主观评价以及王同学对部分糖果的一些评价进行评估。</p><h1 id="method">Method</h1><h2 id="gel-candy">Gel Candy</h2><h1 id="experiment">Experiment</h1><h2 id="evaluation">Evaluation</h2><p>笔者对于这些糖果的味道和口感按照1～5🌟进行打分，另外附带一些文字评价。另外王同学的评价一般包括：就这，还行，味太大，一般。</p><h2 id="alpenliebe">Alpenliebe</h2><ul><li>乐嚼Q动物果果</li><li>乐嚼Q虫虫派对</li><li>乐嚼Q乳酸果果</li><li>乐嚼Q熊猫小队</li></ul><h2 id="skittles">Skittles</h2><h2 id="uha">UHA</h2><h1 id="reference">Reference</h1><p>【1】东南大学九龙湖校区梅园天猫超市<br />【2】东南大学九龙湖校区桃园苏果超市</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;abstract&quot;&gt;Abstract&lt;/h1&gt;
+&lt;p&gt;Todo&lt;/p&gt;
+&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;改革开放以来，人民生活水平日益提升，人们的物质文化生活也越来越丰富多彩。糖果作为小孩子最爱的零食，种类也越</summary>
+      
+    
+    
+    
+    <category term="杂七杂八" scheme="http://example.com/categories/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/"/>
+    
+    
+  </entry>
+  
+  <entry>
     <title>Every Document Owns Its Structure - Inductive Text Classification via Graph Neural Networks [ACL2020]</title>
     <link href="http://example.com/2021/12/08/pd8/"/>
     <id>http://example.com/2021/12/08/pd8/</id>
@@ -94,13 +119,13 @@ Semi-S</summary>
   </entry>
   
   <entry>
-    <title>Two are Better than One — Joint Entity and Relation Extraction with Table-Sequence Encoders [EMNLP2020]</title>
+    <title>读书人的事，能叫偷吗？ [EMNLP2021/AAAI2021]</title>
     <link href="http://example.com/2021/11/23/pd7/"/>
     <id>http://example.com/2021/11/23/pd7/</id>
     <published>2021-11-23T14:09:00.000Z</published>
-    <updated>2021-12-08T05:52:50.695Z</updated>
+    <updated>2022-01-06T01:42:20.071Z</updated>
     
-    <content type="html"><![CDATA[<h1 id="前言">前言</h1><p>最近似乎吃到了一个瓜</p><blockquote><p>如何看待EMNLP'21的文章涉嫌抄袭EMNLP'20上的文章?<br />本人在阅读EMNLP2021的文章时，偶然发现一篇名为Seeking Common but Distinguishing Difference, A Joint Aspect-based Sentiment Analysis Model的文章，这篇文章的内容与EMNLP2020上的一篇文章Two are Better than One: Joint Entity and Relation Extraction with Table-Sequence Encoders高度相似。</p></blockquote><p>先不谈到底有没有抄袭事件，我们来看一看20年和21这两篇文章的所做的工作</p><h1 id="emnlp20">EMNLP'20</h1><h2 id="intro">Intro</h2><h1 id="emnlp21">EMNLP'21</h1><h1 id="p.s.">p.s.</h1><p>最近尝试复现旷视的<a href="/2021/10/26/pd5/" title="ML-GCN">ML-GCN</a>也遇到了大无语事件，其一是用了好几个版本的Pytorch都无法较好的收敛，看网友的一些讨论说居然要用19年特定的0.3.1版本；其二就是ML-GCN中最主要的模块GCN对模型的准确率没有任何贡献，去掉该模块反而有更好的效果。😅<br />怪不得会有人用“魔改”这种略带侮辱性的词来形容AI的科研。希望能有越来越多的人做有意义的科研，也希望“独角兽”们和“master”们把挣钱和科研分开。“挣钱嘛，不寒碜“ （让子弹飞赶紧申遗），但既然想挣钱就别往科研里钻，整些无意义灌水甚至是剽窃他人的成果。<br />当然，抛开环境现状不谈来批判某些个体的行为似乎有些耍流氓。还记得大二时候导师跟我和zb说要做一个一身正气的科研工作者。（虽然现在也说不准以后是进学术界还是工业界）国家快速发展总会留下一些弊病，希望能从高校老师和学生开始，逐渐构建一片净土，让热爱学术的人能够坚定不移的走下去。至少以后学术造假等事件曝光时，我们看到的主角不应该是中国人的名字。</p>]]></content>
+    <content type="html"><![CDATA[<h1 id="前言">前言</h1><p>最近似乎吃到了一个瓜</p><blockquote><p>如何看待EMNLP'21的文章涉嫌抄袭EMNLP'20上的文章?<br />本人在阅读EMNLP2021的文章时，偶然发现一篇名为Seeking Common but Distinguishing Difference, A Joint Aspect-based Sentiment Analysis Model的文章，这篇文章的内容与EMNLP2020上的一篇文章Two are Better than One: Joint Entity and Relation Extraction with Table-Sequence Encoders高度相似。</p></blockquote><p>无独有偶，AAAI2021的论文 Multi-modal Graph Fusion for Named Entity Recognition with Targeted Visual Guidance 也被人指出涉嫌抄袭ACL2020的文章 A Novel Graph-based Multi-modal Fusion Encoder for Neural Machine Translation</p><p>先不谈到底有没有抄袭事件，我们来看一看这几篇文章的所做的工作</p><h1 id="emnlp20">EMNLP'20</h1><p>Two are Better than One: Joint Entity and Relation Extraction with Table-Sequence Encoders</p><h2 id="intro">Intro</h2><p>本文针对实体关系联合抽取问题。现有的方法将NER和RE使用Table-Filling的方法完成联合抽取，但他们在学习过程中仅使用单个encoder来捕获两个任务的信息，而在本文提出的模型中，作者设计了表格式编码器和序列式编码器来进行表示学习。</p><h2 id="model">Model</h2><p><img src="/images/pd7/1.png" title="table filling for NER and RE" /> 对于传统的联合抽取问题，首先构建一个二维表，而后将NER问题视为序列标注为题（沿着表对角线），将RE问题视为对表中的其他条目进行标注，这个二维表能解决两个任务，并能实现两个任务间的潜在交互。<br />但是作者认为这种现有的方式会出现两个问题，一是用于同样的特征表示进行NER和RE(关系分类)两个任务，可能会对模型的学习造成误解 (Feature Confusiong)；二是基于Table-Filling方法去完成联合抽取的工作，会将表结构转化成一个序列结构，这样导致丢失了重要的结构信息。</p><p>对此，本文中作者设计了两个encoder：sequence representations and table representations, for NER and RE respectively。而且设计了一个两者之间交互机制来获取两个任务间的潜在联系。</p><h3 id="text-embedding">Text Embedding</h3><p>对于一个输入的包含n个words的句子，其词向量（LSTM）、字符向量（LSTM）和BERT词向量的共同构成了每个word的表示。 <span class="math display">\[\boldsymbol{S}_{0}=\operatorname{Linear}\left(\left[\boldsymbol{x}^{c} ; \boldsymbol{x}^{w} ; \boldsymbol{x}^{\ell}\right]\right)\]</span></p><p><img src="/images/pd7/2.png" title="table-sequence encoders" /></p><h3 id="table-encoder">Table Encoder</h3><p>Table中第i行第j列分别代表句子中的第i和第j个词，而Table encoder则要学习每个单元格的向量表示。文中使用基于GRU结构的MD-RNN(多维RNN)作为Text Encoder，在更新表格中当前cell的信息时，通过MDRNN融合其上下左右四个方向上的信息，从而利用了表格的结构特点： <img src="/images/pd7/4.png" title="GRU结构的MD-RNN" /> <span class="math display">\[T_{l, i, j}=\operatorname{GRU}\left(X_{l, i, j}, T_{l-1, i, j}, T_{l, i-1, j}, T_{l, i, j-1}\right)\]</span> 同时引入当前cell所对应的两个词在Sequence Encoder下的表示，使得Table Encoder和Sequence Encoder之间发生信息的交流；</p><p>另外，Text Embeddings部分有用到BERT, 因此将BERT中各个层上多头attention每个头上的 atention权重堆叠起来, 得到张量<span class="math inline">\(T^{l} \in \mathbb{R}^{N \times N \times\left(L^{l} \times A^{l}\right)}\)</span>。基于<span class="math inline">\(T^{l}\)</span> 和Text Embedding中每个词的表示，构成Table的初始化输入表示。</p><h3 id="sequence-encoder">Sequence Encoder</h3><p>Sequence Encoder的结构与Transformer类似，不同之处在于将Transformer中的scaled dot-product attention 替 换为了文中提出的table-guided attention。具体地, 将Transformer中计算 <span class="math inline">\(g\left(Q_{i}, K_{j}\right)\)</span> 的部分, 直接替换为对应两个word在表格中的 向量表示 <span class="math inline">\(T_{i, j}\)</span> 。由于 <span class="math inline">\(T_{i, j}\)</span> 融合了四个方向上的信息, 能够更加充分的捕捉上下文信息以及词与词之间的关系, 同时也使Table Encoder和Sequence Encoder之间产生了双向的信息交流。</p><h1 id="emnlp21">EMNLP'21</h1><p>20的文章所针对的问题是实体和关系的联合抽取，而21的文章所针对的问题是情感三元组抽取，但本质上二者所解决的问题都属于信息抽取中的关系抽取。 <img src="/images/pd7/3.png" title="论文部分截图" /> 这篇文章相当于将上面的模型换了一个任务跑，文章的配图除了配色外几乎一模一样。“幸运”的事审稿人应该没有读过20年的文章，而本文的作者也没有在论文中提及或引用，最终使得文章能成功过审。</p><h1 id="acl20">ACL'20</h1><p><strong>A Novel Graph-based Multi-modal Fusion Encoder for Neural Machine Translation</strong></p><h2 id="intro-1">Intro</h2><p>文章针对多模态机器翻译问题 (Multi-modal Neural Machine Translation) 。为了更好的捕获细粒度的不同模态语义单元间的对应关系，论文提出了一种基于图的多模态融合编码器 graph-based multi-modal fusion encoder。具体而言，模型首先把图和句子用一个统一多模态图来表示。然后基于该图，我们堆叠基于多个图的多模态融合层，这些层迭代地表示节点之间的语义交互以进行图编码， 依次进行模态内和模态间融合以学习多模态节点表示。 最后，解码器可以通过注意机制来利用这些表示形式。</p><h2 id="multi-modal-graph">Multi-modal graph</h2><p><img src="/images/pd7/5.png" title="多模态图构建" /></p><p>上图中绿色和蓝色的节点分别代表视觉节点和文本节点，节点间的边包括跨模态的边和单模态内部的边。具体而言，首先对于节点而言，每个节点为a textual word or a visual object。每个词作为一个节点；而后利用斯坦福检测器 (Stanford parser) 识别输入句子中的所有名词短语，然后应用可视化基础工具包检测每个名词短语的边界框，得到对应的视觉节点。intra-modal edge用于连接单模态内部的节点，inter-modal edge用于将视觉节点与其对应的文本节点相连</p><h2 id="encoder-decoder">Encoder-Decoder</h2><p><img src="/images/pd7/6.png" title="模型整体框架" /> 首先借助embedding layer对节点嵌入进行初始化。<br />对于文本节点，使用其词嵌入和位置编码的和；对于视觉节点，首先从Faster-RCNN中的全连接层中提取视觉特征，而后映射到相应维度上。</p><p>在embedding层的后堆叠了多个基于图的多模态融合层进行编码。在每个融合层，模型依次进行单模态内融合和跨模态间融合以更新所有节点状态。最终节点状态对模态内和模态间信息同时进行编码。由于视觉节点和文本节点是包含不同模态信息的两种语义单元，因此我们分别应用相似的操作，但使用不同的参数来对它们的状态更新过程进行建模。</p><ul><li>Intra-modal fusion</li></ul><p>对于单模态内的，文本信息和视觉信息都用mulit-head attention来提取： <span class="math display">\[\mathbf{C}_{x}^{(l)}=\operatorname{MultiHead}\left(\mathbf{H}_{x}^{(l-1)}, \mathbf{H}_{x}^{(l-1)}, \mathbf{H}_{x}^{(l-1)}\right)\]</span> <span class="math display">\[\mathbf{C}_{o}^{(l)}=\operatorname{MultiHead}\left(\mathbf{H}_{o}^{(l-1)}, \mathbf{H}_{o}^{(l-1)}, \mathbf{H}_{o}^{(l-1)}\right)\]</span></p><ul><li>Inter-modal fusion</li></ul><p>跨模态的信息，作者设计了跨模态门控机制。对于文本跨模态信息<span class="math inline">\(M_x\)</span>，<span class="math inline">\(A\left(v_{x_{i}}\right)\)</span>是与词节点<span class="math inline">\(v_{x_{i}}\)</span>相邻的视觉节点，<span class="math inline">\(W^{(l)}\)</span>为参数矩阵。<span class="math inline">\(\alpha_{ij}\)</span>指第i个词节点对第j个视觉节点的权重，结合了节点的语义信息和视觉信息。相应的也可以得到视觉跨模态信息<span class="math inline">\(M_o\)</span>。 <span class="math display">\[\begin{aligned}M_{x_{i}}^{(l)} &amp;=\sum_{j \in A\left(v_{x_{i}}\right)} \alpha_{i, j} \odot C_{o_{j}}^{(l)} \\\alpha_{i, j} &amp;=\operatorname{Sigmoid}\left(\mathbf{W}_{1}^{(l)} C_{x_{i}}^{(l)}+\mathbf{W}_{2}^{(l)} C_{o_{j}}^{(l)}\right)\end{aligned}\]</span> <span class="math display">\[\begin{aligned}M_{o_{j}}^{(l)} &amp;=\sum_{i \in A\left(v_{o_{j}}\right)} \beta_{j, i} \odot C_{x_{i}}^{(l)} \\\beta_{j, i} &amp;=\operatorname{Sigmoid}\left(\mathbf{W}_{3}^{(l)} C_{o_{j}}^{(l)}+\mathbf{W}_{4}^{(l)} C_{x_{i}}^{(l)}\right)\end{aligned}\]</span> 而后分别经过对应的全连接前馈神经网络： <span class="math display">\[\begin{array}{l}\mathbf{H}_{x}^{(l)}=\operatorname{FFN}\left(\mathbf{M}_{x}^{(l)}\right) \\\mathbf{H}_{o}^{(l)}=\operatorname{FFN}\left(\mathbf{M}_{o}^{(l)}\right)\end{array}\]</span></p><p>Decoder的结构与常规的Transformer的decoder非常类似。由于视觉信息已通过多模式融合层合并到所有文本节点中，因此解码器仅使用文本节点状态来动态利用多模式上下文信息。输入的embedding会经过两个attention，分别是decoder内部的和encoder-decoder之间的attention。而后经过全连接层、Softmax得到输出结果。</p><h1 id="aaai21">AAAI'21</h1><p><strong>Multi-modal Graph Fusion for Named Entity Recognition with Targeted Visual Guidance</strong></p><p>论文的关于多模态命名实体识别(Multi-modal named entity recognition, MNER)，模型能发现文本中的命名实体，并利用图像将其分类为预定义的类型。图片用于辅助分类时，本文模型在图片中找到实体（来源于文本信息）所在区域，截出对应的部分进行视觉信息抽取。</p><p><img src="/images/pd7/7.png" title="模型整体架构" /> 先来看一下这篇论文的主图，从图上可以看出模型的整个框架与2020年的论文非常类似。其中图节点嵌入的初始化分别用BERT和ResNet来代替；而后的encoder-decoder与20年的模型基本一致。</p><p><img src="/images/pd7/8.png" title="Graph-based Multi-modal Fusion" /> 这一部分从论文中也可以看出，多模态图中跨模态间和单模态内的处理与20年论文的处理方法一致。</p><h1 id="p.s.">p.s.</h1><p>最近尝试复现旷视的<a href="/2021/10/26/pd5/" title="ML-GCN">ML-GCN</a>也遇到了大无语事件，其一是用了好几个版本的Pytorch都无法较好的收敛，看网友的一些讨论说居然要用19年特定的0.3.1版本；其二就是ML-GCN中最主要的模块GCN对模型的准确率没有任何贡献，去掉该模块反而有更好的效果。😅<br />怪不得会有人用“魔改”这种略带侮辱性的词来形容AI的科研。希望能有越来越多的人做有意义的科研，也希望“独角兽”们和“master”们把挣钱和科研分开。“挣钱嘛，不寒碜“ （让子弹飞赶紧申遗），但既然想挣钱就别往科研里钻，整些无意义灌水甚至是剽窃他人的成果。<br />当然，抛开环境现状不谈来批判某些个体的行为似乎有些耍流氓。还记得大二时候导师跟我和zb说要做一个一身正气的科研工作者。（虽然现在也说不准以后是进学术界还是工业界）国家快速发展总会留下一些弊病，希望能从高校老师和学生开始，逐渐构建一片净土，让热爱学术的人能够坚定不移的走下去。至少以后学术造假等事件曝光时，我们看到的主角不应该是中国人的名字。</p>]]></content>
     
     
       
@@ -113,6 +138,8 @@ Semi-S</summary>
       
     
     
+    
+    <category term="Paper_daily" scheme="http://example.com/categories/Paper-daily/"/>
     
     
     <category term="NER" scheme="http://example.com/tags/NER/"/>
@@ -497,31 +524,6 @@ Code: &lt;a href=&quot;https://github.com/iclr</summary>
     
     
     <category term="NLP" scheme="http://example.com/tags/NLP/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Markdown语法</title>
-    <link href="http://example.com/2021/08/16/hello-world/"/>
-    <id>http://example.com/2021/08/16/hello-world/</id>
-    <published>2021-08-16T14:25:40.470Z</published>
-    <updated>2021-11-17T12:11:12.588Z</updated>
-    
-    <content type="html"><![CDATA[<p>由于Hexo博客的撰写需要用Markdown，虽然比Latex要简单点，但是平时用的比较少，这些杂七杂八的语法很难一下子全部记住，因此在这页博客中记录一下</p><h2 id="文字">文字</h2><h3 id="标题">标题</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 一级标题</span><br><span class="line">## 二级标题</span><br><span class="line">...</span><br></pre></td></tr></table></figure><h3 id="居中">居中</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;center&gt;这一行需要居中&lt;/center&gt;</span><br></pre></td></tr></table></figure><h3 id="字体">字体</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">**（）** 加粗</span><br><span class="line">*（）* 斜体</span><br><span class="line">～～（）～～ 删除线</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;font face= “黑体” color=red size=7&gt;字体设置&lt;/font&gt; #size 1-7，浏览器默认3</span><br></pre></td></tr></table></figure><h2 id="引用">引用</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;这是引用文字</span><br></pre></td></tr></table></figure><h2 id="分割线">分割线</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">***</span><br></pre></td></tr></table></figure><h2 id="图片">图片</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![图片alt](图片地址 &#x27;&#x27;图片title&#x27;&#x27;)</span><br></pre></td></tr></table></figure><p>图片alt就是显示在图片下面的文字，相当于对图片内容的解释。 图片title是图片的标题，当鼠标移到图片上时显示的内容。title可加可不加</p><h2 id="链接">链接</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[超链接名](超链接地址 &quot;超链接title&quot;)</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">站内链接</span><br><span class="line">&#123;% post_link [博客名] title %&#125;</span><br></pre></td></tr></table></figure><h2 id="页内跳转">页内跳转</h2><p>分成两部：定义锚点、使用markdown语法跳转 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;span id=&quot;jump&quot;&gt; （跳转到的地方） &lt;/span&gt;</span><br><span class="line">[点击跳转](#jump)</span><br></pre></td></tr></table></figure></p><h2 id="列表">列表</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- 列表内容</span><br><span class="line">+ 列表内容</span><br><span class="line">1. 列表内容</span><br></pre></td></tr></table></figure><h2 id="代码">代码</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">`代码内容`</span><br><span class="line">\``` (防止打不出加个\转义一下)</span><br><span class="line">  代码...</span><br><span class="line">  代码...</span><br><span class="line">  代码...</span><br><span class="line">\```</span><br></pre></td></tr></table></figure><h2 id="数学公式">数学公式</h2><p>公式、希腊字母、上标下标等基本语法与latex类似，可参考<a href="https://www.jianshu.com/p/a0aa94ef8ab2">markdown数学公式</a></p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">正文中$...$</span><br><span class="line">单行显示$$...$$</span><br></pre></td></tr></table></figure>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;由于Hexo博客的撰写需要用Markdown，虽然比Latex要简单点，但是平时用的比较少，这些杂七杂八的语法很难一下子全部记住，因此在这页博客中记录一下&lt;/p&gt;
-&lt;h2 id=&quot;文字&quot;&gt;文字&lt;/h2&gt;
-&lt;h3 id=&quot;标题&quot;&gt;标题&lt;/h3&gt;
-&lt;figure class=&quot;</summary>
-      
-    
-    
-    
-    <category term="杂七杂八" scheme="http://example.com/categories/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/"/>
-    
     
   </entry>
   
