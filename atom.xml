@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-12-23T02:02:25.713Z</updated>
+  <updated>2022-02-09T09:18:11.173Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,185 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>中文分词｜Chinese-word-segmentation (3)-基于词</title>
+    <link href="http://example.com/2022/02/10/cws3/"/>
+    <id>http://example.com/2022/02/10/cws3/</id>
+    <published>2022-02-10T05:15:50.000Z</published>
+    <updated>2022-02-09T09:18:11.173Z</updated>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+      
+      
+    <summary type="html">
+</summary>
+      
+    
+    
+    
+    <category term="NLP" scheme="http://example.com/categories/NLP/"/>
+    
+    
+    <category term="CWS" scheme="http://example.com/tags/CWS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>中文分词｜Chinese-word-segmentation (2)-基于字符</title>
+    <link href="http://example.com/2022/02/09/cws2/"/>
+    <id>http://example.com/2022/02/09/cws2/</id>
+    <published>2022-02-09T09:15:47.000Z</published>
+    <updated>2022-02-09T09:18:14.294Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="背景">背景</h1><h1 id="section"></h1>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;背景&quot;&gt;背景&lt;/h1&gt;
+&lt;h1 id=&quot;section&quot;&gt;&lt;/h1&gt;
+</summary>
+      
+    
+    
+    
+    <category term="NLP" scheme="http://example.com/categories/NLP/"/>
+    
+    
+    <category term="CWS" scheme="http://example.com/tags/CWS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>中文分词｜Chinese-word-segmentation (1)</title>
+    <link href="http://example.com/2022/02/07/cws/"/>
+    <id>http://example.com/2022/02/07/cws/</id>
+    <published>2022-02-07T13:01:01.000Z</published>
+    <updated>2022-02-09T15:42:51.014Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="背景">背景</h1><p>中文文本中词与词之间没有明确的分割标记，而是以连续字符串形式呈现。所以，任何中文自然语言处理任务都必须解决中文序列切分的问题——中文分词。当然对于英文等语言来说自带分隔符，不需要分词。但在英语手写字识别时，由于分隔符没有那么明显，因此也需要使用类似中文分词的技术。</p><p>事实上不同的人对于同一个句子的分词结果并不一定相同，因此将机器分词的结果与人工分词的结果进行比对时，一个98%准确率的分词器与一个99%的分词器很难比较谁效果更好。在中文自然语言处理任务中，诸如机器翻译，自动问答，语音识别等任务，都需要分词技术做支撑。但是对于不同的子任务，分词的细粒度要求也不一样，尤其是对于一些复合词。比如在机器翻译时，清华大学就应该以整个“清华大学”而不是“清华-大学”。可以说中文分词在工程上是一项需要与任务要求紧密结合的技术。</p><p>中文分词存在两个难点，一是歧义，二是未登录词（OOV-out of vocabulary）。语言的歧义性一直伴随着语言学的发展进程，也自然限制着NLP技术。另一方面，词典的选择诸如词典中的复合词选择和词典的大小也影响着中文分词任务。举个直观的例子，对于Baidu搜索引擎的分词模型来说，基于人民日报的词典和基于用户搜索数据的词典得到的模型表现就会有很大差异。</p><h1 id="分词方法的演变">分词方法的演变</h1><h2 id="基于匹配的词典分词">基于匹配的词典分词</h2><p>基于匹配的词典分词是非常自然的想法，我们根据词典扫描一个句子，遇到词典中出现过的词就进行分割，这类方法又被称为机械分词。这类方法简单易实现，而且能取得不错的效果，其主要问题包括如何构建一个完备的词典、如何设计高效的匹配算法、匹配中出现的歧义切分。<br />常见的匹配算法包括:</p><ul><li>正向最大匹配法</li><li>逆向最大匹配法</li><li>双向最大匹配法</li><li>最少切分</li><li>......</li></ul><p>最大匹配法从句子中寻找长词条进行查字典，若查不到则去掉最后一个字直到找到为止。其中双向最大匹配分别从左到右和从右到左进行两次扫描。最小切分则是寻找使每一个句子切出的词数量最少。</p><h2 id="基于标注的机器学习算法">基于标注的机器学习算法</h2><p>不同于基于匹配的机械分词，基于统计语言模型的分词技术有效提高了分词的准确率。其中基于标注的机器学习算法将中文分词转化为字序列标注问题。，B表示开始位置、M表示中间位置、E表示结束位置及S表示单字构词。机器学习算法 需要人工设计特征模板，指定窗口的大小。由于算法的复杂度以及对分词结果准确度要求等原因，窗口大小一般不超过5。下面介绍几个具有代表性的模型：</p><ul><li><p>隐马尔可夫模型（HMM）隐马尔可夫不是一个复杂的数学模型，但能解决大多数自然语言处理问题。其基本的思想是根据观测值序列找到隐状态值序列。在中文分词中，一段文字的每个字符可以看作是一个观测值，而这个字符的位置标签（BEMS）可以看作是隐状态。使用HMM的分词，通过对切分语料库进行统计，可以得到模型中5大要要素：起始概率矩阵，转移概率矩阵，发射概率矩阵，观察值集合，状态值集合。有了三个矩阵和两个集合后，HMM问题最终转化成求解隐藏状态序列最大值的问题，求解这个问题最常使用的是Viterbi算法。</p></li><li><p>最大熵马尔可夫模型（MEMM）把HMM模型和maximum-entropy模型的优点集合程一个产生式模型，这个模型允许状态转移概率依赖于序列中彼此之间非独立的特征上，从而将上下文信息引入到模型的学习和识别过程中，提高了识别的精确度。</p></li><li><p>条件随机场（CRF）是用来标注和划分结构数据的概率化结构模型。和HMM类似，当对于给定的输入观测序列<span class="math inline">\(X\)</span>和输出序列<span class="math inline">\(Y\)</span>，CRF通过定义条件概率<span class="math inline">\(P(Y|X)\)</span>，而不是联合概率分布<span class="math inline">\(P(X,Y)\)</span>来描述模型。MEMM模型对每个节点进行独立归一化，存在偏置问题。条件随机场(CRF)结合了多方面优势，对所有特征进行全局归一化，避免了偏置问题，成为传统机器学习中应用最多、最具代表性的模型算法之一。条件随机场能够获得更高的分词准确率，但模型复杂导致分词效率略低。</p></li></ul><h2 id="基于理解的深度学习算法">基于理解的深度学习算法</h2><p>深度学习模型诸如CNN、GRU、LSTM、BiLSTM被引入中文分词，相对于机器学习而言，深度学习算法无需人工进行特征选择。在基础深度学习模型的基础上，有效结合预训练和后处理方式已成为深度学习的一种趋势，一般性流程如下图所示。 <img src="/images/cws/1.png" title="基于深度学习的中文分词" /> 预训练既可以根据领域需要和任务特点进行预训练，也可以直接使用现有的预训练结果进行微调。中文分词预训练的基本单位是词(字)的语义、偏旁、拼音和输人法等。语义表示的预训练模型包括与上下文无关的静态词向量训练模型Word2Vec、Glove以及与上下文相关的动态词向量训练模型ELMo、BERT、XLNet等。<br />近几年的中文分词主要分为两类，一个是基于字符的中文分词（根据字所在词的位置，对每个字打上标签），一类是基于词的中文分词。</p><h1 id="分词工具">分词工具</h1><h2 id="jieba">jieba</h2><p>jieba库是一个简单实用的中文自然语言处理分词库，属于概率语言模型分词。<br />jieba自带一个dict.txt的词典, 里面有2万多条词, 包含了词条出现的次数和词性。将句子根据给定的词典进行查词典操作, 生成所有可能的句子切分，而后根据动态规划查找最大概率路径, 找出基于词频的最大切分组合。对于未登录词，采用了基于汉字成词能力的HMM模型，使用了Viterbi算法。<br />（jieba分词对“自然语言处理”的分词结果为 自然语言｜处理）</p><h2 id="ltp">LTP</h2><p>LTP是哈工大开源的一套中文语言处理系统，涵盖了基本功能：分词、词性标注、命名实体识别、依存句法分析、语义角色标注、语义依存分析等。LTP基于结构化感知器（Structured Perceptron,SP）属于基于字符的分词模型，以最大熵准则建模标注序列<span class="math inline">\(Y\)</span>在输入序列<span class="math inline">\(X\)</span>的情况下的score函数，分词结果则等同于最大score函数所对应的标注序列。 <span class="math display">\[S(Y, X)=\sum_{s} \alpha_{s} \Phi_{s}(Y, X)\]</span> <span class="math inline">\(\Phi_{s}(Y, X)\)</span>为特征函数，分词流程为先提取字符特征，计算特征权重值，然后Viterbi解码。</p><h2 id="thula">THULA</h2><p>THULA（THU Lexical Analyzer for Chinese）为清华大学推出的中文词法分析工具包，具有中文分词和词性标注功能，其原理与LTP非常相似，在字符特征选择方面有所不同。<br />测试发现THULA没有针对python3.8进行维护，因此只支持3.7-版本。</p><h2 id="stanford-corenlp">Stanford CoreNLP</h2><p>CoreNLP的中文分词基于CRF模型： <span class="math display">\[P_{w}(y \mid x)=\frac{\exp \left(\sum_{i} w_{i} f_{i}(x, y)\right)}{Z_{w}(x)}\]</span></p><p><span class="math inline">\(f_{i}(x, y)\)</span>为特征函数，<span class="math inline">\(w\)</span>为模型参数。不同于其他分词器采用B、M、E、S四种label来做分词，CoreNLP的中文分词label只有两种，“1”表示当前字符与前一字符连接成词，“0”则表示当前字符为另一词的开始——换言之前一字符为上一个词的结尾。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;背景&quot;&gt;背景&lt;/h1&gt;
+&lt;p&gt;中文文本中词与词之间没有明确的分割标记，而是以连续字符串形式呈现。所以，任何中文自然语言处理任务都必须解决中文序列切分的问题——中文分词。当然对于英文等语言来说自带分隔符，不需要分词。但在英语手写字识别时，由于分隔符没有那么明显，因此</summary>
+      
+    
+    
+    
+    <category term="NLP" scheme="http://example.com/categories/NLP/"/>
+    
+    
+    <category term="CWS" scheme="http://example.com/tags/CWS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Improving Chinese Word Segmentation with Wordhood Memory Networks [ACL20]</title>
+    <link href="http://example.com/2022/02/05/pd12/"/>
+    <id>http://example.com/2022/02/05/pd12/</id>
+    <published>2022-02-05T15:41:35.000Z</published>
+    <updated>2022-02-09T16:35:42.372Z</updated>
+    
+    <content type="html"><![CDATA[<p>link: <a href="https://aclanthology.org/2020.acl-main.734/" class="uri">https://aclanthology.org/2020.acl-main.734/</a><br /><a href="https://github.com/SVAIGBA/WMSeg">代码</a></p><h1 id="背景">背景</h1><p>在中文自然语言处理中，分词是一个非常重要的任务。中文分词技术存在两个主要难点:未登录词（OOV）和歧义消除问题。本文属于基于字符的分词模型，主要思想是利用键值记忆网络来辅助分词，使分词的语义更加完整。</p><h1 id="模型框架">模型框架</h1><p>模型将中文分词作为序列标注问题，核心思想是在传统NER模型的Encoder-Decoder之间添加一个memory network，Encoder可以用BERT或BiLSTM等将汉字序列表示为向量，Decoder可以是Softmax或者CRF。模型总体可以表示为： <span class="math display">\[\widehat{\mathcal{Y}}=\underset{\mathcal{Y} \in \mathcal{T}^{l}}{\arg \max } p(\mathcal{Y} \mid \mathcal{X}, \mathcal{M}(\mathcal{X}, \mathcal{N}))\]</span> 其中<span class="math inline">\(\mathcal{T}\)</span>表示句子中所有分词结果的标签集;<span class="math inline">\(l\)</span>是句子长度。<span class="math inline">\(\widehat{\mathcal{Y}}\)</span>为该模型得到的最佳结果，<span class="math inline">\(\mathcal{N}\)</span>为构造的词典，<span class="math inline">\(\mathcal{X}\)</span>为输入句，<span class="math inline">\(\mathcal{M}\)</span>为本文提出的模型。</p><p><img src="/images/cws/2.png" title="The architecture of $WMS_{EG}$." /></p><h2 id="词典构建">词典构建</h2><p>本文构建的词典实际上是一个N-gram词典，它包含了一个句子中所有可能的N-gram。模型利用前人的模型——Accessor Variety，找出输入句子中所有可能的n-gram集合。根据上图给出的例子，所构建的词典如图底部所示。</p><h2 id="wordhood-memory-networks">Wordhood Memory Networks</h2><p>这部分是本文最重要的部分。作者利用键值记忆网络将字符n-gram与它们的词伙（wordhood）度量相结合。其中key-value分别对应n-grams和wordhood。具体可以分成两个步骤：</p><ul><li><p>Key Addressing<br />首先对该句子构建Lexicon，对每一个汉字<span class="math inline">\(x_i\)</span> ，有可能存在很多包含该汉字的n-gram。比如上面的句子中的第四个字&quot;民&quot;构建Lexicon，可以表示为： <span class="math display">\[K_{4}=[\text {&quot;民&quot;,&quot; 居民&quot;, &quot; 民生&quot;, &quot; 居民生活&quot;] }\]</span>然后将这些n-gram进行key embeding后<span class="math inline">\(e_{i, j}^{k}\)</span>再与Encoder传来的<span class="math inline">\(h_i\)</span> 相乘之后做softmax得到一个概率分布。概率大小就表明了相关程度： <span class="math display">\[p_{i, j}=\frac{\exp \left(h_{i} \cdot e_{i, j}^{k}\right)}{\sum_{j=1}^{m_{i}} \exp \left(h_{i} \cdot e_{i, j}^{k}\right)}\]</span></p></li><li><p>Value Reading<br />先将每个<span class="math inline">\(k_i\)</span>映射到一个标注值V上，因为每个字在不同的n-gram中的位置不同，所以需要映射的值也不同，这里使用B I E S标记法：(B:begin ，I:inside，E:end，S:single)，还是上面的例子，对应Key Addressing时的<span class="math inline">\(K_4\)</span>，得到的value集合为： <span class="math display">\[V_{4}=\left[V_{S}, V_{E}, V_{B}, V_{I}\right]\]</span>而后将每个value进行embedding得到<span class="math inline">\(e_{i, j}^{v}\)</span>，与上一步得到的概率进行相乘累加，得到的结果再与Encoder传入的<span class="math inline">\(h_i\)</span>结合得到最终输出的vector <span class="math inline">\(a_i\)</span>。 <span class="math display">\[O_{i}=\sum_{j=1}^{m_{i}} p_{i, j} e_{i, j}^{v}\]</span></p></li></ul><p>接下来就可以和正常的NER模型一样使用一个decoder（softmax、crf等等） 得到一个句子的分词结果了。</p><h1 id="实验">实验</h1><p>1.消融实验。作者使用了5个基准数据集，分别是CTB6、MSR、PKU、AS和CITYU。将Wordhood Memory Networks加入到目前主流的分词模型中进行比较，实验结果表明，虽然原始的模型有很好的性能，但加入Wordhood Memory Networks后仍有很大的改进<br />2.在五个基准数据集的测试集上，WMSEG和以前的SOTA模型的性能比较。经过实验比较，本文提出的模型在中文分词方面达到了SOTA水平，OOV的召回率有了很大的提高。</p><p><img src="/images/cws/3.png" title="Ablation experiments." /></p><h1 id="例子分析">例子分析</h1><p>作者用“他从小学习电脑技术”这一句子的分词结果进行可视化分析，发现通过Wordhood Memory Networks对n-gram语义的捕捉，给了“从小”一个较高的权重、&quot;小学&quot;一个较低的权重，得到了正确的分词结果。 <img src="/images/cws/4.png" /></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;link: &lt;a href=&quot;https://aclanthology.org/2020.acl-main.734/&quot; class=&quot;uri&quot;&gt;https://aclanthology.org/2020.acl-main.734/&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;ht</summary>
+      
+    
+    
+    
+    <category term="Paper_daily" scheme="http://example.com/categories/Paper-daily/"/>
+    
+    
+    <category term="CWS" scheme="http://example.com/tags/CWS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Graph Wavelet Neural Network[ICLR2019]</title>
+    <link href="http://example.com/2022/01/26/pd11-1/"/>
+    <id>http://example.com/2022/01/26/pd11-1/</id>
+    <published>2022-01-26T04:20:13.000Z</published>
+    <updated>2022-01-28T08:22:30.110Z</updated>
+    
+    <content type="html"><![CDATA[<p><a href="https://arxiv.org/pdf/1904.07785.pdf">Graph Wavelet Neural Network</a><br />Code: <a href="https://github.com/benedekrozemberczki/GraphWaveletNeuralNetwork">link</a></p><p>基于小波变换的图卷积神经网络，其背后的思想及理论基础在这一篇论文中无法很详尽的阐述。不过本篇论文相当于把一套传统方法迁移到图上。</p><h1 id="intro">Intro</h1><p>作者提出了graph wavelet neural network (GWNN)，对于GCN基于传统的图傅里叶变换，GWNN利用graph wavelet transform，用图小波代替图拉普拉斯特征向量作为一组基，利用小波变换和卷积定理定义了卷积算子。使得计算更高效，且在Cora, Citeseer和Pubmed三个图的半监督分类数据集上取得了更好的表现。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;&lt;a href=&quot;https://arxiv.org/pdf/1904.07785.pdf&quot;&gt;Graph Wavelet Neural Network&lt;/a&gt;&lt;br /&gt;
+Code: &lt;a href=&quot;https://github.com/benedekrozembercz</summary>
+      
+    
+    
+    
+    <category term="Paper_daily" scheme="http://example.com/categories/Paper-daily/"/>
+    
+    
+    <category term="GNN" scheme="http://example.com/tags/GNN/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Graphite-Iterative Generative Modeling of Graphs [ICML2019]</title>
+    <link href="http://example.com/2022/01/18/pd11/"/>
+    <id>http://example.com/2022/01/18/pd11/</id>
+    <published>2022-01-18T13:47:01.000Z</published>
+    <updated>2022-01-20T01:53:00.164Z</updated>
+    
+    <content type="html"><![CDATA[<p>ICML2019的论文，作者为Stanford的phd。</p><h1 id="先说几句">先说几句</h1><p>看到摘要</p><blockquote><p>Our model parameterizes variational autoencoders (VAE) with graph neural networks, and uses a novel iterative graph refinement strategy inspired by low-rank approximations for decoding.</p></blockquote><p>基本可以确定模型相当于variational graph autoencoders，但是<a href="/2022/01/18/pd10/" title="VGAE">VGAE</a>这名字已经被人抢了XD。不过对比VGAE，它用了更优的Decoder。另一方面，作者给出了图神经网络中message passing与平均场变分推理之间的理论联系。</p><h1 id="graphite">Graphite</h1><p><img src="/images/pd10/8.png" /> 模型的整体架构与VGAE相似。其中Encoder为 <span class="math display">\[\boldsymbol{\mu}, \boldsymbol{\sigma}=\mathrm{GNN}_{\phi}(\mathbf{A}, \mathbf{X})\]</span> 接下来我们重点来看模型的Decoder。在VGAE中，Decoder是节点隐变量的内积，而Graphite提出了reverse message passing作为Decoder。 <span class="math display">\[\begin{aligned}\widehat{\mathbf{A}} &amp;=\frac{\mathbf{Z Z}^{T}}{\|\mathbf{Z}\|^{2}}+\mathbf{1 1}^{T} \\\mathbf{Z}^{*} &amp;=\operatorname{GNN}_{\theta}(\widehat{\mathbf{A}},[\mathbf{Z} \mid \mathbf{X}])\end{aligned}\]</span> 模型不断迭代上述两个步骤，也就是reverse message passing。 首先第一步借助隐变量矩阵的内积构建一个邻接矩阵（图）<span class="math inline">\(\widehat{\mathbf{A}} \in \mathbb{R}^{n \times n}\)</span>，加上单位矩阵保证非负。第二步中先将Z和X进行级联，而后与构建的图输入到GNN中。通过不断的重复来更新<span class="math inline">\(Z^*\)</span>，最后使用最终的Z进行内积得到生成的邻接矩阵<span class="math inline">\(\hat A\)</span>。另外，由于图学习通常是在大规模图上操作，在迭代过程中的求内积可以借助GNN这一步中的矩阵乘法来降低复杂度。</p><p><img src="/images/pd10/9.png" title="实验结果" /></p><h1 id="theoretical-analysis">Theoretical Analysis</h1><p>这一部分是作者对图神经网络的message passing与近似推断的关系。<br />首先我们定义kennel，<span class="math inline">\(K: \mathcal{Z} \times \mathcal{Z} \rightarrow \mathbb{R}\)</span>；映射函数 <span class="math inline">\(T_{\psi}: \mathcal{P} \rightarrow \mathcal{H}\)</span> 其中<span class="math inline">\(\mathcal{P}\)</span>定义了<span class="math inline">\(\mathcal{Z}\)</span>上所有分布的空间。因此可以定义对变量Z的分布的映射，或者成为kernel embedding： <span class="math display">\[T_{\psi}(p):=\mathbb{E}_{Z \sim p}[\psi(Z)]\]</span> 我们令这种映射<span class="math inline">\(\psi\)</span>是单射的，即对于任意两个分布<span class="math inline">\(p_1,p_2\)</span>，当<span class="math inline">\(p_{1} \neq p_{2}\)</span>，有<span class="math inline">\(T_{\psi}\left(p_{1}\right) \neq T_{\psi}\left(p_{2}\right)\)</span>。接下来我们定义 函数<span class="math inline">\(\mathcal{O}: \mathcal{P} \rightarrow \mathbb{R}^{d}, d \in \mathbb{N}\)</span>，对于每个<span class="math inline">\(T_{\psi}\)</span>和<span class="math inline">\(\mathcal{O}\)</span>，都存在<span class="math inline">\(\tilde{\mathcal{O}}_{\psi}: \mathcal{H} \rightarrow \mathbb{R}^{d}\)</span>使得: <span class="math display">\[\mathcal{O}(p)=\tilde{\mathcal{O}}_{\psi}\left(T_{\psi}(p)\right) \quad \forall p \in \mathcal{P}.\]</span></p><p>在GNN中，我们假设<span class="math inline">\(X\)</span>和<span class="math inline">\(A\)</span>都是观测到且在隐变量的条件概率分布中的相互独立的。也就是说我们期望的图是满足，对于<span class="math inline">\(Z\)</span>上的条件分布，当<span class="math inline">\(A\)</span>、<span class="math inline">\(X\)</span>和由边集<span class="math inline">\(E\)</span>确定的节点i的邻接潜变量时，任意单个<span class="math inline">\(Z_i\)</span>与所有其他<span class="math inline">\(Z_j\)</span>都是独立的。这句话非常抽象，可以从下图来理解。 <img src="/images/pd10/10.png" /></p><p>当图<span class="math inline">\(G\)</span>满足这一条件是，我们就可以用平均场理论 (mean-feild) <span class="math display">\[r\left(\mathbf{Z}_{1}, \cdots, \mathbf{Z}_{n} \mid \mathbf{A}, \mathbf{X}\right) \approx \prod_{i=1}^{n} q_{\phi_{i}}\left(\mathbf{Z}_{i} \mid \mathbf{A}, \mathbf{X}\right)\]</span> 其中<span class="math inline">\(\phi_{i}\)</span> 代表第i个变分边界的参数。而后我们用真实的条件概率分布与上式的KL散度来优化这些参数: <span class="math display">\[\min _{\phi_{1}, \cdots, \phi_{n}} \mathrm{KL}\left(\prod_{i=1}^{n} q_{\phi_{i}}\left(\mathbf{Z}_{i} \mid \mathbf{A}, \mathbf{X}\right) \| r\left(\mathbf{Z}_{1}, \cdots, \mathbf{Z}_{n} \mid \mathbf{A}, \mathbf{X}\right)\right)\]</span></p><p>而最优的变分边界满足以下形式（证明见论文） <span class="math display">\[q_{\phi_{i}}\left(\mathbf{Z}_{i} \mid \mathbf{A}, \mathbf{X}\right)=\mathcal{O}_{\mathcal{G}}^{M F}\left(\mathbf{Z}_{i},\left\{q_{\phi_{j}}\right\}_{j \in \mathcal{N}(i)}\right)\]</span> 其中<span class="math inline">\(\mathcal{N}(i)\)</span>为<span class="math inline">\(\mathbf{Z}_{i}\)</span>的邻节点。<span class="math inline">\(\mathcal{O}\)</span>是一个由不动点方程确定的函数，它依赖于图自身的性质。这一形式意味着最优的<span class="math inline">\(q_{\phi_{i}}\)</span>的参数只与i的邻节点的q_{}有关。这就意味着平均场近似推断的迭代算法是在图上执行信息传递，直到收敛： <span class="math display">\[q_{\phi_{i}}^{(l)}\left(\mathbf{Z}_{i} \mid \mathbf{A}, \mathbf{X}\right)=\mathcal{O}_{\mathcal{G}}^{M F}\left(\mathbf{Z}_{i},\left\{q_{\phi_{j}}^{(l-1)}\right\}_{j \in \mathcal{N}(i)}\right) .\]</span></p><p>令<span class="math inline">\(\boldsymbol{\mu}_{i}=\mathbb{E}_{\mathbf{Z}_{i} \sim q_{\phi_{i}}}\left[\psi\left(\mathbf{Z}_{i}\right)\right]\)</span>，根据上文提到的结论，我们就可以绕开 具体的<span class="math inline">\(\mathcal{O}\)</span>，将其变为 <span class="math display">\[\boldsymbol{\mu}_{i}^{(l)}=\tilde{O}_{\psi, \mathcal{G}}^{M F}\left(\left\{\boldsymbol{\mu}_{j}^{(l-1)}\right\}_{j \in \mathcal{N}(i)}\right)\]</span> 将上式在0处做一阶泰勒展开，有 <span class="math display">\[\mu_{i}^{(l)} \approx \tilde{O}_{\psi, \mathcal{G}}(\mathbf{0})+\mathbf{N}_{i}^{(l-1)} \cdot \nabla \tilde{O}_{\psi, \mathcal{G}}(\mathbf{0})\]</span> 这式从形式上就与message passing机制非常类似。 <span class="math display">\[H_{i}^{(l)}=\eta_{l}\left(B_{l, i}+\sum_{f \in \mathcal{F}_{l}} f\left(\mathbf{A}_{i}\right) \mathbf{H}^{(l-1)} W_{l}\right)\]</span> 由于在看推导过程时把一些分量的维度等忽略了，因此最后一步的具体细节直接在这里贴原文。</p><p><img src="/images/pd10/11.png" title="具体证明过程" /></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;ICML2019的论文，作者为Stanford的phd。&lt;/p&gt;
+&lt;h1 id=&quot;先说几句&quot;&gt;先说几句&lt;/h1&gt;
+&lt;p&gt;看到摘要&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Our model parameterizes variational autoencoders (VA</summary>
+      
+    
+    
+    
+    <category term="Paper_daily" scheme="http://example.com/categories/Paper-daily/"/>
+    
+    
+    <category term="GNN" scheme="http://example.com/tags/GNN/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Graph Auto-Encoders</title>
+    <link href="http://example.com/2022/01/18/pd10/"/>
+    <id>http://example.com/2022/01/18/pd10/</id>
+    <published>2022-01-18T13:39:46.000Z</published>
+    <updated>2022-01-19T12:47:34.022Z</updated>
+    
+    <content type="html"><![CDATA[<p>本文来自Thomas Kipf的博士论文，其论文其他内容包括GCN、relational GCN、compositional imitation learning and execution等。</p><p>对于图<span class="math inline">\(G=(V,E)\)</span>，有<span class="math inline">\(N=|V|\)</span>，邻接矩阵<span class="math inline">\(A\)</span>为<span class="math inline">\(N \times N\)</span>，用<span class="math inline">\(s\left(\mathbf{z}_{i}, \mathbf{z}_{j}\right)\)</span>来度量两个节点ij的相似度，其中<span class="math inline">\({z}_{i}, {z}_{j}\)</span>为节点的embedding</p><h1 id="gae">GAE</h1><p><img src="/images/pd10/1.png" title="encoder-decoder architecture" /></p><p>Graph Auto-Encoder同样采用encoder-decoder架构，其中scoring function <span class="math inline">\(s\left(\mathbf{z}_{i}, \mathbf{z}_{j}\right)\)</span>作为decoder，其根据节点嵌入来重构邻接矩阵；Encoder的输入为图的邻接矩阵<span class="math inline">\(A\)</span>以及节点的特征向量<span class="math inline">\(\left\{\mathbf{x}_{i}\right\}_{i \in \mathcal{V}}\)</span>，输出为node representations <span class="math inline">\(\mathbf{Z}_{i}\)</span>。</p><ul><li><p>Encoder<br />GAE的Encoder借助GNN来处理节点的初始化向量和图的结构信息，从而得到节点的表示。比如使用GCN作为Encoder时，有： <span class="math display">\[\mathbf{Z}=\operatorname{GCN}(\mathbf{X}, \mathbf{A})=\widehat{\mathbf{A}} \operatorname{ReLU}\left(\widehat{\mathbf{A}} \mathbf{X} \mathbf{W}_{0}\right) \mathbf{W}_{1}\]</span> 除了用GNN作为encoder之外，还有其他的embedding方法，比如最简单的shallow embedding直接根据节点的编号，以及DeepWalk、node2vec等方法。</p></li><li><p>Decoder<br />Decoder用来根据<span class="math inline">\(Z\)</span>重建邻接矩阵 <span class="math display">\[\mathbf{A}^{\prime}=l\left(\mathbf{Z Z}^{\top}\right)\]</span> 其中<span class="math inline">\(l(.)\)</span>是logistic sigmoid function，也就是说<span class="math inline">\(A_{i, j}^{\prime}=l\left(s\left(\mathbf{z}_{i}, \mathbf{z}_{j}\right)\right)\)</span></p></li></ul><p>不过在图表示学习一书中给出了多种decoder <img src="/images/pd10/4.png" title="decoder" /></p><ul><li>Training<br />使用交叉熵进行训练 <span class="math display">\[\mathcal{L}=-\frac{1}{N^{2}} \sum_{i=1}^{N} \sum_{j=1}^{N} A_{i, j} \log l\left(s\left(\mathbf{z}_{i}, \mathbf{z}_{j}\right)\right)+\left(1-A_{i, j}\right) \log \left(1-l\left(s\left(\mathbf{z}_{i}, \mathbf{z}_{j}\right)\right)\right)\]</span></li></ul><h1 id="vae">VAE</h1><p><img src="/images/pd10/2.png" title="VAE" /></p><p>在介绍变分图自编码器 (VGAE)之前，我们先简单介绍一下变分自编码器Variational Auto-encoders。[Auto-Encoding Variational Bayes]</p><p><img src="/images/pd10/5.png" title="思路" /> 上图中的实线就代表了生成模型<span class="math inline">\(p_{\boldsymbol{\theta}}(\mathbf{z}) p_{\boldsymbol{\theta}}(\mathbf{x} \mid \mathbf{z})\)</span>，也就是根据隐变量z生成目标数据。而这一生成模型中，我们需要用<span class="math inline">\(q_{\phi}(\mathbf{z} \mid \mathbf{x})\)</span>来拟合无法得到的后验分布<span class="math inline">\(p_{\boldsymbol{\theta}}(\mathbf{z} \mid \mathbf{x})\)</span>。而这里就涉及到变分推断VI的内容。</p><p>接下来我们具体展开来说。</p><p>给定一个真实样本 <span class="math inline">\(x_{k}\)</span>, 我们假设存在一个后验分布<span class="math inline">\(p\left(z \mid x_{k}\right)\)</span> 并假设这个分布是正态分布。后续我们要训练一个生成器<span class="math inline">\(x=g(z)\)</span>, 使其能从分布<span class="math inline">\(p\left(z \mid x_{k}\right)\)</span> 采样出来的一个 <span class="math inline">\(\hat x_{k}\)</span> 还原为<span class="math inline">\(x_{k}\)</span>。<br />对于正态分布的两个参数：均值 <span class="math inline">\(\mu\)</span> 和方差 <span class="math inline">\(\sigma^{2}\)</span>，我们用神经网络进行拟合<span class="math inline">\(\mu_{k}=f_{1}\left(x_{k}\right), \log \sigma_{k}^{2}=f_{2}\left(x_{k}\right)\)</span>。再借助重参数技巧从<span class="math inline">\(z_k\)</span>的分布中采样得到<span class="math inline">\(z_k\)</span>。（对于重参数技巧，就是使采样这一步骤变为可导的一种方法）。</p><p>由于VAE最开始假设了隐变量服从正态分布，这就需要神经网络拟合的分布<span class="math inline">\(p\left(z \mid x_{k}\right)\)</span>向标准正态分布看起，因为 <span class="math display">\[p(z)=\sum_{x} p(z \mid x) p(x)=\sum_{x} \mathcal{N}(0, I) p(x)=\mathcal{N}(0, I) \sum_{x} p(x)=\mathcal{N}(0, I)\]</span> 使分布与标准正态看齐这一过程借助在loss增加一个额外的loss（生成分布与标准正态分布的KL散度）来实现 <span class="math display">\[\mathcal{L}_{\mu, \sigma^{2}}=\frac{1}{2} \sum_{i=1}^{d}\left(\mu_{(i)}^{2}+\sigma_{(i)}^{2}-\log \sigma_{(i)}^{2}-1\right)\]</span></p><p>上述的过程介绍从Auto-Encoder的角度来介绍VAE，事实上如果阅读原论文会发现这种介绍VAE的思路是很令人费解的。回到最基础的贝叶斯学习，我们需要<span class="math inline">\(q_{\phi}\left(\mathrm{z} \mid \mathrm{x}^{(i)}\right)\)</span> 去逼近真实的后验概率 <span class="math inline">\(p_{\theta}\left(\mathrm{z} \mid \mathrm{x}^{(i)}\right)\)</span>，很自然的我们选择用KL散度作为loss，而后经过变分推断的推到转换为优化变分下界 <span class="math display">\[\tilde{\mathcal{L}}\left(\theta, \phi ; \mathrm{x}^{(i)}\right)=\frac{1}{L} \sum_{l=1}^{L}\left[\log p_{\theta}\left(\mathrm{x}^{(i)}, \mathrm{z}^{(i, l)}\right)-\log q_{\phi}\left(\mathrm{z}^{(i, l)} \mid \mathrm{x}^{(i)}\right)\right]\]</span> 其中, <span class="math inline">\(\mathrm{z}^{(i, l)}=g_{\phi}\left(\epsilon^{(i, l)}, \mathrm{x}^{(i)}\right), \quad \epsilon^{(i, l)} \sim p(\epsilon)\)</span> 。</p><p>而VAE正是给定上述结果中<span class="math inline">\(\epsilon, p_{\theta}(\mathrm{x} \mid \mathrm{z}), q_{\phi}(\mathrm{z} \mid \mathrm{x}), p_{\theta}(\mathrm{z})\)</span> 分布具体形式（正态分布）后的特例。</p><h1 id="vgae">VGAE</h1><p><img src="/images/pd10/3.png" title="VGAE" /></p><p>对于变分图自编码器，简单来看就是输入变为节点特征和邻接矩阵，输出为生成的邻接矩阵。</p><p><span class="math inline">\(p_{\theta}(\mathbf{A} \mid \mathbf{X})\)</span>为节点特征<span class="math inline">\(X\)</span>与邻接矩阵A的条件概率分布 <span class="math display">\[p_{\boldsymbol{\theta}}(\mathbf{A} \mid \mathbf{X})=\int p_{\boldsymbol{\theta}}(\mathbf{A} \mid \mathbf{Z}, \mathbf{X}) p(\mathbf{Z} \mid \mathbf{X}) d \mathbf{Z}\]</span> 其中隐变量先验分布独立于特征向量X，只和节点自身有关<span class="math inline">\(p(\mathbf{Z} \mid \mathbf{X})=\prod_{i=1}^{N} p\left(\mathbf{z}_{i}\right)\)</span>。更具体的说，我们令<span class="math inline">\(p\left(\mathbf{z}_{i}\right)=\mathcal{N}\left(\mathbf{z}_{i} ; \mathbf{0}, \mathbf{I}\right)\)</span>。我们的目标是得到最优的参数<span class="math inline">\(\theta\)</span>。</p><p>根据变分推断的框架，我们引入inference model： <span class="math display">\[q_{\phi}(\mathbf{Z} \mid \mathbf{X}, \mathbf{A})=\prod_{i=1}^{N} q_{\phi}\left(\mathbf{z}_{i} \mid \mathbf{X}, \mathbf{A}\right)\]</span> 其中 <span class="math inline">\(q_{\phi}\left(\mathbf{z}_{i} \mid \mathbf{X}, \mathbf{A}\right)=\mathcal{N}\left(\mathbf{z}_{i} ; \boldsymbol{\mu}_{i}, \operatorname{diag}\left(\sigma_{i}^{2}\right)\right)\)</span></p><p>具体模型中，我们用两个GCN作为学习inference model的参数： <span class="math display">\[\mu_{i}=\left[\mathrm{GCN}^{(1)}(\mathbf{X}, \mathbf{A})\right]_{i}\]</span> <span class="math display">\[\log \sigma_{i}=\left[\mathrm{GCN}^{(2)}(\mathbf{X}, \mathbf{A})\right]_{i}\]</span></p><p>接下来的generative model，我们假设它与初始输入的节点特征无关，只与隐变量有关， <span class="math display">\[p_{\boldsymbol{\theta}}(\mathbf{A} \mid \mathbf{Z}, \mathbf{X})=\prod_{i=1}^{N} \prod_{j=1}^{N} p_{\boldsymbol{\theta}}\left(A_{i, j} \mid \mathbf{z}_{i}, \mathbf{z}_{j}\right)\]</span></p><p>模型所要优化的KL散度与变分推断的过程相似，可以变为优化 <span class="math display">\[\operatorname{ELBO}=\mathbb{E}_{q_{\phi}(\mathbf{Z} \mid \mathbf{X}, \mathbf{A})}\left[\log p_{\theta}(\mathbf{A} \mid \mathbf{Z}, \mathbf{X})\right]-\operatorname{KL}\left[q_{\phi}(\mathbf{Z} \mid \mathbf{X}, \mathbf{A}) \| p(\mathbf{Z})\right].\]</span></p><p>我们可以将上述过程写的通俗一点，其中编码过程为： <span class="math display">\[q\left(z_{i} \mid X, A\right)=N\left(z_{i} \mid \mu_{i}, \operatorname{diag}\left(\sigma_{i}^{2}\right)\right).\]</span> 解码（以内积为例）的过程为： <span class="math display">\[p\left(A_{i j}=1 \mid z_{i}, z_{j}\right)=\sigma\left(z_{i}^{T} z_{j}\right)_{\circ}\]</span> 损失函数为： <span class="math display">\[L=E_{q(Z \mid X, A)}[\log p(A \mid Z)]-K L[q(Z \mid X, A) \| p(Z)]\]</span></p><p>作者在边预测任务上测试了VGAE的表现。不过，在Decoder时不考虑节点的特征<span class="math inline">\(X\)</span>仅仅是为了将模型简化，作者发现这不影响link prediction的准确率。 <img src="/images/pd10/6.png" /></p><p>值得推敲的是，在论文的前面有关于图卷积GCN在这几个数据集上的表现。而作者却没有用统一的评价指标（精度和准确率）来对比这两个模型的表现。</p><p><img src="/images/pd10/7.png" /></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;本文来自Thomas Kipf的博士论文，其论文其他内容包括GCN、relational GCN、compositional imitation learning and execution等。&lt;/p&gt;
+&lt;p&gt;对于图&lt;span class=&quot;math inline&quot;&gt;\(G</summary>
+      
+    
+    
+    
+    <category term="Preliminary AI" scheme="http://example.com/categories/Preliminary-AI/"/>
+    
+    
+    <category term="GNN" scheme="http://example.com/tags/GNN/"/>
+    
+  </entry>
   
   <entry>
     <title>QUINE&#39;S EMPIRICAL ASSUMPTIONS [1968]</title>
@@ -344,186 +523,6 @@ ACL2021</summary>
     
     
     <category term="ACL2021" scheme="http://example.com/tags/ACL2021/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Encoding Word Order in Complex Embeddings [ICLR2020]</title>
-    <link href="http://example.com/2021/10/09/p1-position-encoding/"/>
-    <id>http://example.com/2021/10/09/p1-position-encoding/</id>
-    <published>2021-10-09T13:29:54.000Z</published>
-    <updated>2021-10-26T15:36:04.658Z</updated>
-    
-    <content type="html"><![CDATA[<p><a href="https://arxiv.org/pdf/1912.12333.pdf">Encoding Word Order in Complex Embeddings</a><br />Code: <a href="https://github.com/iclr-complex-order/complex-order">link</a></p><h2 id="概要">概要</h2><p>针对位置编码提出的改进，切入点新颖高效且为位置编码带来了一定的具体意义和可解释性。传统的位置嵌入捕获单个单词的位置，而不是单个单词位置之间的有序关系(例如邻接关系或优先级)。本文提出的方法建模单词的全局绝对位置和它们的顺序关系，将以前定义为独立向量的词嵌入推广到变量(位置)上的连续词函数。每个单词的表示会随着位置的增加而移动。因此，在连续函数中，不同位置的词表示可以相互关联。将这些函数的通解推广到复值域，得到了更丰富的表示。作者在文本分类、机器翻译和语言模型方面进行实验，取得了良好的表现。</p><h2 id="positional-encoding">Positional encoding</h2><p>Positional encoding 位置编码在transformer中用于存储位置信息（由于self-attention没法获取序列位置的信息），此外BERT中encoding部分也包含了位置编码。对于位置编码，本能的想法是针对序列中的每个位置必须是独一无二的，且不受序列长度的影响。常见的positional encoding的方法有:</p><ul><li>绝对（正弦）位置编码（Sinusoidal Position Encoding）</li><li>相对位置编码（Relative Position Representations）</li><li>可学习位置编码</li></ul><h3 id="正弦位置编码">正弦位置编码</h3><p>Transformer中使用的就是这种编码，实际上具体编码过程使用了正弦和余弦。具体公式为： <span class="math display">\[\begin{aligned}P E_{(p o s, 2 i)} &amp;=\sin \left(p o s / 10000^{2 i / d_{\text {model }}} \right) \\P E_{(p o s, 2 i+1)} &amp;=\cos \left(p o s / 10000^{2 i / d_{\text {model }}} \right)\end{aligned}\]</span> 其中<span class="math inline">\(d_{model}\)</span>为输入词向量的维度。如d(model)=128,那么位置3对应的位置向量为 <span class="math display">\[\left[\sin \left(3 / 10000^{0 / 128}\right), \cos \left(3 / 10000^{1 / 128}\right), \sin \left(3 / 10000^{2 / 28}\right), \cos \left(3 / 10000^{3 / 28}\right), \ldots\right]\]</span> 在具体的应用时可能前一部分用正弦后一部分用余弦。</p><p><img src="/images/pe4.png" title="Bert中的位置编码" /></p><h3 id="相对位置编码">相对位置编码</h3><p>Todo<br /><a href="https://arxiv.org/abs/1803.02155">Self-Attention with Relative Position Representations</a></p><h3 id="可学习位置编码">可学习位置编码</h3><p>Todo</p><h2 id="intro">Intro</h2><p>本文的重点在于建模文本信息中额外的词的内部顺序和相邻关系，对比原本位置编码方式仅编码词的位置。模型将之前定义为独立向量的词嵌入扩展为位置自变量上的连续函数。在一个连续函数中，不同位置的词表示可以相互关联。</p><p><img src="/images/pe1.png" /></p><h2 id="methodology">Methodology</h2><p>类似于Word Embedding，位置编码（PE）定义了一个映射关系，将词的序列索引映射为一个向量。<span class="math inline">\(f_{n e}: \mathbb{N} \rightarrow \mathbb{R}^{D}\)</span>。最终某个词的embedding通常表示为为词向量和位置向量的和： <span class="math display">\[f(j, p o s)=f_{w e}(j)+f_{p e}(p o s)\]</span></p><p>论文中提出了一个位置独立问题（position independence problem），即位置编码无法捕获相邻词以及其顺序之间的潜在关系。而当后续用于特征处理的网络对这类信息不敏感时，这一问题就会限制整个模型的表达能力。相对位置编码针对这一问题进行了一定的研究，但其无法涵盖整个序列域。</p><h3 id="性质">性质</h3><p>论文指出了在位置编码中建立词序模型所必需的性质。<br />由于位置向量中每个维度的值都是根据离散的位置index得到的，这使得位置间有序关系建模变得困难，因此需要根据位置索引构建一个连续的函数（以在每个维度中表示一个特定的单词？） <span class="math display">\[f(j, \text { pos })=\boldsymbol{g}_{j}(\text { pos }) \in \mathbb{R}^{D}\]</span> <span class="math inline">\(g_j\)</span>即<span class="math inline">\(\boldsymbol{g}_{w e}(j) \in(\mathcal{F})^{D}\)</span>，词<span class="math inline">\(w_j\)</span>在pos位置可以表示为 <span class="math display">\[\left[g_{j, 1}(\operatorname{pos}), g_{j, 2}(\operatorname{pos}), \ldots, g_{j, D}(\text { pos })\right] \in \mathbb{R}^{D}\]</span> 当词<span class="math inline">\(w_j\)</span>从pos位置转到pos’位置时，只需要改变自变量的值而不需要改变映射函数<span class="math inline">\(g_j\)</span>。</p><h3 id="函数">函数</h3><p>由于实数也被囊括在复数域中，且前人有相关工作（详见论文原文Section2.2）验证了复数域所具有的更强大的表达能力，作者将模型拓展到了复数域。对于理想的映射函数，论文中提出了两条性质，即:</p><ul><li>Position-free offset transformation</li><li>Boundedness</li></ul><p>变换函数<span class="math inline">\(Transform\)</span>需满足对于任何pos，有 <span class="math display">\[g(p o s+n)=\operatorname{Transform}_{n}(g(p o s))\]</span> 满足等式的变换函数被称为witness，而满足这一条件的映射函数<span class="math inline">\(g_j\)</span>则被称为<em>linearly witnessed</em>。规定Transform <span class="math inline">\((n\)</span>, pos <span class="math inline">\()=\)</span> Transform <span class="math inline">\(_{n}(\)</span> pos <span class="math inline">\()=w(n)\)</span>。另外，映射函数<span class="math inline">\(g_j\)</span>需要有界。</p><p>而后作者证明了满足上述性质的映射函数唯一解为 <span class="math display">\[g(p o s)=z_{2} z_{1}^{p o s} \text { for } z_{1}, z_{2} \in \mathbb{C} \text { with }\left|z_{1}\right| \leq 1\]</span> 对于任意的 <span class="math inline">\(z \in \mathbb{C}\)</span>, 我们可以写成 <span class="math inline">\(z=r e^{i \theta}=r(\cos \theta+i \sin \theta)\)</span>，因此上式可写为： <span class="math display">\[g(p o s)=z_{2} z_{1}^{p o s}=r_{2} e^{i \theta_{2}}\left(r_{1} e^{i \theta_{1}}\right)^{p o s}=r_{2} r_{1}^{p o s} e^{i\left(\theta_{2}+\theta_{1} p o s\right)} \quad$ subject to $\left|r_{1}\right| \leq 1\]</span></p><p>(...跳过证明和优化过程)</p><p>最终的位置编码函数<span class="math inline">\(f(j\)</span>, pos <span class="math inline">\()\)</span>为 <img src="/images/pe2.png" /> <span class="math inline">\(j\)</span>代表单词（索引），<span class="math inline">\(pos\)</span>表示位置索引。<br />对于embedding中的每一维度，都有各自的参数，振幅r、频率p、初相<span class="math inline">\(\theta\)</span>，这些参数是trainable的。此外，周期/频率决定了单词对位置的敏感程度。当周期很短，则说明嵌入将对position高度敏感。注意，振幅、频率是与postion（自变量）无关的，与单词和维度有关。此时，word embedding可以用这些参数来表示（维度与positional embedding维度相同）。</p><h2 id="实验">实验</h2><p>作者在文本分类、机器翻译和语言模型几个任务上进行了实验，分别用Fasttext、LSTM、CNN、Transformer作为模型的backbone，而后使用不同的位置编码方法以及本文的Complex-order编码方法进行embedding，对比几个实验结果均取得了可观的提升。而计算开销（时间）上并没有显著的增加。 <img src="/images/pe3.png" title="部分实验结果" /> 实验基于tensorflow，目前没有pytorch版本，笔者将会尝试将其迁移到pytorch框架下并开源。</p><h2 id="相关工作">相关工作</h2><p>Vanilla Position Embeddings<br />Trigonometric Position Embeddings<br />Todo</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;&lt;a href=&quot;https://arxiv.org/pdf/1912.12333.pdf&quot;&gt;Encoding Word Order in Complex Embeddings&lt;/a&gt;&lt;br /&gt;
-Code: &lt;a href=&quot;https://github.com/iclr</summary>
-      
-    
-    
-    
-    <category term="Paper_daily" scheme="http://example.com/categories/Paper-daily/"/>
-    
-    
-    <category term="Positional_encoding" scheme="http://example.com/tags/Positional-encoding/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Improved GCN for Text Classification [GNN]</title>
-    <link href="http://example.com/2021/09/29/textGCN/"/>
-    <id>http://example.com/2021/09/29/textGCN/</id>
-    <published>2021-09-29T14:24:53.000Z</published>
-    <updated>2021-09-30T16:45:05.204Z</updated>
-    
-    <content type="html"><![CDATA[<center><font size = 4> <strong>TextRGNN: Residual Graph Neural Networks for Text Classification</strong></font></center>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;center&gt;
-&lt;font size = 4&gt; &lt;strong&gt;TextRGNN: Residual Graph Neural Networks for Text Classification&lt;/strong&gt;&lt;/font&gt;
-&lt;/center&gt;
-</summary>
-      
-    
-    
-    
-    <category term="Research" scheme="http://example.com/categories/Research/"/>
-    
-    
-    <category term="TextGCN" scheme="http://example.com/tags/TextGCN/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>word2vec</title>
-    <link href="http://example.com/2021/09/29/word2vec/"/>
-    <id>http://example.com/2021/09/29/word2vec/</id>
-    <published>2021-09-28T16:10:00.000Z</published>
-    <updated>2021-09-28T16:10:08.351Z</updated>
-    
-    <content type="html"><![CDATA[]]></content>
-    
-    
-      
-      
-    <summary type="html">
-</summary>
-      
-    
-    
-    
-    
-    <category term="NLP" scheme="http://example.com/tags/NLP/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>sort algorithm 1</title>
-    <link href="http://example.com/2021/09/20/sort-1/"/>
-    <id>http://example.com/2021/09/20/sort-1/</id>
-    <published>2021-09-20T15:01:57.000Z</published>
-    <updated>2021-09-28T16:05:07.653Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="sorti">Sort(i)</h1><p>三种复杂度为<span class="math inline">\(O(n^2)\)</span>的排序算法:</p><ul><li>冒泡排序</li><li>选择排序</li><li>插入排序</li></ul><h2 id="bubble-sort">Bubble sort</h2><p>“一趟一趟来” <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bubble_sort</span>(<span class="params">ls</span>):</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(ls)-<span class="number">1</span>):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(ls)-i-<span class="number">1</span>):</span><br><span class="line">            <span class="keyword">if</span> ls[j] &gt; ls[j+<span class="number">1</span>]:</span><br><span class="line">                ls[j+<span class="number">1</span>],ls[j]=ls[j],ls[j+<span class="number">1</span>]</span><br><span class="line">    <span class="keyword">return</span>(ls)</span><br></pre></td></tr></table></figure></p><h2 id="select-sort">Select sort</h2><p>&quot;一个一个排&quot; <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">select_sort</span>(<span class="params">ls</span>):</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(ls)-<span class="number">1</span>):</span><br><span class="line">        min_loc = i</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(ls)-<span class="number">1</span>-i):</span><br><span class="line">            <span class="keyword">if</span> ls[i+j]&lt;ls[min_loc]:</span><br><span class="line">                min_loc =i+j</span><br><span class="line">        ls[min_loc],ls[i] = ls[i],ls[min_loc]</span><br><span class="line">    <span class="built_in">print</span>(ls)</span><br></pre></td></tr></table></figure></p><h2 id="insert-sort">Insert sort</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">insert_select</span>(<span class="params">ls</span>):</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="built_in">len</span>(ls)):</span><br><span class="line">        j = i-<span class="number">1</span></span><br><span class="line">        tmp = ls[i]</span><br><span class="line">        <span class="keyword">while</span> j&gt;=<span class="number">0</span> <span class="keyword">and</span> ls[j]&gt;tmp:</span><br><span class="line">            ls[j+<span class="number">1</span>]=ls[j]</span><br><span class="line">            j-=<span class="number">1</span></span><br><span class="line">        ls[j+<span class="number">1</span>] = tmp</span><br><span class="line">    <span class="built_in">print</span>(ls)</span><br></pre></td></tr></table></figure><h1 id="sortii">Sort(ii)</h1><p>三种复杂度为<span class="math inline">\(O(nlogn)\)</span>的排序算法:</p><ul><li>快速排序</li><li>归并排序</li><li>堆排序</li></ul>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h1 id=&quot;sorti&quot;&gt;Sort(i)&lt;/h1&gt;
-&lt;p&gt;三种复杂度为&lt;span class=&quot;math inline&quot;&gt;\(O(n^2)\)&lt;/span&gt;的排序算法:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;冒泡排序&lt;/li&gt;
-&lt;li&gt;选择排序&lt;/li&gt;
-&lt;li&gt;插入排序&lt;/li&gt;
-&lt;/</summary>
-      
-    
-    
-    
-    <category term="Leetcode" scheme="http://example.com/categories/Leetcode/"/>
-    
-    
-    <category term="Data Structure" scheme="http://example.com/tags/Data-Structure/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Linear Regression (python &amp; pytorch)</title>
-    <link href="http://example.com/2021/08/25/dae%E7%9A%84%E5%89%AF%E6%9C%AC/"/>
-    <id>http://example.com/2021/08/25/dae%E7%9A%84%E5%89%AF%E6%9C%AC/</id>
-    <published>2021-08-25T15:21:47.000Z</published>
-    <updated>2021-09-28T16:09:28.897Z</updated>
-    
-    <content type="html"><![CDATA[]]></content>
-    
-    
-      
-      
-    <summary type="html">
-</summary>
-      
-    
-    
-    
-    <category term="Preliminary AI" scheme="http://example.com/categories/Preliminary-AI/"/>
-    
-    
-    <category term="ML" scheme="http://example.com/tags/ML/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>search algorithm</title>
-    <link href="http://example.com/2021/08/25/test/"/>
-    <id>http://example.com/2021/08/25/test/</id>
-    <published>2021-08-25T14:42:55.000Z</published>
-    <updated>2021-09-28T15:52:31.772Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="linear-search-and-binary-search">Linear Search and Binary Search</h1><h2 id="linear-search">Linear search</h2><p>Time complexity：<span class="math inline">\(O(n)\)</span> <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">linear_search</span>(<span class="params">ls,val</span>):</span></span><br><span class="line">    <span class="keyword">for</span> index,value <span class="keyword">in</span> <span class="built_in">enumerate</span>(ls):</span><br><span class="line">        <span class="keyword">if</span> value == val:</span><br><span class="line">            <span class="keyword">return</span> index</span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span></span><br></pre></td></tr></table></figure></p><h2 id="binary-search">Binary search</h2><p>Time complexity：<span class="math inline">\(O(log n)\)</span> <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">binary_search</span>(<span class="params">ls,val</span>):</span></span><br><span class="line">    left = <span class="number">0</span>  <span class="comment">#左指针</span></span><br><span class="line">    right = <span class="built_in">len</span>(ls)-<span class="number">1</span>  <span class="comment">#右指针</span></span><br><span class="line">    <span class="keyword">while</span> left &lt;= right:</span><br><span class="line">        mid = (left+right)//<span class="number">2</span></span><br><span class="line">        <span class="keyword">if</span> ls[mid] == val:</span><br><span class="line">            <span class="keyword">return</span> mid</span><br><span class="line">        <span class="keyword">elif</span> ls[mid]&lt;val:</span><br><span class="line">            left = mid+<span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            right = mid-<span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span></span><br></pre></td></tr></table></figure></p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h1 id=&quot;linear-search-and-binary-search&quot;&gt;Linear Search and Binary Search&lt;/h1&gt;
-&lt;h2 id=&quot;linear-search&quot;&gt;Linear search&lt;/h2&gt;
-&lt;p&gt;Time complexity：&lt;</summary>
-      
-    
-    
-    
-    <category term="Leetcode" scheme="http://example.com/categories/Leetcode/"/>
-    
-    
-    <category term="Data Structure" scheme="http://example.com/tags/Data-Structure/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>BERT</title>
-    <link href="http://example.com/2021/08/16/test-my-site/"/>
-    <id>http://example.com/2021/08/16/test-my-site/</id>
-    <published>2021-08-16T14:58:35.000Z</published>
-    <updated>2021-09-29T14:29:21.109Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="pre-training-of-deep-bidirectional-transformers-for-language-understanding">Pre-training of Deep Bidirectional Transformers for Language Understanding</h1>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h1 id=&quot;pre-training-of-deep-bidirectional-transformers-for-language-understanding&quot;&gt;Pre-training of Deep Bidirectional Transformers for Lang</summary>
-      
-    
-    
-    
-    <category term="Paper_daily" scheme="http://example.com/categories/Paper-daily/"/>
-    
-    
-    <category term="NLP" scheme="http://example.com/tags/NLP/"/>
     
   </entry>
   
