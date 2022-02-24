@@ -261,6 +261,222 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/17/dataaug/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/02/17/dataaug/" itemprop="url">A Survey of Data Augmentation Approaches for NLP</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-02-17T20:42:55+08:00">
+                2022-02-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/NLP/" itemprop="url" rel="index">
+                    <span itemprop="name">NLP</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>link: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2105.03075v4" class="uri">https://arxiv.org/abs/2105.03075v4</a></p>
+<h1 id="数据增强的背景">数据增强的背景</h1>
+<p><strong>什么是数据增强？</strong></p>
+<blockquote>
+<p>Data augmentation (DA) refers to strategies for increasing the diversity of training examples without explicitly collecting new data.</p>
+</blockquote>
+<p>作者提到，数据增强是一种在不收集新数据的前提下增强训练样本多样性的策略。从这里可以看出，首先数据增强是根据已有的数据来创造新数据的过程。其次，数据增强并不意味着单纯地增多数据，而是为了模型训练进行服务的。也就是说，我们要在任务目标指导下借助已有的样本来创造新样本。</p>
+<p><strong>为什么要做数据增强</strong><br />
+当我们获得的数据有限，不足以训练出优秀的模型时，就需要获取更多的数据。但是采集新数据往往要消耗大量的人力物力资源，在这种情况下，数据增强技术就提供了一个很好的解决措施，尤其是现在NLP领域基本是大规模预训练模型大行其道，对大数据更加渴求。而令一方面，数据增强能够按照我们的意愿对数据做一些约束。换句话说，我们可以通过数据增强的方法引入一些先验知识或条件。</p>
+<p><strong>数据增强的合理性</strong><br />
+从我们直观的角度思考，扩充数据的分布与原始数据的分布既不应该太相似，也不应该太不同。我们设计的数据增强方法得到的新数据是尽可能服从实际情况下的分布。此时，在样本空间上更多的采样点有助于我们进一步探索真实的数据分布。</p>
+<blockquote>
+<p>data augmentation is typically performed in an ad- hoc manner with little understanding of the under- lying theoretical principles</p>
+</blockquote>
+<p>作者提到，目前关于DA为什么有效的研究工作主要停留在表层，对其理论基础和原理研究较少。一些现有的工作包括： 带噪声测试样本的训练可简化为Tikhonov正则化；DA可以增加分类器的positive margin，但只有在许多常见DA方法以指数方式做数据增强时才会如此；将DA转换视为kernels，并发现DA的两种帮助方式:特征平均和方差正则化。</p>
+<p><strong>Data Augmentation in CV</strong></p>
+<p>常见的CV中的数据增强包括：</p>
+<ul>
+<li><p>旋转、平移、翻折</p></li>
+<li><p>缩放：图像可以被放大或缩小。放大时，放大后的图像尺寸会大于原始尺寸。大多数图像处理架构会按照原始尺寸对放大后的图像 进行裁切。</p></li>
+<li><p>随机裁剪，我们随机从图像中选择一部分，然后降这部分图像裁剪出来，然后调整为原图像的大小</p></li>
+<li><p>添加噪声： 过拟合通常发生在神经网络学习高频特征的时候 (因为低频特征神经网络很容易就可以学到，而高频特征只有在最后的时候才可以学到) 而这些特征对于神经网络所做的任务可能没有帮助，而且会对低频特征产生影响，为了消除高频特征我们随机加入噪声数据来消除这些特征。</p></li>
+</ul>
+<p><img src="/images/DA/1.png" title="Data Augmentation in CV vs NLP" /></p>
+<p>相较于机器学习和计算机视觉领域，数据增强在NLP应用并没有前两者这么广泛。在NLP中，输入空间是离散的，我们需要关注如何生成有效的增广例子来捕获所需的不变性。因此它通常被比喻成“蛋糕上的樱桃”，只是提高有限的性能。</p>
+<h1 id="主流技术">主流技术</h1>
+<p>理想的DA技术应该既易于实现又能提高模型性能，但我们往往需要在这两者之间进行权衡。基于规则的技术很容易实现，但通常只能带来有限的性能改进。基于训练的模型的DA技术可能代价更大，但会引入更多的数据变化，导致更好的性能提升。为下游任务定制的基于模型的DA技术对性能有很强的影响，但很难开发和利用。</p>
+<h2 id="rule-based-techniques">Rule-Based Techniques</h2>
+<p>在特征空间内直接进行变化生成新的样本，比如在已知类别的数据之间进行“类比”转换，以扩充新的类；使用迭代的仿射变换和投影来沿着class-manifold最大限度地“拉伸”一个样本。</p>
+<p>还有比如我们可以借助单词嵌入，如Word2Vec, GloVe, FastText, Sent2Vec，使用嵌入空间中最近邻的单词替换句子中的某个单词。 <img src="/images/DA/6.png" /></p>
+<p>EASY DATA AUGMENTATION (EDA)：token-level的随机扰动操作，比如随机插入、删除、交换以及同义替换等。作者发现经过EDA后文本分类的准确率有了很大的提升。</p>
+<p><img src="/images/DA/2.png" title="EDA" /></p>
+<p>Unsupervised Data Augmentation (UDA)。一种基于无监督数据的数据增强方式，该方法通过对<span class="math inline">\((x, DA(x))\)</span>进行consistency training，生成无监督数据与原始无监督数据具备分布的一致性 <img src="/images/DA/3.png" title="UDA" /></p>
+<p>在数据上构建带标记的图，将单个句子作为节点，配对的标签作为带标记的边。使用平衡理论和及物性从这个图中推断扩充句子对。 <img src="/images/DA/4.png" title="Graph Theory DA" /></p>
+<p>Dependency tree morphing DA：受图像裁剪和旋转的启发，Şahin和Steedman提出了依赖树构建方法。对于带有依赖项注释的句子，可以交换或删除具有相同父节点的子节点。 <img src="/images/DA/5.png" title="Dependency tree morphing" /></p>
+<h2 id="example-interpolation-techniques">Example Interpolation Techniques</h2>
+<p>Mixed Sample Data Augmentation (MSDA) /MixUp。这种插值方法在图像处理领域应用非常广泛</p>
+<p><span class="math inline">\(\tilde{x}=\lambda x_{i}+(1-\lambda) x_{j}, \quad\)</span> where <span class="math inline">\(x_{i}, x_{j}\)</span> are raw input vectors</p>
+<p><span class="math inline">\(\tilde{y}=\lambda y_{i}+(1-\lambda) y_{j}, \quad\)</span> where <span class="math inline">\(y_{i}, y_{j}\)</span> are one-hot label encodings</p>
+<p><img src="/images/DA/10.png" /></p>
+<p>不同于MSDA这种连续插值，CUTMIX用从图像B中采样的一个patch替换图像A中的一个小的子区域，标签按照子区域大小的比例混合。对于NLP来说，例如涉及图像和文本的多模态问题可以借鉴这一工作的思想。</p>
+<p>SEQ2MIXUP：（sequence-level variant of MixUp）对于sequence-to-sequence的模型，将输入/输出序列对进行一定的组合。 <span class="math display">\[
+\begin{array}{r}
+(\hat{X}, \hat{Y})=\left(m_{X} \odot X+\left(1-m_{X}\right) \odot X^{\prime}\right. \\
+\left.m_{Y} \odot Y+\left(1-m_{Y}\right) \odot Y^{\prime}\right)
+\end{array}
+\]</span></p>
+<p><span class="math inline">\(m=\left[m_{X}, m_{Y}\right]\)</span>是一个系数向量。这种方法对于基于transformer的机器翻译、语义解析等任务都有明显的提升。</p>
+<h2 id="model-based-techniques">Model-Based Techniques</h2>
+<p>Seq2seq model以及language model都可以被用来做数据增强。</p>
+<p>DiPS 原本是用于Diverse Paraphrasing（复述）任务的模型，该任务的度量标准为语义的相似性以及句子本身的差异性，但是我们也可以借助这些模型来进行数据增强。 <img src="/images/DA/8.png" title="DiPS during decoding to generate k paraphrases" /></p>
+<p>类似的基于Transformer、BERT的模型从预训练的嵌入空间中，使用上下文敏感的、基于注意力的语义邻居混合来增强单词表示。</p>
+<p><img src="/images/DA/7.png" title="综合对比图。Ext.Know是指DA方法是否需要外部知识(如WordNet)，如果需要预训练模型(如BERT)，则需要预训练。Preprocess表示需要进行预处理，Level表示数据被DA修改的深度，Task-Agnostic表示DA方法是否可以应用于不同的任务。Ext.Know、KWE、tok、const和dep分别代表外部知识、关键字提取、字符化、分组解析和依赖解析。" /></p>
+<h1 id="应用">应用</h1>
+<h2 id="low-resource-languages-few-shot-learning">Low-Resource Languages &amp;&amp; Few-Shot Learning</h2>
+<p>低资源语言是DA的一个重要和具有挑战性的应用，尤其是神经机器翻译(NMT)。使用外部知识的技术很难将高资源语言用于低资源语言，特别是当它们具有相似的语言属性时。<br />
+<img src="/images/DA/9.png" title="Low-Resource Languages NMT" /> 如上图所示，我们可以借助一个high-resource language作为中枢来转化目标语言以及low-resource language。当high-resource language与low-resource language属于相同语系或具有类似性质时，我们将（HRL-ENG）数据集借助数据增强转化为（LRL-ENG） 数据集。对于其他任务，我们也可以通过DA来扩充low-resource language。</p>
+<h2 id="mitigating-bias-fixing-class-imbalance">Mitigating Bias &amp;&amp; Fixing Class Imbalance</h2>
+<p>以性别的偏差为例，可以借助DA来缓解性别偏见：创建一个与原始数据相同但偏向于未被充分代表的性别的增强数据集(使用实体的性别交换，如将“他”替换为“她”)来缓解引用解析中的性别偏见，并对这两个数据集进行联合训练。后续也有更好的工作比如缓解性别偏见的COUNTERFACTUAL DA (CDA)方法来打破性别词和中性词之间关联的因果干预。</p>
+<p>类似也可以用于解决某些类别中的采样不足和采样过度问题。比如通过插值增强少数群体类的例子，以平衡多标签分类的分类。</p>
+<h1 id="当前挑战和未来研究方向">当前挑战和未来研究方向</h1>
+<p>应用到数据增强的NLP任务有很多，首先最基本的就是分类，这也是用来测试数据增强技术效果的基本方式之一。其他的任务包括摘要、问答、序列标注、Data-to-Text自然语言生成等以及多模态的任务如automatic speech recognition。</p>
+<p>但是目前为止的研究存在以下方面的缺陷：</p>
+<ul>
+<li><p>明显缺乏关于DA为什么有效的研究。大多数研究都根据经验表明，以及基于一些实验表明DA技术是有效的，但目前很难在不诉诸于全面实验的情况下衡量技术的优劣。</p></li>
+<li><p>多模态领域做数据增强。尽管多模态数据分析的工作有所增加，但许多研究都集中在单个模态或多个模态的扩展上。任需进一步探索诸如图像和文本同时增强的图像字幕方式。</p></li>
+<li><p>基于范围的任务。例如，随机token替换可能是局部可接受的DA方法，但可能会破坏后面句子的共引用链。此时DA技术必须考虑文本中不同位置之间的依赖关系。</p></li>
+<li><p>在专业领域工作，比如那些具有特定领域词汇和术语的领域(如医学)，许多预先训练的模型和外部知识不能被有效地使用。研究表明，当应用于特定领域数据时，DA变得不那么有效，这可能是因为增广数据的分布可能与原始数据有很大不同。</p></li>
+<li><p>另一方面，针对数据增强所应对的少样本问题，我们还能从半监督学习角度考虑，结合数据增强与半监督学习技术是一个不错的选择。半监督学习能够充分利用大量未标注数据，同时能够使输入空间的变化更加平滑。</p></li>
+</ul>
+<h1 id="补充材料">补充材料</h1>
+<p>一些关于NLP中数据增强方法具体操作的介绍： https://amitness.com/2020/05/data-augmentation-for-nlp/<br />
+NLP数据增强工具包：<a target="_blank" rel="noopener" href="https://github.com/makcedward/nlpaug">nlpaug</a><br />
+类似的综述性文章：<br />
+<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2105.11741.pdf">Data Augmentation Approaches in Natural Language Processing: A Survey</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/10/cws3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1904,219 +2120,6 @@ WVO Quine就是文章标题中的这个Quine，文章中从他的作品<em>word 
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/08/pd8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/12/08/pd8/" itemprop="url">Every Document Owns Its Structure - Inductive Text Classification via Graph Neural Networks [ACL2020]</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-12-08T13:49:22+08:00">
-                2021-12-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
-                    <span itemprop="name">Paper_daily</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>本文介绍的内容包含多篇基于图神经网络进行文本分类的论文，从提出GCN后的简单应用到去年ACL上的TextING以及今年的BertGCN，GNN在文本分类上取得了非常好的效果。</p>
-<p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1809.05679">Graph Convolutional Networks for Text Classification</a><br />
-<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1910.02356v2">Text Level Graph Neural Network for Text Classification</a><br />
-<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2004.13826v1">Every Document Owns Its Structure - Inductive Text Classification via Graph Neural Networks</a><br />
-<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2105.05727">BertGCN: Transductive Text Classification by Combining GCN and BERT</a></p>
-<h1 id="text-classification">Text Classification</h1>
-<p>文本分类的应用非常广泛，包括Sentiment Analysis、News Categorization、Topic Analysis甚至是Question Answering等。而automatic text classification方法大致可以被归为两类：基于规则的^rule-based以及基于机器学习的^数据驱动的。</p>
-<p>基于规则的文本分类需要先验知识，包括pre-defined rules、domain knowledge等。而基于机器学习的方法则是借助标注数据集。通常我们可以把机器学习文本分类的步骤归为两步，首先是文本特征提取，而后将特征输入分类器进行分类。而发展到现在，基于神经网络的文本分类模型大致也随着深度学习的发展从前馈神经网络到CNN、RNN以及attention、transformer到如今pre-trained model如BERT等。</p>
-<p>前馈神经网络进行文本分类通常将文本作为bag of words；RNN则把文本作为词的序列；CNN用于训练提取文本中的关键短语、词组等进行匹配分类；attention机制能识别文本中相互关联的词，可以嵌入到其他深度学习模型中；至于transformer以及BERT这类大规模预训练模型，则是“大力出奇迹”。</p>
-<p>而本文的重点，则是基于GNN-图神经网络的文本分类方法。借助图神经网络进行文本中句法、语义解析树之类的图结构信息挖掘，进而进行文本分类。另外经过下文的介绍我们还能发现，基于GNN的模型能与其他深度神经网络进行级联并进行联合训练，进而有效提升分类准确率。<br />
-基于图神经网络的文本分类模型的差异大致体现在三个方面：图的构建、节点嵌入的初始化、图神经网络。</p>
-<h1 id="textgcn">TextGCN</h1>
-<p>Graph Convolutional Networks for Text Classification<br />
-<img src="/images/gcn/2.png" title="Framework of TextGCN" /> TextGCN为AAAI2018的论文，现在很多人看到这篇文章的时候可能会感叹“这也能发？”，但事实上这篇论文是最先构建了transductiive的基于GNN进行文本分类的框架，并取得了非常好的表现。</p>
-<p>模型整体的框架如上图所示，包括图的构建和图神经网络两个模块。其中图神经网络由简单的两层卷积层构成。另一方面，图节点的特征初始化用one-hot vector，输入的信息仅为边信息和节点的结构信息，而其在分类结果上取得的准确率也反映了GNN应用文本分类的合理性。 <span class="math display">\[
-Z=\operatorname{softmax}\left(\tilde{A} \operatorname{ReLU}\left(\tilde{A} X W_{0}\right) W_{1}\right)
-\]</span></p>
-<p>对于构图方面，模型基于整个语料库构建一个异构图，图中的节点包括文档节点和词节点。而这两类节点之间的边，word-word、doc-word定义如下 <span class="math display">\[
-A_{i j}=\left\{\begin{array}{ll}
-\operatorname{PMI}(i, j) &amp; i, j \text { are words, } \operatorname{PMI}(i, j)&gt;0 \\
-\operatorname{TF}-\operatorname{IDF}_{i j} &amp; i \text { is document, } j \text { is word } \\
-1 &amp; i=j \\
-0 &amp; \text { otherwise }
-\end{array}\right.
-\]</span> 其中词i与j之间的PMI (point-wise mutual information) 计算为 <span class="math display">\[
-\begin{aligned}
-\operatorname{PMI}(i, j) &amp;=\log \frac{p(i, j)}{p(i) p(j)} \\
-p(i, j) &amp;=\frac{\# W(i, j)}{\# W} \\
-p(i) &amp;=\frac{\# W(i)}{\# W}
-\end{aligned}
-\]</span> <span class="math inline">\(\#W(i,j)\)</span>代表滑窗中两个词共现次数。另外，图中的词节点会将语料库统计后的低频词过滤掉。至于为什么选择PMI以及TF-IDF这两个指标作为边权重，作者提到是从实验的结果出发作出的选择。 <img src="/images/pd8/2.png" title="Results: TextGCN" /></p>
-<h1 id="text-level-gnn">Text-level GNN</h1>
-<p>Text Level Graph Neural Network for Text Classification [ENMLP2019]<br />
-TextGCN模型跟大部分直推式GNN模型一样，应用时存在明显的缺陷，即没有办法进行在线测试。当我们要输入的新文本进行分类时，需要将文本加入语料库后重新构建graph训练，这就会带来极大的开销。而这篇Text-level GNN则是构建基于文本级别的图，使得基于GNN的文本分类模型提供在线测试的功能，虽然模型依旧是Transductive。 <img src="/images/pd8/3.png" title="Text-level GNN" /> Text-level图的构建如上图所示，其中词与词之间连接的边权重以及词的embedding为整个语料库全局共享，保存在全局矩阵中（上图的两个矩阵），另外文档中的每个词不止和相邻的词存在边，而由一个超参数控制多跳邻居。</p>
-<p>在图神经网络模块，虽然论文中介绍的是non-spectral message passing mechanism，但事实上与TextGCN本质上是一样的，不过边的权重会在训练过程中进行更新。 <span class="math display">\[
-\begin{aligned}
-\mathbf{M}_{\mathbf{n}} &amp;=\max _{a \in \mathcal{N}_{n}^{p}} e_{a n} \mathbf{r}_{\mathbf{a}} \\
-\mathbf{r}_{\mathbf{n}}^{\prime} &amp;=\left(1-\eta_{n}\right) \mathbf{M}_{\mathbf{n}}+\eta_{n} \mathbf{r}_{\mathbf{n}}
-\end{aligned}
-\]</span> 上式中<span class="math inline">\(r\)</span>代表节点特征，<span class="math inline">\(\eta_{n}\)</span>为可训练的参数。<br />
-最后，使用文本中的所有词的embedding进行类别的推断；而在TextGCN中则是直接使用文档节点的embedding进行分类。 <span class="math display">\[
-y_{i}=\operatorname{softmax}\left(\operatorname{Relu}\left(\mathbf{W} \sum_{n \in N_{i}} \mathbf{r}_{\mathbf{n}}^{\prime}+\mathbf{b}\right)\right)
-\]</span></p>
-<p>在这里简单对Corpus-level GNN（TextGCN）和Text-level GNN进行简单的比较。首先两者在下游任务的准确率上有较小的差异，其中后者略胜一筹，不过后者使用了Glove词向量进行初始化，所以事实上将TextGCN使用一些小技巧后两者的准确率是非常接近的。不过Text-level GNN优越性体现在其能够提供在线测试上，当输入新文档进行分类时，它的计算开销会远小于TextGCN。而对于它使用的MPM神经网络而不是GCN，是因为MPM更适合它的构图模式，而不是MPM比常规的GCN更强的信息提取能力。Text-level使得全局的边权重必须成为可训练的参数，而MPM中的另一个可训练的参数<span class="math inline">\(\eta_{n}\)</span>实质上与GCN中结合<span class="math inline">\(I\)</span>的拉普拉斯矩阵<span class="math inline">\(L\)</span>是一致的。</p>
-<h1 id="texting">TextING</h1>
-<p>Every Document Owns Its Structure: Inductive Text Classification via Graph Neural Networks<br />
-上文的两个模型以及后续的BertGCN都是transductive，而本文的TextING则是inducive模型。论文发表在ACL2020上，也就是博客标题。 <img src="/images/pd8/4.png" title="TextING" /> 模型针对每篇文档构建一个图，以词共现作为边节点，借助滑窗（size 3）构建图。节点嵌入用Glove进行初始化。 模型的图神经网络模块使用了Gated Graph Neural Networks(GGNN)和图注意力(GAT)。 <span class="math display">\[
-\begin{aligned}
-\mathbf{a}^{t} &amp;=\mathbf{A h}^{t-1} \mathbf{W}_{a} \\
-\mathbf{z}^{t} &amp;=\sigma\left(\mathbf{W}_{z} \mathbf{a}^{t}+\mathbf{U}_{z} \mathbf{h}^{t-1}+\mathbf{b}_{z}\right) \\
-\mathbf{r}^{t} &amp;=\sigma\left(\mathbf{W}_{r} \mathbf{a}^{t}+\mathbf{U}_{r} \mathbf{h}^{t-1}+\mathbf{b}_{r}\right) \\
-\tilde{\mathbf{h}}^{t} &amp;=\tanh \left(\mathbf{W}_{h} \mathbf{a}^{t}+\mathbf{U}_{h}\left(\mathbf{r}^{t} \odot \mathbf{h}^{t-1}\right)+\mathbf{b}_{h}\right) \\
-\mathbf{h}^{t} &amp;=\tilde{\mathbf{h}}^{t} \odot \mathbf{z}^{t}+\mathbf{h}^{t-1} \odot\left(1-\mathbf{z}^{t}\right)
-\end{aligned}
-\]</span></p>
-<p>上式中<span class="math inline">\(h\)</span>表示节点embedding，<span class="math inline">\(a\)</span>代表接受的信息，<span class="math inline">\(z\)</span>和<span class="math inline">\(r\)</span>分别代表更新和遗忘。而后将节点借助readout模块输出为graph-level的embedding： <span class="math display">\[
-\begin{array}{l}
-\mathbf{h}_{v}=\sigma\left(f_{1}\left(\mathbf{h}_{v}^{t}\right)\right) \odot \tanh \left(f_{2}\left(\mathbf{h}_{v}^{t}\right)\right) \\
-\mathbf{h}_{\mathcal{G}}=\frac{1}{|\mathcal{V}|} \sum_{v \in \mathcal{V}} \mathbf{h}_{v}+\text { Maxpooling }\left(\mathbf{h}_{1} \ldots \mathbf{h}_{\mathcal{V}}\right)
-\end{array}
-\]</span></p>
-<p>上文提到的两个模型中GNN并没有attention模块，这是由于TextGCN的PMI、TF-IDF信息会损失，另一方面Text-level GNN全局的边权重也不应该引入文本图中的attention机制进行更新。</p>
-<p>将上文的三个模型进行简单的对比，可以隐约感到存在一个图的构建与图神经网络之间的trade-off。前两个模型的图构建过程都嵌入了大量的信息（先验信息、全局信息），而他们的图神经网络都非常简单。事实上我曾在TextGCN上做过一些实验，尝试把GAT融入到信息传播过程中，发现准确率会有明显下降。而TextING的构图过程中的信息仅是词节点的共现所包含的上下文信息和结构信息，因此它可以接受更复杂的信息传播和聚合过程。这也使得TextING可以面对新词和新输入的文本直接进行分类。</p>
-<h1 id="bertgcn">BertGCN</h1>
-<p>BertGCN: Transductive Text Classification by Combining GCN and BERT<br />
-BertGCN是由香侬科技提出，发表在ACL2021上的文章，也是目前文本分类的SOTA模型。不过这篇文章的贡献主要是工程上的。另外，不妨排列组合一下将Bert与TextING结合，应该能取得更好的结果XD（虽然在R8上的结果已经非常接近100了）。<br />
-回顾TextGCN，模型中图节点初始化用的是one-hot向量，而BertGCN则是用Bert进行embedding的初始化，另外将Bert与GNN两个模块进行联合训练，取得了很好的表现。</p>
-<p>两者的结合存在两个问题，一是难收敛：BERT与GCN处理数据的方式不同、模型大小不同；二是GCN是在整个图上运算，而BERT过大的模型无法一次全部加载图中所有结点，这就给BertGCN的训练带来阻碍。 针对第一个问题，模型使用了Interpolating损失。 <span class="math display">\[
-Z=\lambda Z_{\mathrm{GCN}}+(1-\lambda) Z_{\mathrm{BERT}}, Z_{\mathrm{BERT}}=\operatorname{softmax}(W X)
-\]</span> 当<span class="math inline">\(\lambda=1\)</span>时，BERT模块没有更新；当<span class="math inline">\(\lambda=0\)</span>时，GCN模块没有更新；当<span class="math inline">\(\lambda \in (0,1)\)</span>时，两个模块都能得到更新，并且通过调节<span class="math inline">\(\lambda\)</span>实现BertGCN整体模块的快速收敛。<br />
-对于无法整图训练这一问题，BertGNN提出了一个Memory Bank用于保存所有节点特征，每次从中加载batch进行训练并更新，其他保持不变。将整个语料库中的文档特征分批更新，为了防止异步更新带来的不一致性，模型在训练Bert模型时采用了小学习率。</p>
-<p><img src="/images/pd8/1.png" title="Results: BertGCN" /></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2172,7 +2175,7 @@ Z=\lambda Z_{\mathrm{GCN}}+(1-\lambda) Z_{\mathrm{BERT}}, Z_{\mathrm{BERT}}=\ope
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-count">33</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -2194,7 +2197,7 @@ Z=\lambda Z_{\mathrm{GCN}}+(1-\lambda) Z_{\mathrm{BERT}}, Z_{\mathrm{BERT}}=\ope
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
