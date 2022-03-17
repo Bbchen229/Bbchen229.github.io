@@ -79,15 +79,15 @@
 
 
 
-<meta name="description" content="Pre-training of Deep Bidirectional Transformers for Language Understanding">
+<meta name="description" content="Pre-training of Deep Bidirectional Transformers for Language Understanding 关于Bert，多的不说了，网上的扫盲帖、详解帖也一大堆。我们针对源码来一步一步的看。 Transformer部分的源码来自于pytorch-transformer 首先是Multi-head Self-Attention，这也是Transformer">
 <meta property="og:type" content="article">
-<meta property="og:title" content="BERT">
+<meta property="og:title" content="Transformer &amp; Bert">
 <meta property="og:url" content="http://example.com/2021/08/16/test-my-site/index.html">
 <meta property="og:site_name" content="Chen&#39;s Homepage">
-<meta property="og:description" content="Pre-training of Deep Bidirectional Transformers for Language Understanding">
+<meta property="og:description" content="Pre-training of Deep Bidirectional Transformers for Language Understanding 关于Bert，多的不说了，网上的扫盲帖、详解帖也一大堆。我们针对源码来一步一步的看。 Transformer部分的源码来自于pytorch-transformer 首先是Multi-head Self-Attention，这也是Transformer">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-08-16T14:58:35.000Z">
-<meta property="article:modified_time" content="2021-09-29T14:29:21.109Z">
+<meta property="article:modified_time" content="2022-03-17T04:03:34.634Z">
 <meta property="article:author" content="Chen jiayuan">
 <meta property="article:tag" content="NLP">
 <meta name="twitter:card" content="summary">
@@ -126,7 +126,7 @@
 
 
 
-  <title>BERT | Chen's Homepage</title>
+  <title>Transformer & Bert | Chen's Homepage</title>
   
 
 
@@ -282,7 +282,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">BERT</h1>
+          <h1 class="post-title" itemprop="name headline">Transformer & Bert</h1>
         
 
         <div class="post-meta">
@@ -338,6 +338,37 @@
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  480
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  2
+                </span>
+              
+            </div>
+          
 
           
 
@@ -354,7 +385,14 @@
       
 
       
-        <h1 id="pre-training-of-deep-bidirectional-transformers-for-language-understanding">Pre-training of Deep Bidirectional Transformers for Language Understanding</h1>
+        <p><strong>Pre-training of Deep Bidirectional Transformers for Language Understanding</strong></p>
+<p>关于Bert，多的不说了，网上的扫盲帖、详解帖也一大堆。我们针对源码来一步一步的看。<br />
+Transformer部分的源码来自于<a target="_blank" rel="noopener" href="https://github.com/tunz/transformer-pytorch/tree/e7266679f0b32fd99135ea617213f986ceede056">pytorch-transformer</a></p>
+<p>首先是Multi-head Self-Attention，这也是Transformer中最重要的一部分。 <span class="math display">\[
+\operatorname{Attention}(Q, K, V)=\operatorname{softmax}\left(\frac{Q K^{T}}{\sqrt{d_{k}}}\right) V
+\]</span></p>
+<p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultiHeadAttention</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, hidden_size, dropout_rate, head_size=<span class="number">8</span></span>):</span></span><br><span class="line">        <span class="built_in">super</span>(MultiHeadAttention, self).__init__()</span><br><span class="line"></span><br><span class="line">        self.head_size = head_size</span><br><span class="line"></span><br><span class="line">        self.att_size = att_size = hidden_size // head_size</span><br><span class="line">        self.scale = att_size ** -<span class="number">0.5</span>     <span class="comment"># d_k ^ 0.5</span></span><br><span class="line"></span><br><span class="line">        self.linear_q = nn.Linear(hidden_size, head_size * att_size, bias=<span class="literal">False</span>)</span><br><span class="line">        self.linear_k = nn.Linear(hidden_size, head_size * att_size, bias=<span class="literal">False</span>)</span><br><span class="line">        self.linear_v = nn.Linear(hidden_size, head_size * att_size, bias=<span class="literal">False</span>)</span><br><span class="line">        initialize_weight(self.linear_q)</span><br><span class="line">        initialize_weight(self.linear_k)</span><br><span class="line">        initialize_weight(self.linear_v)</span><br><span class="line"></span><br><span class="line">        self.att_dropout = nn.Dropout(dropout_rate)</span><br><span class="line"></span><br><span class="line">        self.output_layer = nn.Linear(head_size * att_size, hidden_size,</span><br><span class="line">                                      bias=<span class="literal">False</span>)</span><br><span class="line">        initialize_weight(self.output_layer)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, q, k, v, mask, cache=<span class="literal">None</span></span>):</span></span><br><span class="line">        orig_q_size = q.size()</span><br><span class="line"></span><br><span class="line">        d_k = self.att_size</span><br><span class="line">        d_v = self.att_size</span><br><span class="line">        batch_size = q.size(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># head_i = Attention(Q(W^Q)_i, K(W^K)_i, V(W^V)_i)</span></span><br><span class="line">        </span><br><span class="line">        q = self.linear_q(q).view(batch_size, -<span class="number">1</span>, self.head_size, d_k)</span><br><span class="line">        <span class="keyword">if</span> cache <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> <span class="string">&#x27;encdec_k&#x27;</span> <span class="keyword">in</span> cache:</span><br><span class="line">            k, v = cache[<span class="string">&#x27;encdec_k&#x27;</span>], cache[<span class="string">&#x27;encdec_v&#x27;</span>]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            k = self.linear_k(k).view(batch_size, -<span class="number">1</span>, self.head_size, d_k)</span><br><span class="line">            v = self.linear_v(v).view(batch_size, -<span class="number">1</span>, self.head_size, d_v)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> cache <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                cache[<span class="string">&#x27;encdec_k&#x27;</span>], cache[<span class="string">&#x27;encdec_v&#x27;</span>] = k, v</span><br><span class="line"></span><br><span class="line">        q = q.transpose(<span class="number">1</span>, <span class="number">2</span>)                  <span class="comment"># [b, h, q_len, d_k]</span></span><br><span class="line">        v = v.transpose(<span class="number">1</span>, <span class="number">2</span>)                  <span class="comment"># [b, h, v_len, d_v]</span></span><br><span class="line">        k = k.transpose(<span class="number">1</span>, <span class="number">2</span>).transpose(<span class="number">2</span>, <span class="number">3</span>)  <span class="comment"># [b, h, d_k, k_len]</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># Scaled Dot-Product Attention.</span></span><br><span class="line">        <span class="comment"># Attention(Q, K, V) = softmax((QK^T)/sqrt(d_k))V</span></span><br><span class="line">        q.mul_(self.scale)</span><br><span class="line">        x = torch.matmul(q, k)  <span class="comment"># [b, h, q_len, k_len]</span></span><br><span class="line">        x.masked_fill_(mask.unsqueeze(<span class="number">1</span>), -<span class="number">1e9</span>)</span><br><span class="line">        x = torch.softmax(x, dim=<span class="number">3</span>)</span><br><span class="line">        x = self.att_dropout(x)</span><br><span class="line">        x = x.matmul(v)  <span class="comment"># [b, h, q_len, attn]</span></span><br><span class="line"></span><br><span class="line">        x = x.transpose(<span class="number">1</span>, <span class="number">2</span>).contiguous()  <span class="comment"># [b, q_len, h, attn]</span></span><br><span class="line">        x = x.view(batch_size, -<span class="number">1</span>, self.head_size * d_v)</span><br><span class="line"></span><br><span class="line">        x = self.output_layer(x)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">assert</span> x.size() == orig_q_size</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EncoderLayer</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, hidden_size, filter_size, dropout_rate</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(EncoderLayer, self).__init__()</span><br><span class="line"></span><br><span class="line">        self.self_attention_norm = nn.LayerNorm(hidden_size, eps=<span class="number">1e-6</span>)</span><br><span class="line">        self.self_attention = MultiHeadAttention(hidden_size, dropout_rate)</span><br><span class="line">        self.self_attention_dropout = nn.Dropout(dropout_rate)</span><br><span class="line"></span><br><span class="line">        self.ffn_norm = nn.LayerNorm(hidden_size, eps=<span class="number">1e-6</span>)</span><br><span class="line">        self.ffn = FeedForwardNetwork(hidden_size, filter_size, dropout_rate)</span><br><span class="line">        self.ffn_dropout = nn.Dropout(dropout_rate)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x, mask</span>):</span>  <span class="comment"># pylint: disable=arguments-differ</span></span><br><span class="line">        y = self.self_attention_norm(x)</span><br><span class="line">        y = self.self_attention(y, y, y, mask)</span><br><span class="line">        y = self.self_attention_dropout(y)</span><br><span class="line">        x = x + y</span><br><span class="line"></span><br><span class="line">        y = self.ffn_norm(x)</span><br><span class="line">        y = self.ffn(y)</span><br><span class="line">        y = self.ffn_dropout(y)</span><br><span class="line">        x = x + y</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -390,6 +428,24 @@
       </div>
     
 
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:</strong>
+    Chen jiayuan
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link:</strong>
+    <a href="http://example.com/2021/08/16/test-my-site/" title="Transformer & Bert">http://example.com/2021/08/16/test-my-site/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice: </strong>
+    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
+  </li>
+</ul>
+
+      </div>
     
 
     <footer class="post-footer">
@@ -473,17 +529,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Table of Contents
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Overview
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -502,7 +549,7 @@
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">35</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -570,22 +617,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#pre-training-of-deep-bidirectional-transformers-for-language-understanding"><span class="nav-number">1.</span> <span class="nav-text">Pre-training of Deep Bidirectional Transformers for Language Understanding</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
