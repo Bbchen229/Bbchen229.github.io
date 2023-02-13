@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Chen's Homepage" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="Intro 概率图模型（probabilistic graphical model）提供了一个概率与图结构结合的途径，因其灵活性、强大的表达能力和在大规模数据集中的学习和推理能力而受到广泛关注。从高层面来说，我们的目标是表示一个关于多元变量\(X &#x3D; {X_1,X_2,...,X_n}\)的联合概率分布\(P\)，以及边缘分布\(P(X_i)\)。但是，即便每个变量是二值变量（比如0&#x2F;1），其联合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Probabilistic Graphical Model">
+<meta property="og:url" content="http://example.com/2022/05/03/pgm/index.html">
+<meta property="og:site_name" content="Chen&#39;s Homepage">
+<meta property="og:description" content="Intro 概率图模型（probabilistic graphical model）提供了一个概率与图结构结合的途径，因其灵活性、强大的表达能力和在大规模数据集中的学习和推理能力而受到广泛关注。从高层面来说，我们的目标是表示一个关于多元变量\(X &#x3D; {X_1,X_2,...,X_n}\)的联合概率分布\(P\)，以及边缘分布\(P(X_i)\)。但是，即便每个变量是二值变量（比如0&#x2F;1），其联合">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/pgm/1.png">
+<meta property="og:image" content="http://example.com/images/pgm/2.png">
+<meta property="article:published_time" content="2022-05-03T14:33:37.000Z">
+<meta property="article:modified_time" content="2022-05-05T07:58:43.397Z">
+<meta property="article:author" content="Chen jiayuan">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/pgm/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://example.com/2022/05/03/pgm/"/>
+
+
+
+
+
+  <title>Probabilistic Graphical Model | Chen's Homepage</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    
+    <a target="_blank" rel="noopener" href="https://github.com/Bbchen229" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#70B7FD; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Chen's Homepage</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello AI</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/05/03/pgm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Probabilistic Graphical Model</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-05-03T22:33:37+08:00">
+                2022-05-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Preliminary-AI/" itemprop="url" rel="index">
+                    <span itemprop="name">Preliminary AI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="intro">Intro</h1>
+<p>概率图模型（probabilistic graphical model）提供了一个概率与图结构结合的途径，因其灵活性、强大的表达能力和在大规模数据集中的学习和推理能力而受到广泛关注。从高层面来说，我们的目标是表示一个关于多元变量<span class="math inline">\(X = {X_1,X_2,...,X_n}\)</span>的联合概率分布<span class="math inline">\(P\)</span>，以及边缘分布<span class="math inline">\(P(X_i)\)</span>。但是，即便每个变量是二值变量（比如0/1），其联合概率分布的计算开销也是随着变量增加而指数级的增长。但是这些变量之间或多或少会存在一些联系，此时，我们就可以引入图结构来进行建模，借助图来直观的表示变量间的条件独立性关系，进而简化计算。两种最常见的PGM包括贝叶斯网络和马尔可夫随机场，分别为有向图和无向图。</p>
+<p>概率图模型有三类主要问题：表示问题：对于一个概率模型，如何通过图结构来描述变量之间的依赖关系。学习问题：图模型的学习包括图结构的学习和参数的学习。推断问题：在已知部分变量时，计算其他变量的条件概率分布。</p>
+<h1 id="representation">Representation</h1>
+<h2 id="bayesian-networks">Bayesian Networks</h2>
+<p><img src="/images/pgm/1.png" /></p>
+<p>贝叶斯网络的核心结构在于有向无环图，图中的节点表示随机变量，而边则表示了变量间的关系。因此，贝叶斯网络中的节点都有一个相应的条件概率分布 <span class="math inline">\(P(X_i|Pa_{X_i})\)</span>，Pa表示父节点。此时，我们就可以得到贝叶斯网络的链式法则。 <span class="math display">\[
+P_{\mathcal{B}}\left(X_{1}, \ldots, X_{n}\right)=\prod_{i=1}^{n} P\left(X_{i} \mid \mathbf{P} \mathbf{a}_{X_{i}}\right)
+\]</span> 对于贝叶斯网络，我们有条件独立性假设，即 <span class="math display">\[
+\left(X_{i} \perp \text { NonDescendants }_{X_{i}} \mid \mathbf{P} \mathbf{a}_{X_{i}}\right)
+\]</span></p>
+<p><img src="/images/pgm/2.png" /> 对于有向图，我们可以把变量间的概率视作一种流动的过程，考虑一个简单的三节点路径X - Y -Z如果条件概率影响可以通过Z从X流到Y，我们说路径X -Z - Y是激活的。借此可以给出在因果推断中常见的情况:</p>
+<ul>
+<li>Causal path X →Z →Y</li>
+<li>Evidential path X ← Z ← Y</li>
+<li>Common cause X ← Z → Y</li>
+<li>Common effect X → Z ← Y</li>
+</ul>
+<h2 id="markov-networks">Markov Networks</h2>
+<p>第二种常见的概率图模型称为马尔可夫网络或马尔可夫随机场，这些模型基于无向图。在独立性结构和推理任务方面，无向模型还为有向模型提供了不同的、通常更简单的视角。马尔可夫随机场的无向图允许自环存在，且满足局部马尔可夫性，即一个变量X 在给定它的邻居的情况下独立于所有其他变量。在马尔可夫随机场中，我们不能用参数化的概率或条件概率来表示一个变量，而是引入势能函数 potential function <span class="math display">\[
+\begin{array}{c}
+P_{\mathcal{H}}\left(X_{1}, \ldots, X_{n}\right)=\frac{1}{Z} P^{\prime}\left(X_{1}, \ldots, X_{n}\right) \\
+P_{\mathcal{H}}^{\prime}\left(X_{1}, \ldots, X_{n}\right)=\pi_{i}\left[\boldsymbol{D}_{1}\right] \times \pi_{2}\left[\boldsymbol{D}_{2}\right] \times \cdots \times \pi_{m}\left[\boldsymbol{D}_{m}\right]
+\end{array}
+\]</span> 联合分布被分解为连通子图/团的势能函数<span class="math inline">\(\pi\)</span>的乘积，并除以一个归一化因子Z。势能函数需要满足非负性，所以一般表示为： <span class="math display">\[
+\pi[\boldsymbol{D}]=\exp (-\epsilon[\boldsymbol{D}])
+\]</span> 其中<span class="math inline">\(\epsilon[\boldsymbol{D}]=-\ln \pi[\boldsymbol{D}]\)</span></p>
+<p>由于无向图模型并不提供一个变量的拓扑顺序，因此无法用链式法则对<span class="math inline">\(P(X)\)</span> 进行逐一分解。无向图模型的联合概率一般以全连通子图为单位进行分解。 无向图中的一个全连通子图，称为团（Clique），即团内的所有节点之间都连边。</p>
+<h1 id="inference">Inference</h1>
+<p>有向和无向图模型都代表了多元变量上的完整联合概率分布。对于概率图上的推理问题，我们可以理解为使用联合概率分布来回答一些query。</p>
+<p>最常见的conditional probability query <span class="math inline">\(P(Y|E=e)\)</span>由两部分组成：evidence E和query Y；另一种是寻找剩余变量最有可能的值 <span class="math inline">\(\operatorname{argmax}_{\boldsymbol{y}} P(\boldsymbol{y} \mid \boldsymbol{e})\)</span>。对于以上的一些查询，最容易想到的解决方法就是得到联合概率分布，而后针对特定变量（条件概率查询）进行求和，但这一过程的计算复杂度是我们不能接受的。在这种情况下，我们选择使用概率图结构特点来进行近似推断，并考虑它产生精确结果的条件-变分推断；或者使用基于采样的近似推断来应对小数据集（比如MCMC，从后验分布生成样本）。</p>
+<h1 id="learning">Learning</h1>
+<p>概率图模型的学习任务有两种:参数估计和结构学习。在参数估计任务中，我们假设图模型的结构是已知的。在这种情况下，学习任务只是学习CPD的参数或定义马尔可夫网络势能函数的参数。在结构学习任务中，不需要额外的输入(尽管用户可以提供关于结构的先验知识，例如，以约束的形式)。目标是从训练数据单独提取贝叶斯网络或马尔科夫网络结构和参数。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>I do not accept rewards, but you can donate to the public welfare of China.</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt=" Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/04/12/iclr22-1/" rel="next" title="GNN is a Counter? Revisiting GNN for Question Answering [ICLR22]">
+                <i class="fa fa-chevron-left"></i> GNN is a Counter? Revisiting GNN for Question Answering [ICLR22]
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/05/11/22511/" rel="prev" title="HETERMPC A Heterogeneous Graph Neural Network for Response Generation in Multi-Party Conversations [ACL22]">
+                HETERMPC A Heterogeneous Graph Neural Network for Response Generation in Multi-Party Conversations [ACL22] <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/touxiang.JPG"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Bbchen229" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:1109441357@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#intro"><span class="nav-number">1.</span> <span class="nav-text">Intro</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#representation"><span class="nav-number">2.</span> <span class="nav-text">Representation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#bayesian-networks"><span class="nav-number">2.1.</span> <span class="nav-text">Bayesian Networks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#markov-networks"><span class="nav-number">2.2.</span> <span class="nav-text">Markov Networks</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#inference"><span class="nav-number">3.</span> <span class="nav-text">Inference</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#learning"><span class="nav-number">4.</span> <span class="nav-text">Learning</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chen jiayuan</span>
+
+  
+</div>
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -261,6 +261,1725 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/28/gcn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/11/28/gcn/" itemprop="url">就叫“深入浅出图卷积(GCN)”吧</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-28T18:35:25+08:00">
+                2021-11-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Preliminary-AI/" itemprop="url" rel="index">
+                    <span itemprop="name">Preliminary AI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  3.7k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  15
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>图卷积网络作为图神经网络之一，具有非常广泛的应用。因此网上也有非常多的关于GCN的介绍，但是各种博客看的多了搞得我脑壳嗡嗡的，而刚好最近的一个工作涉及到GCN的内核，因此借助这篇博客整理对GCN进行整理。</p>
+<p>在介绍GCN先介绍几篇文献：<br />
+Semi-Supervised Classification with Graph Convolutional Networks-首次提出GCN的论文（ICLR2017)<br />
+Data Analytics on Graphs-图机器学习的教材<br />
+<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/54504471" class="uri">https://www.zhihu.com/question/54504471</a>-介绍GCN的博客</p>
+<h2 id="gnn-message-passing">GNN &amp; Message Passing</h2>
+<p>GNN作为一种graph embedding的手段，可以借助节点特征的message passing提取图结构信息 <span class="math display">\[\begin{aligned} \mathbf{h}_{u}^{(k+1)} &amp;=\operatorname{UPDATE}^{(k)}\left(\mathbf{h}_{u}^{(k)}, \text { AGGREGATE }^{(k)}\left(\left\{\mathbf{h}_{v}^{(k)}, \forall v \in \mathcal{N}(u)\right\}\right)\right) \\ &amp;=\operatorname{UPDATE}^{(k)}\left(\mathbf{h}_{u}^{(k)}, \mathbf{m}_{\mathcal{N}(u)}^{(k)}\right) \end{aligned}\]</span></p>
+<p><img src="/images/gcn/1.png" title="GNN Framework" /> GNN进行k轮迭代，每轮包括一个聚合（aggregate）和更新（update）操作。聚合来获取邻节点的信息，而后更新节点的自身特征。这种多轮message passaging的机制使得图的结构信息以及邻节点特征被提取到节点的特征中。广义上来说，GCN也是GNN中的一种。GCN的message passaging非常的简单。从下式（最基础形式的GCN）可以看出，GCN借助边信息对节点信息进行聚合。 <span class="math display">\[
+f\left(H^{(l)}, A\right)=\sigma\left(A H^{(l)} W^{(l)}\right)
+\]</span></p>
+<h2 id="gnn-cnn">GNN &amp; CNN</h2>
+<p>对于图像来说，nxn的卷积核可以作为图像中的特征提取器（为了防止图和图像这两个词的太过接近导致可能出现的问题，下文提到图时将用graph）。但是这种卷积操作无法直接用在Graph上，为什么？<br />
+由于图像与graph的数据特性和卷积操作的特性。首先，图像具有局部平移不变性(local translational invariance)，使得卷积核能够对图像矩阵进行扫描卷积；而graph作为非欧空间的数据 (Non Euclidean Structure)，每个节点邻接点的各异导致传统CNN操作无法应用。第二，卷积核是参数共享的，且可以实现层次化特征提取-卷积层可以在前一层的基础上提取更高阶的特征；而graph的层数加深则是使节点获取更广的感受野。</p>
+<h2 id="spectrum">Spectrum</h2>
+<p>参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/120311352" class="uri">https://zhuanlan.zhihu.com/p/120311352</a><br />
+在空间域上的图卷积碰壁并不意味着在图上没法进行操作，我们可以从频域中进行分析。</p>
+<h3 id="图的拉普拉斯矩阵">图的拉普拉斯矩阵</h3>
+<p>首先定义几个概念：<br />
+在图上最基本的拉普拉斯矩阵Laplacian matrix为： <span class="math display">\[
+\mathbf{L}=\mathbf{D}-\mathbf{A}
+\]</span> 其中<span class="math inline">\(\mathbf{D}\)</span>为度矩阵，<span class="math inline">\(\mathbf{A}\)</span>为邻接矩阵。拉普拉斯矩阵有一些基本的性质：对称 (<span class="math inline">\(\mathbf{L}^{T}=\mathbf{L}\)</span>)；半正定 (<span class="math inline">\(\mathbf{x}^{\top} \mathbf{L} \mathbf{x} \geq 0, \forall \mathbf{x} \in \mathbb{R}^{|\mathcal{V}|}\)</span>)，这也意味着拉普拉斯矩阵的特征值都是非负的：<span class="math inline">\(0=\lambda_{|\mathcal{V}|} \leq \lambda_{|\mathcal{V}|-1} \leq \ldots \leq \lambda_{1}\)</span>。 <span class="math display">\[
+\begin{aligned}
+\mathbf{x}^{\top} \mathbf{L} \mathbf{x} &amp;=\frac{1}{2} \sum_{u \in \mathcal{V}} \sum_{v \in \mathcal{V}} \mathbf{A}[u, v](\mathbf{x}[u]-\mathbf{x}[v])^{2} \\
+&amp;=\sum_{(u, v) \in \mathcal{E}}(\mathbf{x}[u]-\mathbf{x}[v])^{2}
+\end{aligned}
+\]</span> 另外，对称规范化拉普拉斯矩阵symmetric normalized Laplacian定义如下，这是GCN相关工作中比较常用的。 <span class="math display">\[
+\mathbf{L}_{\mathrm{sym}}=\mathbf{D}^{-\frac{1}{2}} \mathbf{L} \mathbf{D}^{-\frac{1}{2}}
+\]</span></p>
+<h3 id="拉普拉斯算子">拉普拉斯算子</h3>
+<p>接下来我们来一步步理解为什么要这样定义图的拉普拉斯矩阵。对于空间中的任意函数<span class="math inline">\(f\)</span>来说， <span class="math display">\[
+\Delta f=\nabla^{2} f=\nabla \cdot \nabla f =\sum_{i=1}^{n} \frac{\partial^{2} f}{\partial x_{i}^{2}}
+\]</span> 拉普拉斯算子 (Laplacian)是欧式空间中的函数梯度的散度 (Divergence)对应的微分算子。在n维空间中计算的是函数各个维度二阶偏导的和。在二维空间中，可以<strong>近似</strong>为差分的计算 <span class="math display">\[
+\begin{aligned}
+\Delta f(x, y) &amp;=\frac{\partial^{2} f}{\partial x^{2}}+\frac{\partial^{2} f}{\partial y^{2}} \\
+&amp;=[f(x+1, y)+f(x-1, y))-2 f(x, y)]+[f(x, y+1)+f(x, y-1))-2 f(x, y)] \\
+&amp;=f(x+1, y)+f(x-1, y))+f(x, y+1)+f(x, y-1))-4 f(x, y)
+\end{aligned}
+\]</span> 上式事实上就是在图像上作用拉普拉斯卷积核 <span class="math display">\[
+\begin{array}{|r|r|r|}
+\hline 0 &amp; 1 &amp; 0 \\
+\hline 1 &amp; -4 &amp; 1 \\
+\hline 0 &amp; 1 &amp; 0 \\
+\hline
+\end{array}
+\]</span> 因此拉普拉斯算子可以理解为——在所有自由度上进行微小变化后所获得的增益。<br />
+而将其推广到有N节点的graph上时，<span class="math inline">\(f\)</span>维度最高为N，<span class="math inline">\(f=\left(f_{1}, \ldots, f_{N}\right)\)</span>。其中<span class="math inline">\(f_{i}\)</span> 表示函数<span class="math inline">\(f\)</span>在网络图中节点i处的函数值, 类比<span class="math inline">\(f(x, y)\)</span>为函数<span class="math inline">\(f\)</span>在 <span class="math inline">\((\mathrm{x}, \mathrm{y})\)</span>的函数值。<br />
+因此当拉普拉斯算子作用在加权graph（<strong>边权重为</strong><span class="math inline">\(w_{i j}\)</span>）上时，借助差分近似后有： <span class="math display">\[
+\begin{aligned}
+\Delta \boldsymbol{f}_{i} &amp;=\sum_{j \in N_{i}} \frac{\partial f_{i}}{\partial j^{2}} \\
+&amp; \approx \sum_{j} w_{i j}\left(f_{i}-f_{j}\right) \\
+&amp;=\sum_{j} w_{i j}\left(f_{i}-f_{j}\right) \\
+&amp;=\left(\sum_{j} w_{i j}\right) f_{i}-\sum_{j} w_{i j} f_{j} \\
+&amp;=d_{i} f_{i}-w_{i:} f
+\end{aligned}
+\]</span> 对于任意<span class="math inline">\(i \in N\)</span>都成立，所以就得到了： <span class="math display">\[
+\begin{aligned}
+\Delta f=\left(\begin{array}{c}
+\Delta f_{1} \\
+\vdots \\
+\Delta f_{N}
+\end{array}\right) &amp;=\left(\begin{array}{cc}
+d_{1} f_{1}-w_{1:} f \\
+\vdots \\
+d_{N} f_{N}-w_{N:} f
+\end{array}\right) \\
+&amp;=\left(\begin{array}{ccc}
+d_{1} &amp; \cdots &amp; 0 \\
+\vdots &amp; \ddots &amp; \vdots \\
+0 &amp; \cdots &amp; d_{N}
+\end{array}\right) f-\left(\begin{array}{c}
+w_{1:} \\
+\vdots \\
+w_{N:}
+\end{array}\right) f \\
+&amp;=\operatorname{diag}\left(d_{i}\right) f-\mathbf{W} f \\
+&amp;=(\mathbf{D}-\mathbf{W}) f \\
+&amp;=\mathbf{L} f
+\end{aligned}
+\]</span> 这就意味着，对由图节点特征构成的向量<span class="math inline">\(f\)</span>做拉普拉斯等价于图拉普拉斯矩阵与向量<span class="math inline">\(f\)</span>进行点积。</p>
+<h3 id="graph-fourier-transformer">Graph Fourier Transformer</h3>
+<p>拉普拉斯矩阵的特征分解 <span class="math display">\[
+\mathbf{L} \mathbf{u}_{\mathbf{k}}=\lambda_{k} \mathbf{u}_{\mathbf{k}}
+\]</span> 继而进行正交相似对角化后就得到 <span class="math display">\[
+\mathbf{L}=\mathbf{U} \mathbf{\Lambda} \mathbf{U}^{-1}=\mathbf{U}\left(\begin{array}{ccc}
+\lambda_{1} &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \\
+&amp; &amp; \lambda_{n}
+\end{array}\right) \mathbf{U^{-1}}=\mathbf{U}\boldsymbol{\Lambda} \mathbf{U}^{T}
+\]</span> 其中<span class="math inline">\(\boldsymbol{\Lambda}\)</span> 为特征值构成对角矩阵, <span class="math inline">\(\mathbf{U}\)</span> 为特征向量构成的正交矩阵。</p>
+<p>在这里补充一条性质 <span class="math display">\[\Delta e^{-i \omega t} =\frac{\partial^{2} e^{-i \omega t}}{\partial t^{2}}= -\omega^{2} e^{-i \omega t}\]</span> 从广义上来看，这符合特征方程<span class="math inline">\(AV=\lambda V\)</span>的定义，也就是说<span class="math inline">\(e^{-i \omega t}\)</span>是拉普拉斯算子的特征函数</p>
+<p>把传统的傅里叶变换以及卷积迁移到Graph上来, 核心工作其实就是把<strong>拉普拉斯算子的特征函数<span class="math inline">\(e^{-i \omega t}\)</span></strong> 变为Graph对应的<strong>拉普拉斯矩阵的特征向量</strong>。 傅立叶变化是信号函数<span class="math inline">\(f(t)\)</span>与基函数<span class="math inline">\(e^{-i \omega t}\)</span>的内积 <span class="math display">\[
+\mathcal{F}_{T}(\omega)=\int_{-\infty}^{+\infty} f(t) e^{-i \omega t} d t
+\]</span> 因此对于Graph我们就可以定义 <span class="math display">\[
+F\left(\lambda_{l}\right)=\hat{f}\left(\lambda_{l}\right)=\sum_{i=1}^{N} f(i) u_{l}^{*}(i)
+\]</span> 其中<span class="math inline">\(f\)</span>是graph上的N维向量，<span class="math inline">\(f(i)\)</span>对应于graph上的第i个顶点，<span class="math inline">\(u_{l}(i)\)</span>表示第l个特征向量的第i个分量。特征值<span class="math inline">\(\lambda_l\)</span>（频率）下的<span class="math inline">\(f\)</span>的graph傅立叶变换就是与<span class="math inline">\(\lambda_l\)</span>对应的特征向量<span class="math inline">\(u_{l}\)</span>进行内积运算。将上式推广到矩阵形式，就有 <span class="math display">\[
+\left(\begin{array}{c}
+\hat{f}\left(\lambda_{1}\right) \\
+\hat{f}\left(\lambda_{2}\right) \\
+\vdots \\
+\hat{f}\left(\lambda_{N}\right)
+\end{array}\right)=\left(\begin{array}{cccc}
+u_{1}(1) &amp; u_{1}(2) &amp; \ldots &amp; u_{1}(N) \\
+u_{2}(1) &amp; u_{2}(2) &amp; \ldots &amp; u_{2}(N) \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+u_{N}(1) &amp; u_{N}(2) &amp; \ldots &amp; u_{N}(N)
+\end{array}\right)\left(\begin{array}{c}
+f(1) \\
+f(2) \\
+\vdots \\
+f(N)
+\end{array}\right)
+\]</span> <span class="math display">\[
+\hat{f} = U^T f
+\]</span></p>
+<p>图上的傅立叶逆变换类似于传统傅立叶逆变换的对频率求积分： <span class="math display">\[
+f(i)=\sum_{l=1}^{N} \hat{f}\left(\lambda_{l}\right) u_{l}(i)
+\]</span> <span class="math display">\[f=U \hat{f}\]</span></p>
+<h2 id="gcn">GCN</h2>
+<p>上文从百草园讲到三味书屋，终于要讲到了本文的主角-GCN。在上面graph傅立叶变换的基础上，我们可以将卷积推广到graph上。 <span class="math display">\[
+f * h=\mathcal{F}^{-1}[\hat{f}(\omega) \hat{h}(\omega)]=\frac{1}{2 \Pi} \int \hat{f}(\omega) \hat{h}(\omega) e^{i \omega t} d \omega
+\]</span> 类比到graph上，函数<span class="math inline">\(f\)</span>与卷积核<span class="math inline">\(h\)</span>在graph上的卷积 <span class="math display">\[
+(f * h)_{G}=U\left(\begin{array}{lll}
+\hat{h}\left(\lambda_{1}\right) &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \hat{h}\left(\lambda_{n}\right)
+\end{array}\right) U^{T} f
+\]</span> 式中<span class="math inline">\(\hat{h}\left(\lambda_{l}\right)=\sum_{i=1}^{N} h(i) u_{l}^{*}(i)\)</span>是根据需要设计的卷积核<span class="math inline">\(h\)</span>在graph上的傅立叶变换。 图表示学习中用的定义为 <span class="math display">\[
+(f * h)_{G}=U\left(\left(U^{T} h\right) \odot\left(U^{T} f\right)\right)
+\]</span> <span class="math inline">\(\odot\)</span> 表示Hadamard product，对两个维度相同的向量、矩阵进行对应位置的逐元素乘积。</p>
+<p>将神经网络与graph卷积结合，只需令卷积核变为可学习的参数，也就得到 <span class="math display">\[
+y_{\text {output }}=\sigma\left(U \left(\begin{array}{lll}
+\theta_{1} &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \theta_{n}
+\end{array}\right) U^{T} x\right)
+\]</span> 我们将卷积核记为<span class="math inline">\(g(\Lambda)\)</span> (<span class="math inline">\(\Lambda\)</span>就是大写的<span class="math inline">\(\lambda\)</span>)。<br />
+这种图卷积被称为<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1312.6203">第一代图卷积</a>，但这类图卷积计算开销非常大，且卷积核有n个参数，这种图卷积很难处理工业级的数据。 <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1606.09375.pdf">第二代图卷积</a>使用了polynomial filter <span class="math display">\[
+g_{\theta}(\Lambda)=\sum_{k=0}^{K-1} \theta_{k} \Lambda^{k}=\left(\begin{array}{ccc}
+\sum_{j=0}^{K} \alpha_{j} \lambda_{1}^{j} &amp; &amp; \\
+&amp; \ddots &amp; \\
+&amp; &amp; \\
+&amp; &amp; &amp; \sum_{j=0}^{K} \alpha_{j} \lambda_{n}^{j}
+\end{array}\right)
+\]</span> 其中<span class="math inline">\(\theta \in \mathbb{R}^{K}\)</span>是多项式系数向量。进而可以推出 <span class="math display">\[
+U \sum_{j=0}^{K} \alpha_{j} \Lambda^{j} U^{T}=\sum_{j=0}^{K} \alpha_{j} U \Lambda^{j} U^{T}=\sum_{j=0}^{K} \alpha_{j} L^{j}
+\]</span> <span class="math display">\[y_{\text {output }}=\sigma\left(\sum_{j=0}^{K-1} \alpha_{j} L^{j} x\right)\]</span> 此时，我们计算图卷积运算就不需要再乘上特征向量矩阵<span class="math inline">\(U\)</span>，而是直接使用拉普拉斯矩阵<span class="math inline">\(L\)</span>的k 次方（K远小于n），这样就避免了进行特征分解。而我们可以事先计算好<span class="math inline">\(L^K\)</span> ，这样就只需要计算矩阵相乘。 此外，高阶拉普拉斯可以用切比雪夫展开来近似，因此卷积核还可以用切比雪夫多项式来表示 <span class="math display">\[
+g_{\theta}(\Lambda)=\sum_{k=0}^{K-1} \theta_{k} T_{k}(\tilde{\Lambda})
+\]</span> 而将切比雪夫多项式的阶数限制为2的时候就得到在下游任务中常用的图卷积公式： <span class="math display">\[
+H^{(l+1)}=\sigma\left(\widetilde{D}^{-\frac{1}{2}} \widetilde{A} \widetilde{D}^{-\frac{1}{2}} H^{(l)} W^{(l)}\right)
+\]</span> 上式中，<span class="math inline">\(\widetilde{A}=A+I, \mathrm{~A}\)</span>为邻接矩阵, <span class="math inline">\(I\)</span>为单位矩阵, 所以<span class="math inline">\(\widetilde{A}\)</span> 为添加自连接的邻接矩阵;<span class="math inline">\(W^{(l)}\)</span> 为神经网络第<span class="math inline">\(l\)</span>层的权重矩阵; <span class="math inline">\(\sigma(\cdot)\)</span>是激活函数</p>
+<h2 id="gcn-self-attention">GCN &amp; Self-attention</h2>
+<p>上面从频域分析graph convolution，当我们从空间域上分析得到的卷积公式时，可以看出它仍是一种message passing机制。 <span class="math display">\[
+A  H^{(l)}  W^{(l)}
+\]</span> 上式可以分为两个步骤，首先是<span class="math inline">\(H\)</span>与参数矩阵<span class="math inline">\(W\)</span>做一个线性映射，而后与邻节点及其边信息进行聚合汇总。这一框架在某种意义上说与self- attention是非常类似的。</p>
+<p>self- attention包含query、key、value；其中输入的query与每个key计算相似度，而后得到一个注意力系数<span class="math inline">\(\alpha\)</span>，再由注意力系数对value进行加权求和输出最终的结果。抛开邻节点后，这两者的计算机制可以说非常类似，都可以被囊括在message passing这一框架下，而self-attention也可以理解为在完成图（所有节点都相连）上的GCN。而Transformer以及GNN在NLP中的广泛应用也从某种意义上说明了两者之间存在某种相似性。</p>
+<h2 id="gcn应用">GCN应用</h2>
+<h3 id="textgcn">TextGCN</h3>
+<p><img src="/images/gcn/2.png" title="TextGCN" /> 论文<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1809.05679v3">Graph Convolutional Networks for Text Classification</a>所构建的TextGCN将GCN用于文本分类中，在电影评价、新闻等数据集上都取得了不错的表现。<br />
+如上图所示，模型将语料库中的每一篇文档和语料库中词作为节点，联合构建了一个异构图，再借助GCN进行特征传播，得到每个文档节点的embedding后进行softmax分类。<br />
+文章中节点都使用one-hot vector进行初始化，而文档-词边、词-词边分别用TF-IDF、PMI赋以不同的权重，而最终得到的分类准确率比传统的CNN、LSTM等网络效果要高，足以证明GCN在NLP任务中的潜力。此外，后续用BERT进行节点初始化的BERTGCN也是目前的文本分类的SOTA模型。</p>
+<h3 id="st-gcn">ST-GCN</h3>
+<p><img src="/images/gcn/4.png" title="ST-GCN" /> <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1801.07455.pdf">ST-GCN</a>可以说是GCN在骨骼行为识别里面的开山之作。</p>
+<h3 id="sgc">SGC</h3>
+<p><img src="/images/gcn/3.png" title="Simplifying Graph Convolutional Networks (SGC)" /> 作者将图卷积层中的激活函数去掉，得到了SGC在许多NLP任务上更优的结果，且模型速度有了极大的提升。</p>
+<h2 id="再回首">再回首</h2>
+<p>回顾一下上文的内容，首先GCN是GNN的一种，从公式上看聚合函数采用的是图的拉普拉斯矩阵。当我们从频域上分析图的拉普拉斯矩阵及其特征分解之后可以发现，拉普拉斯矩阵的特征向量可以作为傅里叶变换的基、特征值表示频率，从而就可以定义图上的傅立叶变换，进而扩展到卷积操作。而将图卷积与神经网络结合后，借助多项式优化后就得到了现在常用的卷积公式。而从空间域中看，图卷积本质上也就是一种信息传播机制，借助边的权重信息对邻节点的特征做限制后传播、聚合、更新节点原本的特征。</p>
+<p>在频域分析过程中我们可以得到，在由Graph确定的<span class="math inline">\(n\)</span>维空间中，越小的特征值 <span class="math inline">\(\lambda_{l}\)</span> 表明：拉普拉斯矩阵 <span class="math inline">\(L\)</span> 其所对应的基 <span class="math inline">\(u_{l}\)</span> 上的分量、&quot;信息&quot;越少、高频部分。所以图卷积有时候也被认知为是图上的高斯平滑，一种滤波的过程，这也导出了图卷积中的一大问题：over-smooshing。当图卷积层数加深时，图上节点自身的特征会因为不断的传播后导致自身的特征消失，所有节点的特征会越来越接近，进而使得下游任务准确率下降。</p>
+<h3 id="gcn-vs-cnn">GCN vs CNN</h3>
+<p>GCN可以退化为CNN...TODO</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/23/pd7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/11/23/pd7/" itemprop="url">读书人的事，能叫偷吗？ [EMNLP2021/AAAI2021]</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-23T22:09:00+08:00">
+                2021-11-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
+                    <span itemprop="name">Paper_daily</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  2.7k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言">前言</h1>
+<p>最近似乎吃到了一个瓜</p>
+<blockquote>
+<p>如何看待EMNLP'21的文章涉嫌抄袭EMNLP'20上的文章?<br />
+本人在阅读EMNLP2021的文章时，偶然发现一篇名为Seeking Common but Distinguishing Difference, A Joint Aspect-based Sentiment Analysis Model的文章，这篇文章的内容与EMNLP2020上的一篇文章Two are Better than One: Joint Entity and Relation Extraction with Table-Sequence Encoders高度相似。</p>
+</blockquote>
+<p>无独有偶，AAAI2021的论文 Multi-modal Graph Fusion for Named Entity Recognition with Targeted Visual Guidance 也被人指出涉嫌抄袭ACL2020的文章 A Novel Graph-based Multi-modal Fusion Encoder for Neural Machine Translation</p>
+<p>先不谈到底有没有抄袭事件，我们来看一看这几篇文章的所做的工作</p>
+<h1 id="emnlp20">EMNLP'20</h1>
+<p>Two are Better than One: Joint Entity and Relation Extraction with Table-Sequence Encoders</p>
+<h2 id="intro">Intro</h2>
+<p>本文针对实体关系联合抽取问题。现有的方法将NER和RE使用Table-Filling的方法完成联合抽取，但他们在学习过程中仅使用单个encoder来捕获两个任务的信息，而在本文提出的模型中，作者设计了表格式编码器和序列式编码器来进行表示学习。</p>
+<h2 id="model">Model</h2>
+<p><img src="/images/pd7/1.png" title="table filling for NER and RE" /> 对于传统的联合抽取问题，首先构建一个二维表，而后将NER问题视为序列标注为题（沿着表对角线），将RE问题视为对表中的其他条目进行标注，这个二维表能解决两个任务，并能实现两个任务间的潜在交互。<br />
+但是作者认为这种现有的方式会出现两个问题，一是用于同样的特征表示进行NER和RE(关系分类)两个任务，可能会对模型的学习造成误解 (Feature Confusiong)；二是基于Table-Filling方法去完成联合抽取的工作，会将表结构转化成一个序列结构，这样导致丢失了重要的结构信息。</p>
+<p>对此，本文中作者设计了两个encoder：sequence representations and table representations, for NER and RE respectively。而且设计了一个两者之间交互机制来获取两个任务间的潜在联系。</p>
+<h3 id="text-embedding">Text Embedding</h3>
+<p>对于一个输入的包含n个words的句子，其词向量（LSTM）、字符向量（LSTM）和BERT词向量的共同构成了每个word的表示。 <span class="math display">\[
+\boldsymbol{S}_{0}=\operatorname{Linear}\left(\left[\boldsymbol{x}^{c} ; \boldsymbol{x}^{w} ; \boldsymbol{x}^{\ell}\right]\right)
+\]</span></p>
+<p><img src="/images/pd7/2.png" title="table-sequence encoders" /></p>
+<h3 id="table-encoder">Table Encoder</h3>
+<p>Table中第i行第j列分别代表句子中的第i和第j个词，而Table encoder则要学习每个单元格的向量表示。文中使用基于GRU结构的MD-RNN(多维RNN)作为Text Encoder，在更新表格中当前cell的信息时，通过MDRNN融合其上下左右四个方向上的信息，从而利用了表格的结构特点： <img src="/images/pd7/4.png" title="GRU结构的MD-RNN" /> <span class="math display">\[
+T_{l, i, j}=\operatorname{GRU}\left(X_{l, i, j}, T_{l-1, i, j}, T_{l, i-1, j}, T_{l, i, j-1}\right)
+\]</span> 同时引入当前cell所对应的两个词在Sequence Encoder下的表示，使得Table Encoder和Sequence Encoder之间发生信息的交流；</p>
+<p>另外，Text Embeddings部分有用到BERT, 因此将BERT中各个层上多头attention每个头上的 atention权重堆叠起来, 得到张量<span class="math inline">\(T^{l} \in \mathbb{R}^{N \times N \times\left(L^{l} \times A^{l}\right)}\)</span>。基于<span class="math inline">\(T^{l}\)</span> 和Text Embedding中每个词的表示，构成Table的初始化输入表示。</p>
+<h3 id="sequence-encoder">Sequence Encoder</h3>
+<p>Sequence Encoder的结构与Transformer类似，不同之处在于将Transformer中的scaled dot-product attention 替 换为了文中提出的table-guided attention。具体地, 将Transformer中计算 <span class="math inline">\(g\left(Q_{i}, K_{j}\right)\)</span> 的部分, 直接替换为对应两个word在表格中的 向量表示 <span class="math inline">\(T_{i, j}\)</span> 。由于 <span class="math inline">\(T_{i, j}\)</span> 融合了四个方向上的信息, 能够更加充分的捕捉上下文信息以及词与词之间的关系, 同时也使Table Encoder和Sequence Encoder之间产生了双向的信息交流。</p>
+<h1 id="emnlp21">EMNLP'21</h1>
+<p>20的文章所针对的问题是实体和关系的联合抽取，而21的文章所针对的问题是情感三元组抽取，但本质上二者所解决的问题都属于信息抽取中的关系抽取。 <img src="/images/pd7/3.png" title="论文部分截图" /> 这篇文章相当于将上面的模型换了一个任务跑，文章的配图除了配色外几乎一模一样。“幸运”的事审稿人应该没有读过20年的文章，而本文的作者也没有在论文中提及或引用，最终使得文章能成功过审。</p>
+<h1 id="acl20">ACL'20</h1>
+<p><strong>A Novel Graph-based Multi-modal Fusion Encoder for Neural Machine Translation</strong></p>
+<h2 id="intro-1">Intro</h2>
+<p>文章针对多模态机器翻译问题 (Multi-modal Neural Machine Translation) 。为了更好的捕获细粒度的不同模态语义单元间的对应关系，论文提出了一种基于图的多模态融合编码器 graph-based multi-modal fusion encoder。具体而言，模型首先把图和句子用一个统一多模态图来表示。然后基于该图，我们堆叠基于多个图的多模态融合层，这些层迭代地表示节点之间的语义交互以进行图编码， 依次进行模态内和模态间融合以学习多模态节点表示。 最后，解码器可以通过注意机制来利用这些表示形式。</p>
+<h2 id="multi-modal-graph">Multi-modal graph</h2>
+<p><img src="/images/pd7/5.png" title="多模态图构建" /></p>
+<p>上图中绿色和蓝色的节点分别代表视觉节点和文本节点，节点间的边包括跨模态的边和单模态内部的边。具体而言，首先对于节点而言，每个节点为a textual word or a visual object。每个词作为一个节点；而后利用斯坦福检测器 (Stanford parser) 识别输入句子中的所有名词短语，然后应用可视化基础工具包检测每个名词短语的边界框，得到对应的视觉节点。intra-modal edge用于连接单模态内部的节点，inter-modal edge用于将视觉节点与其对应的文本节点相连</p>
+<h2 id="encoder-decoder">Encoder-Decoder</h2>
+<p><img src="/images/pd7/6.png" title="模型整体框架" /> 首先借助embedding layer对节点嵌入进行初始化。<br />
+对于文本节点，使用其词嵌入和位置编码的和；对于视觉节点，首先从Faster-RCNN中的全连接层中提取视觉特征，而后映射到相应维度上。</p>
+<p>在embedding层的后堆叠了多个基于图的多模态融合层进行编码。在每个融合层，模型依次进行单模态内融合和跨模态间融合以更新所有节点状态。最终节点状态对模态内和模态间信息同时进行编码。由于视觉节点和文本节点是包含不同模态信息的两种语义单元，因此我们分别应用相似的操作，但使用不同的参数来对它们的状态更新过程进行建模。</p>
+<ul>
+<li>Intra-modal fusion</li>
+</ul>
+<p>对于单模态内的，文本信息和视觉信息都用mulit-head attention来提取： <span class="math display">\[
+\mathbf{C}_{x}^{(l)}=\operatorname{MultiHead}\left(\mathbf{H}_{x}^{(l-1)}, \mathbf{H}_{x}^{(l-1)}, \mathbf{H}_{x}^{(l-1)}\right)
+\]</span> <span class="math display">\[
+\mathbf{C}_{o}^{(l)}=\operatorname{MultiHead}\left(\mathbf{H}_{o}^{(l-1)}, \mathbf{H}_{o}^{(l-1)}, \mathbf{H}_{o}^{(l-1)}\right)
+\]</span></p>
+<ul>
+<li>Inter-modal fusion</li>
+</ul>
+<p>跨模态的信息，作者设计了跨模态门控机制。对于文本跨模态信息<span class="math inline">\(M_x\)</span>，<span class="math inline">\(A\left(v_{x_{i}}\right)\)</span>是与词节点<span class="math inline">\(v_{x_{i}}\)</span>相邻的视觉节点，<span class="math inline">\(W^{(l)}\)</span>为参数矩阵。<span class="math inline">\(\alpha_{ij}\)</span>指第i个词节点对第j个视觉节点的权重，结合了节点的语义信息和视觉信息。相应的也可以得到视觉跨模态信息<span class="math inline">\(M_o\)</span>。 <span class="math display">\[
+\begin{aligned}
+M_{x_{i}}^{(l)} &amp;=\sum_{j \in A\left(v_{x_{i}}\right)} \alpha_{i, j} \odot C_{o_{j}}^{(l)} \\
+\alpha_{i, j} &amp;=\operatorname{Sigmoid}\left(\mathbf{W}_{1}^{(l)} C_{x_{i}}^{(l)}+\mathbf{W}_{2}^{(l)} C_{o_{j}}^{(l)}\right)
+\end{aligned}
+\]</span> <span class="math display">\[
+\begin{aligned}
+M_{o_{j}}^{(l)} &amp;=\sum_{i \in A\left(v_{o_{j}}\right)} \beta_{j, i} \odot C_{x_{i}}^{(l)} \\
+\beta_{j, i} &amp;=\operatorname{Sigmoid}\left(\mathbf{W}_{3}^{(l)} C_{o_{j}}^{(l)}+\mathbf{W}_{4}^{(l)} C_{x_{i}}^{(l)}\right)
+\end{aligned}
+\]</span> 而后分别经过对应的全连接前馈神经网络： <span class="math display">\[
+\begin{array}{l}
+\mathbf{H}_{x}^{(l)}=\operatorname{FFN}\left(\mathbf{M}_{x}^{(l)}\right) \\
+\mathbf{H}_{o}^{(l)}=\operatorname{FFN}\left(\mathbf{M}_{o}^{(l)}\right)
+\end{array}
+\]</span></p>
+<p>Decoder的结构与常规的Transformer的decoder非常类似。由于视觉信息已通过多模式融合层合并到所有文本节点中，因此解码器仅使用文本节点状态来动态利用多模式上下文信息。输入的embedding会经过两个attention，分别是decoder内部的和encoder-decoder之间的attention。而后经过全连接层、Softmax得到输出结果。</p>
+<h1 id="aaai21">AAAI'21</h1>
+<p><strong>Multi-modal Graph Fusion for Named Entity Recognition with Targeted Visual Guidance</strong></p>
+<p>论文的关于多模态命名实体识别(Multi-modal named entity recognition, MNER)，模型能发现文本中的命名实体，并利用图像将其分类为预定义的类型。图片用于辅助分类时，本文模型在图片中找到实体（来源于文本信息）所在区域，截出对应的部分进行视觉信息抽取。</p>
+<p><img src="/images/pd7/7.png" title="模型整体架构" /> 先来看一下这篇论文的主图，从图上可以看出模型的整个框架与2020年的论文非常类似。其中图节点嵌入的初始化分别用BERT和ResNet来代替；而后的encoder-decoder与20年的模型基本一致。</p>
+<p><img src="/images/pd7/8.png" title="Graph-based Multi-modal Fusion" /> 这一部分从论文中也可以看出，多模态图中跨模态间和单模态内的处理与20年论文的处理方法一致。</p>
+<h1 id="p.s.">p.s.</h1>
+<p>最近尝试复现旷视的<a href="/2021/10/26/pd5/" title="ML-GCN">ML-GCN</a>也遇到了大无语事件，其一是用了好几个版本的Pytorch都无法较好的收敛，看网友的一些讨论说居然要用19年特定的0.3.1版本；其二就是ML-GCN中最主要的模块GCN对模型的准确率没有任何贡献，去掉该模块反而有更好的效果。😅<br />
+怪不得会有人用“魔改”这种略带侮辱性的词来形容AI的科研。希望能有越来越多的人做有意义的科研，也希望“独角兽”们和“master”们把挣钱和科研分开。“挣钱嘛，不寒碜“ （让子弹飞赶紧申遗），但既然想挣钱就别往科研里钻，整些无意义灌水甚至是剽窃他人的成果。<br />
+当然，抛开环境现状不谈来批判某些个体的行为似乎有些耍流氓。还记得大二时候导师跟我和zb说要做一个一身正气的科研工作者。（虽然现在也说不准以后是进学术界还是工业界）国家快速发展总会留下一些弊病，希望能从高校老师和学生开始，逐渐构建一片净土，让热爱学术的人能够坚定不移的走下去。至少以后学术造假等事件曝光时，我们看到的主角不应该是中国人的名字。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/18/svgd-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/11/18/svgd-2/" itemprop="url">SVGD补充</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-18T10:03:58+08:00">
+                2021-11-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
+                    <span itemprop="name">Paper_daily</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  113
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>关于<a href="/2021/11/09/svgd/" title="SVGD">SVGD</a>的内容，这一篇博客中大致做了简单的介绍，包括从上到下的数学推导和简单的逻辑链。但整个贝叶斯推断背后还有许多思想，且SVGD背后也隐藏的一些思维过程。这篇Blog将作为SVGD相关内容的补充以及涉及到的知识体系的简要归纳。</p>
+<h1 id="svgd实验">SVGD实验</h1>
+<h2 id="拟合高斯分布">拟合高斯分布</h2>
+<h2 id="贝叶斯神经网络">贝叶斯神经网络</h2>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/16/kernel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/11/16/kernel/" itemprop="url">Kernels and Hilbert Space</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-16T19:43:16+08:00">
+                2021-11-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Preliminary-AI/" itemprop="url" rel="index">
+                    <span itemprop="name">Preliminary AI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  482
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Reference：<br />
+‘Introduction to Hilbert Spaces with Application.’<br />
+‘Introduction to RKHS, and some simple kernel algorithms.’</p>
+<p>Since Kernel trick is one of the core methods in SVM and SVGD also involves expertise related to RKHS. I looked up several books on Kernel method, trying to get a systematic understanding of Kernel and Hilbert space. This blog can also be regarded as a summary and summary of the book ‘Introduction to Hilbert Spaces with Application ’.</p>
+<h1 id="introduction">Introduction</h1>
+<p><img src="/images/kernel/1.png" title="XOR example" /> <img src="/images/kernel/2.png" title="Document classification example" /></p>
+<h2 id="kernel">Kernel</h2>
+<p>Definition: Let <span class="math inline">\(\mathcal{X}\)</span> be a non-empty set. A function <span class="math inline">\(k: \mathcal{X} \times \mathcal{X} \rightarrow \mathbb{R}\)</span> is called a kernel if there exists an <span class="math inline">\(\mathbb{R}\)</span>-Hilbert space and a map <span class="math inline">\(\phi: \mathcal{X} \rightarrow \mathcal{H}\)</span> such that <span class="math inline">\(\forall x, x^{\prime} \in \mathcal{X}\)</span> <span class="math display">\[
+k\left(x, x^{\prime}\right):=\left\langle\phi(x), \phi\left(x^{\prime}\right)\right\rangle_{\mathcal{H}}
+\]</span></p>
+<h1 id="normed-vector-spaces">Normed Vector Spaces</h1>
+<p>First, the space defined in mathematics can be divided from simple to complex as:</p>
+<ul>
+<li><p>Vector Space<br />
+a nonempty set <span class="math inline">\(E\)</span> with two operations: <em>addition</em> and <em>multiplication by scalars</em>.<br />
+e.g. <span class="math inline">\(\mathbb{R}^{N}\)</span> <span class="math inline">\(\mathbb{C}^{N}\)</span></p></li>
+<li><p>Normed Space<br />
+norm is an abstract generalization of the length of a vector:<br />
+function <span class="math inline">\(x \mapsto\|x\|\)</span> from a vector space <span class="math inline">\(E\)</span> into <span class="math inline">\(\mathbb{R}\)</span></p></li>
+<li><p>Banach Space: complete normed space<br />
+A normed space is complete if and only if every absolutely convergent series converges. (The contents of Cauchy sequence and Cauchy series are put in the appendix)<br />
+Actually, Banach space introduces the concept of Limits</p></li>
+<li><p>Inner Product Spaces<br />
+The space that defines the <a href="#jump">inner product</a>.</p></li>
+<li><p>Hilbert Spaces: A complete inner product space</p></li>
+</ul>
+<h1 id="hilbert-spaces">Hilbert Spaces</h1>
+<h1 id="appendix">Appendix</h1>
+<h2 id="cauchy-sequence-and-cauchy-series">Cauchy sequence and Cauchy series</h2>
+<p>Definition of <strong><em>Cauchy sequence</em></strong>. A sequence <span class="math inline">\(\left\{f_{n}\right\}_{n=1}^{\infty}\)</span> of elements in a normed space <span class="math inline">\(\mathcal{H}\)</span> is said to be a Cauchy sequence if for every <span class="math inline">\(\epsilon&gt;0\)</span>, there exists <span class="math inline">\(N=N(\varepsilon) \in \mathbb{N}\)</span>, such that for all <span class="math inline">\(n, m \geq N,\left\|f_{n}-f_{m}\right\|_{\mathcal{H}}&lt;\epsilon\)</span></p>
+<h2 id="inner-product">Inner product</h2>
+<p><span id="jump"> </span> Definition of <strong><em>Inner product</em></strong>. Let <span class="math inline">\(\mathcal{H}\)</span> be a vector space over <span class="math inline">\(\mathbb{R}\)</span>. A function <span class="math inline">\(\langle\cdot, \cdot\rangle_{\mathcal{H}}: \mathcal{H} \times \mathcal{H} \rightarrow \mathbb{R}\)</span> is said to be an inner product on <span class="math inline">\(\mathcal{H}\)</span> if:</p>
+<ul>
+<li><p><span class="math inline">\(\left\langle\alpha_{1} f_{1}+\alpha_{2} f_{2}, g\right\rangle_{\mathcal{H}}=\alpha_{1}\left\langle f_{1}, g\right\rangle_{\mathcal{H}}+\alpha_{2}\left\langle f_{2}, g\right\rangle_{\mathcal{H}}\)</span></p></li>
+<li><p><span class="math inline">\(\langle f, g\rangle_{\mathcal{H}}=\langle g, f\rangle_{\mathcal{H}}{ }^{1}\)</span></p></li>
+<li><p><span class="math inline">\(\langle f, f\rangle_{\mathcal{H}} \geq 0\)</span> and <span class="math inline">\(\langle f, f\rangle_{\mathcal{H}}=0\)</span> if and only if <span class="math inline">\(f=0\)</span>.</p></li>
+</ul>
+<p>the inner product between matrices <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span> and <span class="math inline">\(B \in\)</span> <span class="math inline">\(\mathbb{R}^{m \times n}\)</span> is <span class="math display">\[
+\langle A, B\rangle=\operatorname{trace}\left(A^{\top} B\right)
+\]</span></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/09/svgd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/11/09/svgd/" itemprop="url">Stein variational gradient descent (NIPS2018)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-11-09T20:28:58+08:00">
+                2021-11-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
+                    <span itemprop="name">Paper_daily</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  3.7k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  18
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="intro">Intro</h1>
+<p>这一工作是清华大学liu qiang老师提出的，相关论文从2016年开始也一直在更新，分别发表在NIPS、ICLR等顶会上。<br />
+<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1704.07520">Stein Variational Gradient Descent as Gradient Flow</a><br />
+<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1810.11693">Stein Variational Gradient Descent as Moment Matching</a><br />
+<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1608.04471.pdf">Stein Variational Gradient Descent: A General Purpose Bayesian Inference Algorithm</a></p>
+<p>从定义上来说，SVGD是一种确定性的采样算法，用一组粒子来近似给定的分布。基于这两点，它和MCMC以及VI都有共通之处。但SVGD即保证了在大量数据下的计算速度，也比变分推断具有更高的准确性。</p>
+<p>从整体上来看，这一工作通过引入Stein discrepancy来度量两个分布之间的距离，再借助RKHS使其容易计算，最后借助gradient descent进行优化。因此下文也就从这三部分一一介绍。</p>
+<h1 id="background">Background</h1>
+<h2 id="steins-method">Stein's method</h2>
+<p>首先我们需要引入几个定义：</p>
+<ul>
+<li><p><em>Stein score function</em> <span class="math display">\[
+\boldsymbol{s}_{p}=\nabla_{x} \log p(x)=\frac{\nabla_{x} p(x)}{p(x)}
+\]</span> 这一函数被称为<span class="math inline">\(q(x)\)</span>的Stein score function</p></li>
+<li><p><em>Stein class</em><br />
+当函数<span class="math inline">\(f: \mathcal{X} \rightarrow \mathbb{R}\)</span>满足下式时则称其在stein class中 <span class="math display">\[
+\int_{x \in \mathcal{X}} \nabla_{x}(f(x) p(x)) d x=0
+\]</span> 其中<span class="math inline">\(\mathcal{X}\)</span> 是<span class="math inline">\(\mathbb{R}^{d}\)</span>下的子集，而<span class="math inline">\(p(x)\)</span>则是在<span class="math inline">\(\mathcal{X}\)</span> 下连续可微的分布。</p></li>
+<li><p><em>Stein's operator</em>：作用在<span class="math inline">\(p\)</span>上的线性操作 <span class="math display">\[
+\mathcal{A}_{p} f(x)=\boldsymbol{s}_{p}(x) f(x)+\nabla_{x} f(x)
+\]</span> 其中<span class="math inline">\(s_{p}\)</span>和<span class="math inline">\(\mathcal{A}_{p} f\)</span> 都是<span class="math inline">\(d \times 1\)</span> 函数(mapping from <span class="math inline">\(\mathcal{X}\)</span> to <span class="math inline">\(\mathbb{R}^{d}.\)</span>)</p></li>
+</ul>
+<p>有了以上三个定义后，我们可以尝试得到stein discrepancy。首先作为一个度量手段，必然需要满足一些条件。<br />
+当且仅当 <span class="math display">\[
+\mathbb{E}_{p}\left[\boldsymbol{s}_{q}(x) f(x)+\nabla_{x} f(x)\right]=0   \qquad   (1) 
+\]</span> <span class="math inline">\(p(x)\)</span> 和 <span class="math inline">\(q(x)\)</span>是相等的。而当两个分布<span class="math inline">\(p=q\)</span>时又被称为stein identity。<br />
+借助 (1) 式，我们可以定义Stein discrepancy来度量两个分布<span class="math inline">\(p\)</span>和<span class="math inline">\(q\)</span>之间的差异： <span class="math display">\[
+\mathbb{S}(p, q)=\max _{f \in \mathcal{F}}\left(\mathbb{E}_{p}\left[\boldsymbol{s}_{q}(x) f(x)+\nabla_{x} f(x)\right]\right)^{2}
+\]</span> 借助之前定义的stein operator，也可以把上式写为 <span class="math display">\[\mathbb{S}(p, q)=\max _{f \in \mathcal{F}}\left(\mathbb{E}_{p}\left[\mathcal{A}_{q} f(x)\right]\right)^{2}\]</span></p>
+<p><span class="math inline">\(\mathcal{F}\)</span>是一系列连续可微的且满足<span class="math inline">\(\mathbb{S}(p, q)\)</span>不为0(<span class="math inline">\(p \neq q\)</span>时)函数集合。当<span class="math inline">\(p \neq q\)</span>时，<span class="math inline">\(\mathbb{S}(p,q)&gt;0\)</span>，而<span class="math inline">\(max\)</span>则是因为我们希望距离尽可能明显。</p>
+<p><span class="math inline">\(\mathbb{S}(p, q)\)</span>并没有被广泛应用在机器学习中，因为其计算和优化的复杂性: <span class="math inline">\(q(x)=f(x) / Z\)</span> 而<span class="math inline">\(Z=\int f(x) d x\)</span>的计算往往设计高维积分。<br />
+但是论文提出了将函数<span class="math inline">\(\mathcal{F}\)</span>用核函数代替时，会得到易于计算的Stein discrepancy <span class="math inline">\(\mathbb{S}(p, q)\)</span>。具体而言，我们令<span class="math inline">\(\mathcal{F}\)</span>来源于希尔伯特再生核空间的一个球 (reproducing kernel Hilbert space (RKHS))。</p>
+<h2 id="kernelized-stein-discrepancy">Kernelized Stein Discrepancy</h2>
+<p>对于映射后的函数，对应的正定核<span class="math inline">\(k\left(x, x^{\prime}\right)\)</span>，我们有 <span class="math display">\[
+\mathbb{S}(p, q)=\mathbb{E}_{x, x^{\prime} \sim p}\left[u_{q}\left(x, x^{\prime}\right)\right]
+\]</span> 其中<span class="math inline">\(x, x^{\prime}\)</span>是<span class="math inline">\(p\)</span>中独立同分布的两个变量，函数<span class="math inline">\(u_{q}\left(x, x^{\prime}\right)\)</span>由<span class="math inline">\(q\)</span>确定，如果展开的话实际上是： <span class="math display">\[u_{q}\left(x, x^{\prime}\right)= \boldsymbol{s}_{q}(x)^{\top} k\left(x, x^{\prime}\right) \boldsymbol{s}_{q}\left(x^{\prime}\right)+\boldsymbol{s}_{q}(x)^{\top} \nabla_{x^{\prime}} k\left(x, x^{\prime}\right)+\nabla_{x} k\left(x, x^{\prime}\right)^{\top} \boldsymbol{s}_{q}\left(x^{\prime}\right)+\operatorname{trace}\left(\nabla_{x, x^{\prime}} k\left(x, x^{\prime}\right)\right)\]</span></p>
+<p>当我们从未知分布<span class="math inline">\(p(x)\)</span>采样出一个样本<span class="math inline">\({x_i}\)</span>时，我们可以进行近似计算 <span class="math display">\[\hat{\mathbb{S}}(p, q)=\frac{1}{n(n-1)} \sum_{i \neq j} u_{q}\left(x_{i}, x_{j}\right)\]</span></p>
+<p>接下来我们详细介绍上述的过程。</p>
+<h3 id="kernels-and-reproducing-kernel-hilbert-spaces">Kernels and Reproducing Kernel Hilbert Spaces</h3>
+<a href="/2021/11/16/kernel/" title="Kernel and Hilbert Spaces介绍 (未完待续)">Kernel and Hilbert Spaces介绍 (未完待续)</a>
+<p>令<span class="math inline">\(k\left(x, x^{\prime}\right)\)</span>为一个正定核，根据Mercer’s theorem我们对其进行谱分解： <span class="math display">\[
+k\left(x, x^{\prime}\right)=\sum_{j} \lambda_{j} e_{j}(x) e_{j}\left(x^{\prime}\right)
+\]</span> 其中<span class="math inline">\(\left\{e_{j}\right\},\left\{\lambda_{j}\right\}\)</span>分别是正交特征函数和正特征值，满足<span class="math inline">\(\int e_{i}(x) e_{j}(x) d x=\mathbb{I}[i=j]\)</span>, for <span class="math inline">\(\forall i, j\)</span></p>
+<p>对于一个正定核，它可以分解为RKHS中特征函数的线性组合（空间中任何一个函数可以用这组基的线性组合来表示）。由一个特定的核函数能产生一个唯一的Hilbert空间，有性质 <span class="math display">\[
+f(x)=\langle f, k(\cdot, x)\rangle_{\mathcal{H}}, \quad k\left(x, x^{\prime}\right)=\left\langle k(\cdot, x), k\left(\cdot, x^{\prime}\right)\right\rangle_{\mathcal{H}}
+\]</span> 当我们定义 <span class="math inline">\(\mathcal{H}^{d}=\mathcal{H} \times \mathcal{H} \times \cdots \mathcal{H}\)</span> 为 <span class="math inline">\(d\)</span> 维向量函数 <span class="math inline">\(\mathbf{f}=\left\{f_{i}: f_{i} \in \mathcal{H} \quad i=1, \cdots, d\right\}\)</span> 组成的 Hilbert空间, <span class="math inline">\(\mathcal{H}^{d}\)</span> 上的内积定义为 <span class="math inline">\(&lt;\mathbf{f}, \mathbf{g}&gt;_{\mathcal{H}^{d}}=\sum_{i=1}^{d}&lt;f_{i}, g_{i}&gt;_{\mathcal{H}}\)</span> 。如果觉得上述的介绍太过抽象，可以看附录部分关于RKHS的一个<a href="#jump">toy example</a></p>
+<h3 id="lemmas">lemmas</h3>
+<p><strong>Stein's Identity</strong> ： <span class="math display">\[
+\mathbb{E}_{p}\left[\mathcal{A}_{p} \boldsymbol{f}(x)\right]=\mathbb{E}_{p}\left[\boldsymbol{s}_{p}(x) \boldsymbol{f}(x)^{\top}+\nabla \boldsymbol{f}(x)\right]=0
+\]</span> 证明的话根据<span class="math inline">\(\boldsymbol{s}_{p}(x) \boldsymbol{f}(x)^{\top}+\nabla \boldsymbol{f}(x)=\nabla_{x}(\boldsymbol{f}(x) p(x)) / p(x)\)</span>和分布积分法则就可以推导出来。</p>
+<p>有了上面的引理，我们可以得到 <span class="math display">\[\mathbb{E}_{p}\left[\mathcal{A}_{q} \boldsymbol{f}(x)\right]=\mathbb{E}_{p}\left[\mathcal{A}_{q} \boldsymbol{f}(x)-\mathcal{A}_{p} \boldsymbol{f}(x)\right]=\mathbb{E}_{p}\left[\left(\boldsymbol{s}_{q}(x)-\boldsymbol{s}_{p}(x)\right) \boldsymbol{f}(x)^{\top}\right]\]</span></p>
+<p>也就是说<span class="math inline">\(\mathbb{E}_{p}\left[\mathcal{A}_{q} \boldsymbol{f}(x)\right]\)</span>是一个由<span class="math inline">\(f(x)\)</span>加权的期望，对于<span class="math inline">\(\left(s_{q}(x)-s_{p}(x)\right)\)</span>的期望。</p>
+<h3 id="ksd">KSD</h3>
+<p>借助上面的推导以及RKHS的性质，我们可以定义出核空间下的stein discrepancy： <span class="math display">\[
+S(p, q)=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{x})\right)^{T} k(\mathbf{x}, \mathbf{y})\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{x})\right)\right]
+\]</span> （这里我们将Kernelized前后的stein discrepancy分别写为<span class="math inline">\(\mathbb{S}(p,q)\)</span>和<span class="math inline">\(S(p, q)\)</span>。另外需要注意后续部分推导是针对stein discrepancy中的期望项）<br />
+我们要用一个可采样的分布<span class="math inline">\(q\)</span>拟合分布<span class="math inline">\(p\)</span>，因此我们希望<span class="math inline">\(S(p, q)\)</span>[]中的式子是与<span class="math inline">\(p\)</span>无关的。把式子展开后可以发现 <span class="math display">\[
+\begin{aligned}
+S(p, q) &amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim}\left[\left(s_{q}-s_{p}\right)^{T} k(\mathbf{x}, \mathbf{y})\left(s_{q}-s_{p}\right)\right] \\
+&amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim}\left[\left(s_{q}-s_{p}\right)^{T}\left(k(\mathbf{x}, \mathbf{y}) s_{q}+\nabla_{y} k(\mathbf{x}, \mathbf{y})-k(\mathbf{x}, \mathbf{y}) s_{p}-\nabla_{\mathbf{y}} k(\mathbf{x}, \mathbf{y})\right)\right] \\
+&amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim}\left[\left(s_{q}-s_{p}\right)^{T} v(\mathbf{x}, \mathbf{y})\right]
+\end{aligned}
+\]</span> 其中<span class="math inline">\(v(\mathbf{x}, \mathbf{y})=k(\mathbf{x}, \mathbf{y}) s_{q}(\mathbf{y})+\nabla_{\mathbf{y}} k(\mathbf{x}, \mathbf{y})=\mathcal{A}_{q} k_{\mathbf{x}}(\mathbf{y}), k_{\mathbf{x}}(\cdot)=k(\mathbf{x}, \cdot)\)</span></p>
+<p>而对于固定的 <span class="math inline">\(\mathbf{y}\)</span>, 容易证明 <span class="math inline">\(v(\cdot, \mathbf{y})\)</span> 是Stein class of <span class="math inline">\(p(\mathbf{x})\)</span>, 即满足 <span class="math inline">\(\int_{\mathbf{x} \in \mathcal{X}} \nabla_{\mathbf{x}}(v(\mathbf{x}, \mathbf{y}) p(\mathbf{x})) d \mathbf{x}=0\)</span> 。因此就可以进一步将上式写开为 <span class="math display">\[
+\begin{aligned}
+S(p, q) &amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[s_{q}^{T} v(\mathbf{x}, \mathbf{y})-\left(\nabla_{\mathbf{x}} \ln p(\mathbf{x})\right)^{T} v(\mathbf{x}, \mathbf{y})\right] \\
+&amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[s_{q}^{T} v(\mathbf{x}, \mathbf{y})\right]-\int d \mathbf{x} d \mathbf{y} p(\mathbf{x}) p(\mathbf{y})\left(\nabla_{\mathbf{x}} \ln p(\mathbf{x})\right)^{T} v(\mathbf{x}, \mathbf{y}) \\
+&amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[s_{q}^{T} v(\mathbf{x}, \mathbf{y})\right]+\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[\operatorname{tr} \nabla_{\mathbf{x}} v(\mathbf{x}, \mathbf{y})\right]
+\end{aligned}
+\]</span></p>
+<p>其中<span class="math inline">\(\nabla_{\mathbf{x}} v(\mathbf{x}, \mathbf{y})=\nabla_{\mathbf{x}} k(\mathbf{x}, \mathbf{y}) s_{q}(\mathbf{y})^{T}+\nabla_{\mathbf{x}} \nabla_{\mathbf{y}} k(\mathbf{x}, \mathbf{y})\)</span>为一个矩阵。</p>
+<p>这样就得到了前文提到了 <span class="math display">\[
+S(p, q)=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[u_{q}(\mathbf{x}, \mathbf{y})\right]
+\]</span> 其中<span class="math inline">\(u_{q}(\mathbf{x}, \mathbf{y})\)</span>仅与分布<span class="math inline">\(q\)</span>有关。</p>
+<p>上述的推导说明了什么？说明引入核方法的可行性。而另一方面，我们要用核方法来加速内积的计算，如何体现？<br />
+借助RKHS的对称性和再生性，我们可以将<span class="math inline">\(S(p,q)\)</span>进行变化： <span class="math display">\[
+\begin{aligned}
+S(p, q) &amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{y})\right)^{T} k(\mathbf{x}, \mathbf{y})\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{y})\right)\right] \\
+&amp;=\mathbb{E}_{\mathbf{x}, \mathbf{y} \sim p}\left[\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{y})\right)^{T}&lt;k(\mathbf{x}, \cdot), k(\cdot, \mathbf{y})&gt;_{\mathcal{H}}\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{y})\right)\right] \\
+&amp;=\sum_{i=1}^{d}&lt;\mathbb{E}_{\mathbf{x} \sim p}\left[\left(s_{q}^{i}(\mathbf{x})-s_{p}^{i}(\mathbf{x})\right) k(\mathbf{x}, \cdot)\right], \mathbb{E}_{\mathbf{y} \sim p}\left[\left(s_{q}^{i}(\mathbf{y})-s_{p}^{i}(\mathbf{y})\right) k(\cdot \mathbf{y})\right]&gt;_{\mathcal{H}} \\
+&amp;=\sum_{i=1}^{d}&lt;\beta_{i}, \beta_{i}&gt;_{\mathcal{H}} \\
+&amp;=\|\boldsymbol{\beta}\|_{\mathcal{H}^{d}}^{2}
+\end{aligned}
+\]</span> 其中<span class="math inline">\(\boldsymbol{\beta}(\mathbf{y})\)</span>是一个向量函数 <span class="math display">\[
+\boldsymbol{\beta}(\mathbf{y})=\mathbb{E}_{\mathbf{x} \sim p}\left[\mathcal{A}_{q} k_{\mathbf{y}}(\mathbf{x})\right]=\mathbb{E}_{\mathbf{x} \sim p}\left[\left(s_{q}(\mathbf{x})-s_{p}(\mathbf{x})\right) k_{\mathbf{y}}(\mathbf{x})\right]
+\]</span></p>
+<p>在这里再展示一下最开始的stein discrepancy <span class="math display">\[
+\mathbb{S}(p, q)=\max _{f \in \mathcal{F}}\left(\mathbb{E}_{p}\left[\mathcal{A}_{q} f(x)\right]\right)^{2}
+\]</span> 对于任意向量 <span class="math inline">\(\mathbf{f} \in \mathcal{H}^{d}\)</span> 与 <span class="math inline">\(\boldsymbol{\beta}\)</span> 的内积为 <span class="math display">\[
+\begin{aligned}
+&lt;\mathbf{f}, \boldsymbol{\beta}&gt;_{\mathcal{H}^{d}} &amp;=\sum_{i=1}^{d}&lt;f_{i}, \mathbb{E}_{\mathbf{x} \sim p}\left[s_{q}^{i}(\mathbf{x}) k(\mathbf{x}, \cdot)+\nabla_{x_{i}} k(\mathbf{x}, \cdot)\right]&gt;_{\mathcal{H}} \\
+&amp;=\sum_{i=1}^{d} \mathbb{E}_{\mathbf{x} \sim p}\left[s_{q}^{i}(\mathbf{x})&lt;f_{i}, k(\mathbf{x}, \cdot)&gt;_{\mathcal{H}}+&lt;f_{i}, \nabla_{x_{i}} k(\mathbf{x}, \cdot)&gt;_{\mathcal{H}}\right] \\
+&amp;=\sum_{i=1}^{d} \mathbb{E}_{\mathbf{x} \sim p}\left[s_{q}^{i}(\mathbf{x}) f_{i}(\mathbf{x})+\nabla_{x_{i}} f_{i}(\mathbf{x})\right] \\
+&amp;=\mathbb{E}_{\mathbf{x} \sim p}\left[\operatorname{tr}\left(\mathcal{A}_{q} \mathbf{f}(\mathbf{x})\right)\right] \leq\|\boldsymbol{\beta}\|_{\mathcal{H}^{d}} (因为任意两个向量内积小于它与自身的内积)
+\end{aligned}
+\]</span> 因此我们有 <span class="math display">\[
+\|\boldsymbol{\beta}\|_{\mathcal{H}^{d}}=S(p, q)=\max _{f \in \mathcal{H}^{d}}\left\{\mathbb{E}_{\mathbf{x} \sim p}\left[\operatorname{tr}\left(\mathcal{A}_{q} f(\mathbf{x})\right)\right]\right \}.
+\]</span> 上式中<span class="math inline">\(\|f\|_{\mathcal{H}^{d}} \leq 1\)</span>，对应于最初提到的映射到希尔伯特空间中的一个球中的最优向量。这个<span class="math inline">\(S(p,q)\)</span>最大值所对应的向量为 <span class="math inline">\({f}^{*}=\boldsymbol{\beta} /\|\boldsymbol{\beta}\|_{\mathcal{H}^{d}}\)</span></p>
+<p>简单来说，引入kernel之后，我们可以直接得到stein discrepancy定义式中的函数。也就是说，KSD非常容易就能求得。</p>
+<h1 id="stein-variational-gradient-descent-svgd">Stein Variational Gradient Descent (SVGD)</h1>
+<p>SVGD的另一个核心公式在于 <span class="math display">\[
+\left.\nabla_{\epsilon} \mathrm{KL}\left(q_{[T]} \| p\right)\right|_{\epsilon=0}=-\mathbb{E}_{x \sim q}\left[\operatorname{tr}\left(\mathcal{A}_{p} \phi(x)\right)\right]
+\]</span> 也就是说KL散度变分求导等于KSD（具体推导过程见附录），这意味着KL散度变化最快的方向就是KSD所对应的向量函数 <span class="math inline">\(\phi^{*}=\boldsymbol{\beta} /\|\boldsymbol{\beta}\|_{\mathcal{H}^{d}}\)</span> <img src="/images/vimcmc/2.png" title="算法伪代码" /> 具体而言粒子<span class="math inline">\(\left\{x_{i}^{l}\right\}_{i=1}^{n}\)</span> 表示第<span class="math inline">\(l\)</span>次达代的第<span class="math inline">\(i\)</span>个粒子, 一共<span class="math inline">\(n\)</span> 个。粒子最开始是从分布<span class="math inline">\(q_{0}\)</span>中采样的, 最初的分布<span class="math inline">\(q\)</span>可以是任意 的。也就是说，该算法不依赖于初始的分布。</p>
+<p>算法中的更新项包含了两个部分 <span class="math display">\[
+k\left(x_{j}^{\ell}, x\right) \nabla_{x_{j}^{\ell}} \log p\left(x_{j}^{\ell}\right)+\nabla_{x_{j}^{\ell}} k\left(x_{j}^{\ell}, x\right)
+\]</span> 其中第一项意味着粒子会朝<span class="math inline">\(p\)</span>分布概率高的地方移动，而第二项代表着粒子将会朝着远离当前迭代轮数$l ll的粒子，从而减轻局部最优的风险。</p>
+<p><img src="/images/vimcmc/2.gif" title="SVGD拟合一维分布" /></p>
+<h1 id="回顾与总结">回顾与总结</h1>
+<p>从上文繁杂的推导中，SVGD算法确保粒子的移动是朝着KL散度的减小最快方向，而这个方向可以有核化的stein discrepancy导出 我们回看一下KL divergence的定义式： <span class="math display">\[\mathrm{KL}(P \| Q)=\int P(x) \log \frac{P(x)}{Q(x)} d x\]</span></p>
+<p>对于目标分布<span class="math inline">\(p(x)\)</span>，变分推断 (VI)目标是从一类分布族<span class="math inline">\(\mathcal{Q}\)</span>中找到最优的<span class="math inline">\(q(x)\)</span> <span class="math display">\[
+q^{*}=\underset{q \in \mathcal{Q}}{\arg \min }\left\{K L(q \| p)=\mathbb{E}_{q}[\log q(x)]-\mathbb{E}_{q}[\log \bar{p}(x)]+\log Z\right\}
+\]</span> 而SVGD在再生核希尔伯特空间下给出了使得KL散度下降最快的确定性方向，类似经典的梯度下降算法，可以理解为迭代构建增量变化的方法。</p>
+<h1 id="appendix">Appendix</h1>
+<p><span id="jump"> </span></p>
+<h2 id="the-reproducing-kernel-hilbert-space">The reproducing kernel Hilbert space</h2>
+<p>先回顾一下kernel的定义： Let <span class="math inline">\(\mathcal{X}\)</span> be a non-empty set. A function <span class="math inline">\(k: \mathcal{X} \times \mathcal{X} \rightarrow \mathbb{R}\)</span> is called a kernel if there exists an <span class="math inline">\(\mathbb{R}\)</span>-Hilbert space and a map <span class="math inline">\(\phi: \mathcal{X} \rightarrow \mathcal{H}\)</span> such that <span class="math inline">\(\forall x, x^{\prime} \in \mathcal{X}\)</span> <span class="math display">\[
+k\left(x, x^{\prime}\right):=\left\langle\phi(x), \phi\left(x^{\prime}\right)\right\rangle_{\mathcal{H}}
+\]</span></p>
+<p>在此基础上，我们用一个异或问题的例子来介绍RKHS。考虑特征映射</p>
+<p><span class="math display">\[\phi: \mathbb{R}^{2} \rightarrow \mathbb{R}^{3}\]</span> <span class="math display">\[x=\left[\begin{array}{l}
+x_{1} \\
+x_{2}
+\end{array}\right] \quad \mapsto \quad \phi(x)=\left[\begin{array}{c}
+x_{1} \\
+x_{2} \\
+x_{1} x_{2}
+\end{array}\right]\]</span> <img src="/images/vimcmc/4.png" title="特征空间和特征映射。希尔伯特空间的元素一般是函数，而函数可以被视为无穷维的向量。因此事实上希尔伯特空间的基底是一组无限维的函数，可以参考傅立叶变化或泰勒展开" /></p>
+<p>kernel <span class="math display">\[
+k(x, y)=\left[\begin{array}{c}
+x_{1} \\
+x_{2} \\
+x_{1} x_{2}
+\end{array}\right]^{\top}\left[\begin{array}{c}
+y_{1} \\
+y_{2} \\
+y_{1} y_{2}
+\end{array}\right]
+\]</span></p>
+<p>接下来我们可以定义一个特征函数： <span class="math display">\[
+f(x)=a x_{1}+b x_{2}+c x_{1} x_{2}
+\]</span> 这个函数属于从<span class="math inline">\(\mathcal{X}=\mathbb{R}^{2}\)</span>映射到<span class="math inline">\(\mathbb{R}\)</span>的函数空间。此时，我们也可以把函数<span class="math inline">\(f\)</span>等价表示为： <span class="math display">\[
+f(\cdot)=\left[\begin{array}{l}
+a \\
+b \\
+c
+\end{array}\right]
+\]</span> 至此，我们可以把<span class="math inline">\(f(x)\)</span>写为： <span class="math display">\[
+\begin{aligned}
+f(x) &amp;=f(\cdot)^{\top} \phi(x) \\
+&amp;:=\langle f(\cdot), \phi(x)\rangle_{\mathcal{H}}
+\end{aligned}
+\]</span> 也就是说，特征函数<span class="math inline">\(f\)</span>在<span class="math inline">\(x\)</span>的值可以被写为特征空间中的内积。<span class="math inline">\(\mathcal{H}\)</span>是一个将<span class="math inline">\(\mathbb{R}^{2}\)</span>映射到<span class="math inline">\(\mathbb{R}\)</span>的函数空间。上面这些乱七八糟的怎么体现再生性呢？我们仔细看下面的等式 <span class="math display">\[
+k(\cdot, y)=\left[\begin{array}{c}
+y_{1} \\
+y_{2} \\
+y_{1} y_{2}
+\end{array}\right]=\phi(y)
+\]</span> 上式我们参考<span class="math inline">\(f(\cdot)\)</span>类似的定义。具体来说，如果我们令<span class="math inline">\(a=y_{1}, b=y_{2}\)</span>, and <span class="math inline">\(c=y_{1} y_{2}\)</span>，就有 <span class="math display">\[
+\langle k(\cdot, y), \phi(x)\rangle_{\mathcal{H}}=a x_{1}+b x_{2}+c x_{1} x_{2}
+\]</span></p>
+<p>总的来说RKHS两个特性：<br />
+每个点的特征映射在特征空间中 <span class="math display">\[
+\forall x \in \mathcal{X}, \quad k(\cdot, x) \in \mathcal{H}
+\]</span> 再生性：<br />
+<span class="math display">\[
+\forall x \in \mathcal{X}, \forall f \in \mathcal{H},\langle f, k(\cdot, x)\rangle_{\mathcal{H}}=f(x)
+\]</span> <span class="math display">\[
+k(x, y)=\langle k(\cdot, x), k(\cdot, y)\rangle_{\mathcal{H}}
+\]</span></p>
+<h2 id="kl散度一阶导与ksd">KL散度一阶导与KSD</h2>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/26/pd5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/10/26/pd5/" itemprop="url">Multi-Label Image Recognition with Graph Convolutional Networks [CVPR2019]</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-10-26T23:25:47+08:00">
+                2021-10-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
+                    <span itemprop="name">Paper_daily</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  903
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1904.03582">Multi-Label Image Recognition with Graph Convolutional Networks</a><br />
+Code: <a target="_blank" rel="noopener" href="https://github.com/chenzhaomin123/ML_GCN">link</a></p>
+<p>针对多标签图像识别 (multi-label image recognition) 问题，旷视研究院提出一种基于图卷积网络的模型取得了良好的表现，该模型包含一个CNN的图像特征提取模块和一个图卷积网络进行标签间关系提取模块。</p>
+<h2 id="intro">Intro</h2>
+<p>对于多标签图像的识别问题，传统的方法往往是对每个标签进行孤立的二分类，即预测每个物体是否出现。基于概率图模型或RNN模型的方法则考虑显式的建模标签之间的依赖关系。也有方法将图像区域划分后考虑区域间的局部相关性，从而隐式的建模标签相关性。本文提出的基于GCN的端到端模型将标签的表示映射到相互独立的对象分类器上。</p>
+<h2 id="related-work">Related Work</h2>
+<p>最简单的多标签识别方法就是为每个标签独立训练一个二分类器，这种模型没有考虑标签之间的关系。当数据集中可能的标签数量增长时，可能的标签组合就会指数级增长（当一个数据集包含20个标签，则标签组合就有<span class="math inline">\(2^{20}\)</span>种。基于RNN、LSTM之类的模型将标签嵌入为向量，从而发掘标签间的相关性。<br />
+本文提出的模型将多标签构建为有向图，借助GCN在标签间的信息传播来学习图像标签间依赖、共现关系，并实现端到端训练。</p>
+<h2 id="framework">Framework</h2>
+<p><img src="/images/pd5/2.png" title="模型框架" /></p>
+<h3 id="图像特征提取">图像特征提取</h3>
+<p>论文用CNN进行图像特征提取，具体为ResNet-101的网络结构，输入图像<span class="math inline">\(I\)</span>，经过cnn和global max-pooling后得到2048维图像特征。 <span class="math display">\[
+\boldsymbol{x}=f_{\mathrm{GMP}}\left(f_{\mathrm{cnn}}\left(\boldsymbol{I} ; \theta_{\mathrm{cnn}}\right)\right) \in \mathbb{R}^{D}
+\]</span></p>
+<h3 id="图卷积">图卷积</h3>
+<p>卷积模块与最基本的卷积相同，如下式 <span class="math display">\[
+\boldsymbol{H}^{l+1}=h\left(\widehat{\boldsymbol{A}} \boldsymbol{H}^{l} \boldsymbol{W}^{l}\right)
+\]</span> 我们主要关注如何构图，在这一方面，本文的idea似乎有些超脱CV领域。模型针对图片数据集构建图，图中的节点为数据中的标签，并使用word embedding（pre-trained glove）对节点特征进行初始化。<br />
+而对于图的边，也对应图卷积中的矩阵<span class="math inline">\(\boldsymbol{A}\)</span>（文中称其为相关系数矩阵），模型使用条件概率<span class="math inline">\(P\left(L_{j} \mid L_{i}\right)\)</span>进行建模，已期获得标签相关性信息。 <img src="/images/pd5/3.png" /> 具体而言，论文统计了数据集中的标签对的共现次数，然后构建共现矩阵，并设定一个阈值来进行二值化处理，借此过滤噪声边。 <img src="/images/pd5/1.png" title="基于多标签构建有向图" /></p>
+<p>借助模型框架图可以看到，模型中图卷积模块起的是类似辅助分类器的作用，图中每个标签节点就是该标签的一个二分类器，将基于整个数据集训练的分类器<span class="math inline">\(\boldsymbol{W} \in \mathbb{R}^{C \times D}\)</span>与图像的特征<span class="math inline">\(x \in \mathbb{R}^{D}\)</span>进行点积，得到<span class="math inline">\(\boldsymbol{y} \in \mathbb{R}^{C}\)</span>（C表示标签的总数）。图卷积利用的信息也只有图的边，也就是标签的共现，而后借助图卷积与图像特征提取进行共同训练，得到标签之间关系的隐式表示，最终推动更准确的多标签识别。</p>
+<h2 id="实验">实验</h2>
+<p><img src="/images/pd5/4.png" title="实验结果—非常不错 XD" /> 不过在尝试复现该模型时，本人试验了几个数据集似乎始终无法到达论文中的结果。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/24/pd6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/touxiang.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen's Homepage">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/10/24/pd6/" itemprop="url">Multi-hop Question Generation with Graph Convolutional Network [Arxiv]</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-10-24T23:56:42+08:00">
+                2021-10-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
+                    <span itemprop="name">Paper_daily</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  902
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2010.09240.pdf">Multi-hop Question Generation with Graph Convolutional Network</a><br />
+Code: <a target="_blank" rel="noopener" href="https://github.com/HLTCHKUST/MulQG">link</a></p>
+<h2 id="background">Background</h2>
+<p>问题生成(QG)是一个从给定的上下文自动生成问题或答案的任务，而多跳问题生成 (Multi-hop Question Generation) 需要从多个不同的段落中推理生成与答案相关的问题。QG可以应用于教育系统，也可以结合QA模型作为双重任务来增强QA系统的推理能力。对于多跳问题生成，核心问题在于如何连接多个段落间的零散的信息以及答案。</p>
+<p><img src="/images/pd6/1.png" title="多跳问题生成" /></p>
+<h2 id="模型">模型</h2>
+<p><img src="/images/pd6/2.png" title="模型框架" /></p>
+<h3 id="multi-hop-encoder">Multi-hop Encoder</h3>
+<p>对于输入的文本段落和答案，先分割成word-level的token，并分别用pre-trained Glove进行embedding，并在文本的token embedding中加入答案 embedding tag。对于得到的token embedding 输入到LSTM-RNN中学习初步的上下文相关的representation，再输入到Encoder中，模型的Encoder包括三个部分:</p>
+<ul>
+<li><p>Answer-aware context encoder 这一部分参考了阅读理解中的co-attention reasoning机制: <span class="math display">\[
+\begin{aligned}
+S &amp;=C_{0}^{T} A_{0} \in R^{n \times m} \\
+S^{\prime} &amp;=\operatorname{softmax}(S) \in R^{n \times m} \\
+S^{\prime \prime} &amp;=\operatorname{softmax}\left(S^{T}\right) \in R^{m \times n} \\
+A_{0}^{\prime} &amp;=C_{0} \cdot S^{\prime} \in R^{d \times m} \\
+\tilde{C}_{1} &amp;=\left[A_{0} ; A_{0}^{\prime}\right] \cdot S^{\prime \prime} \in R^{2 d \times n}\\
+C_{1} &amp;=\operatorname{BiLSTM}\left(\left[\tilde{C}_{1} ; C_{0}\right]\right) \in R^{d \times n}
+\end{aligned}
+\]</span> 相关性矩阵S表示答案与上下文的相关性，整个过程比较复杂，这一模块的有效性在阅读理解任务中被验证，大致操作即将答案与文本计算attention后生成新的“答案”而后同样进行一遍相关性计算，最后输入Bi-LSTM中。</p></li>
+<li><p>GCN-based entity-aware answer encoder 将上述encoder得到的embedding输入到GCN中进行多跳信息的嵌入。 <img src="/images/pd6/3.png" title="GCN-based entity-aware answer encoder" /> 图中的节点为文本中的命名实体（由BERT自动化提取），如果实体对在同一句子中，则为它们创建边。将上面Answer-aware context encoder 的结果结合到多跳图卷积中，并最终和图的结果结合，输入到Bi-attention模型，进一步得到token的representations <span class="math display">\[
+A_{1}=\text { BiAttention }\left(A_{0}, E_{M}\right)
+\]</span></p></li>
+<li><p>Gated encoder reasoning layer 将前面得到的结果输入到门控网络进行特征融合，进行特征保留或遗忘，得到最终的Encoder结果。</p></li>
+</ul>
+<h3 id="maxout-pointer-decoder">Maxout Pointer Decoder</h3>
+<p>模型采用单向LSTM作为解码器，而Maxout pointer这一模块也并不是由作者提出的，而是参考了他人的模型，用这一模块减少生成结果中的重复项。</p>
+<h2 id="实验">实验</h2>
+<p>实验部分，作者分别做了与现有multi-hop QG模型对比以及消融实验，取得了SOTA结果，并且证明了框架中每个模块的意义。 <img src="/images/pd6/4.png" title="纵向对比" /> <img src="/images/pd6/5.png" title="消融实验" /></p>
+<h2 id="总结">总结</h2>
+<p>本文提出的框架总体来说比较复杂。往牛了说可以理解为整个框架模拟了人类的问题生成的过程，包括整体文本和答案的阅读，进行大概了解，而后对文本和答案中的实体进行关注，并寻找他们的联系，最后在生成问题时确定核心和次要信息，生成相关的问题。不过事实上整个框架就是对几个现有模型中的部分模块进行组装，类似“搭积木”的过程。而新加入的multi-hop图卷积部分整体方法也不具有很亮点的想法，从消融实验结果中也可以看出这一模块对最终结果的提升也并不是很明显。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/23/maxp/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -990,1291 +2709,11 @@ VOLT对比BPE、MUV search更加高效</p>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/09/p1-position-encoding/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/10/09/p1-position-encoding/" itemprop="url">Encoding Word Order in Complex Embeddings [ICLR2020]</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-10-09T21:29:54+08:00">
-                2021-10-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
-                    <span itemprop="name">Paper_daily</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  1.6k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1912.12333.pdf">Encoding Word Order in Complex Embeddings</a><br />
-Code: <a target="_blank" rel="noopener" href="https://github.com/iclr-complex-order/complex-order">link</a></p>
-<h2 id="概要">概要</h2>
-<p>针对位置编码提出的改进，切入点新颖高效且为位置编码带来了一定的具体意义和可解释性。传统的位置嵌入捕获单个单词的位置，而不是单个单词位置之间的有序关系(例如邻接关系或优先级)。本文提出的方法建模单词的全局绝对位置和它们的顺序关系，将以前定义为独立向量的词嵌入推广到变量(位置)上的连续词函数。每个单词的表示会随着位置的增加而移动。因此，在连续函数中，不同位置的词表示可以相互关联。将这些函数的通解推广到复值域，得到了更丰富的表示。作者在文本分类、机器翻译和语言模型方面进行实验，取得了良好的表现。</p>
-<h2 id="positional-encoding">Positional encoding</h2>
-<p>Positional encoding 位置编码在transformer中用于存储位置信息（由于self-attention没法获取序列位置的信息），此外BERT中encoding部分也包含了位置编码。对于位置编码，本能的想法是针对序列中的每个位置必须是独一无二的，且不受序列长度的影响。常见的positional encoding的方法有:</p>
-<ul>
-<li>绝对（正弦）位置编码（Sinusoidal Position Encoding）</li>
-<li>相对位置编码（Relative Position Representations）</li>
-<li>可学习位置编码</li>
-</ul>
-<h3 id="正弦位置编码">正弦位置编码</h3>
-<p>Transformer中使用的就是这种编码，实际上具体编码过程使用了正弦和余弦。具体公式为： <span class="math display">\[
-\begin{aligned}
-P E_{(p o s, 2 i)} &amp;=\sin \left(p o s / 10000^{2 i / d_{\text {model }}} \right) \\
-P E_{(p o s, 2 i+1)} &amp;=\cos \left(p o s / 10000^{2 i / d_{\text {model }}} \right)
-\end{aligned}
-\]</span> 其中<span class="math inline">\(d_{model}\)</span>为输入词向量的维度。如d(model)=128,那么位置3对应的位置向量为 <span class="math display">\[
-\left[\sin \left(3 / 10000^{0 / 128}\right), \cos \left(3 / 10000^{1 / 128}\right), \sin \left(3 / 10000^{2 / 28}\right), \cos \left(3 / 10000^{3 / 28}\right), \ldots\right]
-\]</span> 在具体的应用时可能前一部分用正弦后一部分用余弦。</p>
-<p><img src="/images/pe4.png" title="Bert中的位置编码" /></p>
-<h3 id="相对位置编码">相对位置编码</h3>
-<p>Todo<br />
-<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1803.02155">Self-Attention with Relative Position Representations</a></p>
-<h3 id="可学习位置编码">可学习位置编码</h3>
-<p>Todo</p>
-<h2 id="intro">Intro</h2>
-<p>本文的重点在于建模文本信息中额外的词的内部顺序和相邻关系，对比原本位置编码方式仅编码词的位置。模型将之前定义为独立向量的词嵌入扩展为位置自变量上的连续函数。在一个连续函数中，不同位置的词表示可以相互关联。</p>
-<p><img src="/images/pe1.png" /></p>
-<h2 id="methodology">Methodology</h2>
-<p>类似于Word Embedding，位置编码（PE）定义了一个映射关系，将词的序列索引映射为一个向量。<span class="math inline">\(f_{n e}: \mathbb{N} \rightarrow \mathbb{R}^{D}\)</span>。最终某个词的embedding通常表示为为词向量和位置向量的和： <span class="math display">\[f(j, p o s)=f_{w e}(j)+f_{p e}(p o s)\]</span></p>
-<p>论文中提出了一个位置独立问题（position independence problem），即位置编码无法捕获相邻词以及其顺序之间的潜在关系。而当后续用于特征处理的网络对这类信息不敏感时，这一问题就会限制整个模型的表达能力。相对位置编码针对这一问题进行了一定的研究，但其无法涵盖整个序列域。</p>
-<h3 id="性质">性质</h3>
-<p>论文指出了在位置编码中建立词序模型所必需的性质。<br />
-由于位置向量中每个维度的值都是根据离散的位置index得到的，这使得位置间有序关系建模变得困难，因此需要根据位置索引构建一个连续的函数（以在每个维度中表示一个特定的单词？） <span class="math display">\[
-f(j, \text { pos })=\boldsymbol{g}_{j}(\text { pos }) \in \mathbb{R}^{D}
-\]</span> <span class="math inline">\(g_j\)</span>即<span class="math inline">\(\boldsymbol{g}_{w e}(j) \in(\mathcal{F})^{D}\)</span>，词<span class="math inline">\(w_j\)</span>在pos位置可以表示为 <span class="math display">\[
-\left[g_{j, 1}(\operatorname{pos}), g_{j, 2}(\operatorname{pos}), \ldots, g_{j, D}(\text { pos })\right] \in \mathbb{R}^{D}
-\]</span> 当词<span class="math inline">\(w_j\)</span>从pos位置转到pos’位置时，只需要改变自变量的值而不需要改变映射函数<span class="math inline">\(g_j\)</span>。</p>
-<h3 id="函数">函数</h3>
-<p>由于实数也被囊括在复数域中，且前人有相关工作（详见论文原文Section2.2）验证了复数域所具有的更强大的表达能力，作者将模型拓展到了复数域。对于理想的映射函数，论文中提出了两条性质，即:</p>
-<ul>
-<li>Position-free offset transformation</li>
-<li>Boundedness</li>
-</ul>
-<p>变换函数<span class="math inline">\(Transform\)</span>需满足对于任何pos，有 <span class="math display">\[
-g(p o s+n)=\operatorname{Transform}_{n}(g(p o s))
-\]</span> 满足等式的变换函数被称为witness，而满足这一条件的映射函数<span class="math inline">\(g_j\)</span>则被称为<em>linearly witnessed</em>。规定Transform <span class="math inline">\((n\)</span>, pos <span class="math inline">\()=\)</span> Transform <span class="math inline">\(_{n}(\)</span> pos <span class="math inline">\()=w(n)\)</span>。另外，映射函数<span class="math inline">\(g_j\)</span>需要有界。</p>
-<p>而后作者证明了满足上述性质的映射函数唯一解为 <span class="math display">\[
-g(p o s)=z_{2} z_{1}^{p o s} \text { for } z_{1}, z_{2} \in \mathbb{C} \text { with }\left|z_{1}\right| \leq 1
-\]</span> 对于任意的 <span class="math inline">\(z \in \mathbb{C}\)</span>, 我们可以写成 <span class="math inline">\(z=r e^{i \theta}=r(\cos \theta+i \sin \theta)\)</span>，因此上式可写为： <span class="math display">\[g(p o s)=z_{2} z_{1}^{p o s}=r_{2} e^{i \theta_{2}}\left(r_{1} e^{i \theta_{1}}\right)^{p o s}=r_{2} r_{1}^{p o s} e^{i\left(\theta_{2}+\theta_{1} p o s\right)} \quad$ subject to $\left|r_{1}\right| \leq 1\]</span></p>
-<p>(...跳过证明和优化过程)</p>
-<p>最终的位置编码函数<span class="math inline">\(f(j\)</span>, pos <span class="math inline">\()\)</span>为 <img src="/images/pe2.png" /> <span class="math inline">\(j\)</span>代表单词（索引），<span class="math inline">\(pos\)</span>表示位置索引。<br />
-对于embedding中的每一维度，都有各自的参数，振幅r、频率p、初相<span class="math inline">\(\theta\)</span>，这些参数是trainable的。此外，周期/频率决定了单词对位置的敏感程度。当周期很短，则说明嵌入将对position高度敏感。注意，振幅、频率是与postion（自变量）无关的，与单词和维度有关。此时，word embedding可以用这些参数来表示（维度与positional embedding维度相同）。</p>
-<h2 id="实验">实验</h2>
-<p>作者在文本分类、机器翻译和语言模型几个任务上进行了实验，分别用Fasttext、LSTM、CNN、Transformer作为模型的backbone，而后使用不同的位置编码方法以及本文的Complex-order编码方法进行embedding，对比几个实验结果均取得了可观的提升。而计算开销（时间）上并没有显著的增加。 <img src="/images/pe3.png" title="部分实验结果" /> 实验基于tensorflow，目前没有pytorch版本，笔者将会尝试将其迁移到pytorch框架下并开源。</p>
-<h2 id="相关工作">相关工作</h2>
-<p>Vanilla Position Embeddings<br />
-Trigonometric Position Embeddings<br />
-Todo</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/29/textGCN/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/09/29/textGCN/" itemprop="url">Improved GCN for Text Classification [GNN]</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-09-29T22:24:53+08:00">
-                2021-09-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Research/" itemprop="url" rel="index">
-                    <span itemprop="name">Research</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  8
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <center>
-<font size = 4> <strong>TextRGNN: Residual Graph Neural Networks for Text Classification</strong></font>
-</center>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/29/word2vec/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/09/29/word2vec/" itemprop="url">word2vec</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-09-29T00:10:00+08:00">
-                2021-09-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  0
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/20/sort-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/09/20/sort-1/" itemprop="url">sort algorithm 1</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-09-20T23:01:57+08:00">
-                2021-09-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Leetcode/" itemprop="url" rel="index">
-                    <span itemprop="name">Leetcode</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  187
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="sorti">Sort(i)</h1>
-<p>三种复杂度为<span class="math inline">\(O(n^2)\)</span>的排序算法:</p>
-<ul>
-<li>冒泡排序</li>
-<li>选择排序</li>
-<li>插入排序</li>
-</ul>
-<h2 id="bubble-sort">Bubble sort</h2>
-<p>“一趟一趟来” <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bubble_sort</span>(<span class="params">ls</span>):</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(ls)-<span class="number">1</span>):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(ls)-i-<span class="number">1</span>):</span><br><span class="line">            <span class="keyword">if</span> ls[j] &gt; ls[j+<span class="number">1</span>]:</span><br><span class="line">                ls[j+<span class="number">1</span>],ls[j]=ls[j],ls[j+<span class="number">1</span>]</span><br><span class="line">    <span class="keyword">return</span>(ls)</span><br></pre></td></tr></table></figure></p>
-<h2 id="select-sort">Select sort</h2>
-<p>&quot;一个一个排&quot; <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">select_sort</span>(<span class="params">ls</span>):</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(ls)-<span class="number">1</span>):</span><br><span class="line">        min_loc = i</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(ls)-<span class="number">1</span>-i):</span><br><span class="line">            <span class="keyword">if</span> ls[i+j]&lt;ls[min_loc]:</span><br><span class="line">                min_loc =i+j</span><br><span class="line">        ls[min_loc],ls[i] = ls[i],ls[min_loc]</span><br><span class="line">    <span class="built_in">print</span>(ls)</span><br></pre></td></tr></table></figure></p>
-<h2 id="insert-sort">Insert sort</h2>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">insert_select</span>(<span class="params">ls</span>):</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="built_in">len</span>(ls)):</span><br><span class="line">        j = i-<span class="number">1</span></span><br><span class="line">        tmp = ls[i]</span><br><span class="line">        <span class="keyword">while</span> j&gt;=<span class="number">0</span> <span class="keyword">and</span> ls[j]&gt;tmp:</span><br><span class="line">            ls[j+<span class="number">1</span>]=ls[j]</span><br><span class="line">            j-=<span class="number">1</span></span><br><span class="line">        ls[j+<span class="number">1</span>] = tmp</span><br><span class="line">    <span class="built_in">print</span>(ls)</span><br></pre></td></tr></table></figure>
-<h1 id="sortii">Sort(ii)</h1>
-<p>三种复杂度为<span class="math inline">\(O(nlogn)\)</span>的排序算法:</p>
-<ul>
-<li>快速排序</li>
-<li>归并排序</li>
-<li>堆排序</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/25/dae%E7%9A%84%E5%89%AF%E6%9C%AC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/08/25/dae%E7%9A%84%E5%89%AF%E6%9C%AC/" itemprop="url">Linear Regression (python & pytorch)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-08-25T23:21:47+08:00">
-                2021-08-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Preliminary-AI/" itemprop="url" rel="index">
-                    <span itemprop="name">Preliminary AI</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  0
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/25/test/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/08/25/test/" itemprop="url">search algorithm</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-08-25T22:42:55+08:00">
-                2021-08-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Leetcode/" itemprop="url" rel="index">
-                    <span itemprop="name">Leetcode</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  79
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="linear-search-and-binary-search">Linear Search and Binary Search</h1>
-<h2 id="linear-search">Linear search</h2>
-<p>Time complexity：<span class="math inline">\(O(n)\)</span> <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">linear_search</span>(<span class="params">ls,val</span>):</span></span><br><span class="line">    <span class="keyword">for</span> index,value <span class="keyword">in</span> <span class="built_in">enumerate</span>(ls):</span><br><span class="line">        <span class="keyword">if</span> value == val:</span><br><span class="line">            <span class="keyword">return</span> index</span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="binary-search">Binary search</h2>
-<p>Time complexity：<span class="math inline">\(O(log n)\)</span> <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">binary_search</span>(<span class="params">ls,val</span>):</span></span><br><span class="line">    left = <span class="number">0</span>  <span class="comment">#左指针</span></span><br><span class="line">    right = <span class="built_in">len</span>(ls)-<span class="number">1</span>  <span class="comment">#右指针</span></span><br><span class="line">    <span class="keyword">while</span> left &lt;= right:</span><br><span class="line">        mid = (left+right)//<span class="number">2</span></span><br><span class="line">        <span class="keyword">if</span> ls[mid] == val:</span><br><span class="line">            <span class="keyword">return</span> mid</span><br><span class="line">        <span class="keyword">elif</span> ls[mid]&lt;val:</span><br><span class="line">            left = mid+<span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            right = mid-<span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span></span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/16/test-my-site/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/touxiang.JPG">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen's Homepage">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/08/16/test-my-site/" itemprop="url">Transformer & Bert</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-08-16T22:58:35+08:00">
-                2021-08-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Paper-daily/" itemprop="url" rel="index">
-                    <span itemprop="name">Paper_daily</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  480
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  2
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>Pre-training of Deep Bidirectional Transformers for Language Understanding</strong></p>
-<p>关于Bert，多的不说了，网上的扫盲帖、详解帖也一大堆。我们针对源码来一步一步的看。<br />
-Transformer部分的源码来自于<a target="_blank" rel="noopener" href="https://github.com/tunz/transformer-pytorch/tree/e7266679f0b32fd99135ea617213f986ceede056">pytorch-transformer</a></p>
-<p>首先是Multi-head Self-Attention，这也是Transformer中最重要的一部分。 <span class="math display">\[
-\operatorname{Attention}(Q, K, V)=\operatorname{softmax}\left(\frac{Q K^{T}}{\sqrt{d_{k}}}\right) V
-\]</span></p>
-<p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultiHeadAttention</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, hidden_size, dropout_rate, head_size=<span class="number">8</span></span>):</span></span><br><span class="line">        <span class="built_in">super</span>(MultiHeadAttention, self).__init__()</span><br><span class="line"></span><br><span class="line">        self.head_size = head_size</span><br><span class="line"></span><br><span class="line">        self.att_size = att_size = hidden_size // head_size</span><br><span class="line">        self.scale = att_size ** -<span class="number">0.5</span>     <span class="comment"># d_k ^ 0.5</span></span><br><span class="line"></span><br><span class="line">        self.linear_q = nn.Linear(hidden_size, head_size * att_size, bias=<span class="literal">False</span>)</span><br><span class="line">        self.linear_k = nn.Linear(hidden_size, head_size * att_size, bias=<span class="literal">False</span>)</span><br><span class="line">        self.linear_v = nn.Linear(hidden_size, head_size * att_size, bias=<span class="literal">False</span>)</span><br><span class="line">        initialize_weight(self.linear_q)</span><br><span class="line">        initialize_weight(self.linear_k)</span><br><span class="line">        initialize_weight(self.linear_v)</span><br><span class="line"></span><br><span class="line">        self.att_dropout = nn.Dropout(dropout_rate)</span><br><span class="line"></span><br><span class="line">        self.output_layer = nn.Linear(head_size * att_size, hidden_size,</span><br><span class="line">                                      bias=<span class="literal">False</span>)</span><br><span class="line">        initialize_weight(self.output_layer)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, q, k, v, mask, cache=<span class="literal">None</span></span>):</span></span><br><span class="line">        orig_q_size = q.size()</span><br><span class="line"></span><br><span class="line">        d_k = self.att_size</span><br><span class="line">        d_v = self.att_size</span><br><span class="line">        batch_size = q.size(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># head_i = Attention(Q(W^Q)_i, K(W^K)_i, V(W^V)_i)</span></span><br><span class="line">        </span><br><span class="line">        q = self.linear_q(q).view(batch_size, -<span class="number">1</span>, self.head_size, d_k)</span><br><span class="line">        <span class="keyword">if</span> cache <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> <span class="string">&#x27;encdec_k&#x27;</span> <span class="keyword">in</span> cache:</span><br><span class="line">            k, v = cache[<span class="string">&#x27;encdec_k&#x27;</span>], cache[<span class="string">&#x27;encdec_v&#x27;</span>]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            k = self.linear_k(k).view(batch_size, -<span class="number">1</span>, self.head_size, d_k)</span><br><span class="line">            v = self.linear_v(v).view(batch_size, -<span class="number">1</span>, self.head_size, d_v)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> cache <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                cache[<span class="string">&#x27;encdec_k&#x27;</span>], cache[<span class="string">&#x27;encdec_v&#x27;</span>] = k, v</span><br><span class="line"></span><br><span class="line">        q = q.transpose(<span class="number">1</span>, <span class="number">2</span>)                  <span class="comment"># [b, h, q_len, d_k]</span></span><br><span class="line">        v = v.transpose(<span class="number">1</span>, <span class="number">2</span>)                  <span class="comment"># [b, h, v_len, d_v]</span></span><br><span class="line">        k = k.transpose(<span class="number">1</span>, <span class="number">2</span>).transpose(<span class="number">2</span>, <span class="number">3</span>)  <span class="comment"># [b, h, d_k, k_len]</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># Scaled Dot-Product Attention.</span></span><br><span class="line">        <span class="comment"># Attention(Q, K, V) = softmax((QK^T)/sqrt(d_k))V</span></span><br><span class="line">        q.mul_(self.scale)</span><br><span class="line">        x = torch.matmul(q, k)  <span class="comment"># [b, h, q_len, k_len]</span></span><br><span class="line">        x.masked_fill_(mask.unsqueeze(<span class="number">1</span>), -<span class="number">1e9</span>)</span><br><span class="line">        x = torch.softmax(x, dim=<span class="number">3</span>)</span><br><span class="line">        x = self.att_dropout(x)</span><br><span class="line">        x = x.matmul(v)  <span class="comment"># [b, h, q_len, attn]</span></span><br><span class="line"></span><br><span class="line">        x = x.transpose(<span class="number">1</span>, <span class="number">2</span>).contiguous()  <span class="comment"># [b, q_len, h, attn]</span></span><br><span class="line">        x = x.view(batch_size, -<span class="number">1</span>, self.head_size * d_v)</span><br><span class="line"></span><br><span class="line">        x = self.output_layer(x)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">assert</span> x.size() == orig_q_size</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EncoderLayer</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, hidden_size, filter_size, dropout_rate</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(EncoderLayer, self).__init__()</span><br><span class="line"></span><br><span class="line">        self.self_attention_norm = nn.LayerNorm(hidden_size, eps=<span class="number">1e-6</span>)</span><br><span class="line">        self.self_attention = MultiHeadAttention(hidden_size, dropout_rate)</span><br><span class="line">        self.self_attention_dropout = nn.Dropout(dropout_rate)</span><br><span class="line"></span><br><span class="line">        self.ffn_norm = nn.LayerNorm(hidden_size, eps=<span class="number">1e-6</span>)</span><br><span class="line">        self.ffn = FeedForwardNetwork(hidden_size, filter_size, dropout_rate)</span><br><span class="line">        self.ffn_dropout = nn.Dropout(dropout_rate)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x, mask</span>):</span>  <span class="comment"># pylint: disable=arguments-differ</span></span><br><span class="line">        y = self.self_attention_norm(x)</span><br><span class="line">        y = self.self_attention(y, y, y, mask)</span><br><span class="line">        y = self.self_attention_dropout(y)</span><br><span class="line">        x = x + y</span><br><span class="line"></span><br><span class="line">        y = self.ffn_norm(x)</span><br><span class="line">        y = self.ffn(y)</span><br><span class="line">        y = self.ffn_dropout(y)</span><br><span class="line">        x = x + y</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/default/page/2/">&lt;</a><a class="page-number" href="/default/">1</a><a class="page-number" href="/default/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/default/page/4/">4</a><a class="extend next" rel="next" href="/default/page/4/">&gt;</a>
+    <a class="extend prev" rel="prev" href="/default/page/2/">&lt;</a><a class="page-number" href="/default/">1</a><a class="page-number" href="/default/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/default/page/4/">4</a><a class="page-number" href="/default/page/5/">5</a><a class="extend next" rel="next" href="/default/page/4/">&gt;</a>
   </nav>
 
 
@@ -2325,7 +2764,7 @@ Transformer部分的源码来自于<a target="_blank" rel="noopener" href="https
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">42</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -2347,7 +2786,7 @@ Transformer部分的源码来自于<a target="_blank" rel="noopener" href="https
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -2407,7 +2846,7 @@ Transformer部分的源码来自于<a target="_blank" rel="noopener" href="https
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

@@ -92,7 +92,7 @@
 <meta property="og:image" content="http://example.com/images/pd8/4.png">
 <meta property="og:image" content="http://example.com/images/pd8/1.png">
 <meta property="article:published_time" content="2021-12-08T05:49:22.000Z">
-<meta property="article:modified_time" content="2021-12-14T13:04:34.134Z">
+<meta property="article:modified_time" content="2022-03-19T07:00:41.157Z">
 <meta property="article:author" content="Chen jiayuan">
 <meta property="article:tag" content="Text Classification">
 <meta name="twitter:card" content="summary">
@@ -457,7 +457,7 @@ y_{i}=\operatorname{softmax}\left(\operatorname{Relu}\left(\mathbf{W} \sum_{n \i
 <h1 id="bertgcn">BertGCN</h1>
 <p>BertGCN: Transductive Text Classification by Combining GCN and BERT<br />
 BertGCN是由香侬科技提出，发表在ACL2021上的文章，也是目前文本分类的SOTA模型。不过这篇文章的贡献主要是工程上的。另外，不妨排列组合一下将Bert与TextING结合，应该能取得更好的结果XD（虽然在R8上的结果已经非常接近100了）。<br />
-回顾TextGCN，模型中图节点初始化用的是one-hot向量，而BertGCN则是用Bert进行embedding的初始化，另外将Bert与GNN两个模块进行联合训练，取得了很好的表现。</p>
+回顾TextGCN，模型中图节点初始化用的是one-hot向量，而BertGCN则是用Bert进行embedding的初始化（文档节点用Bert、词节点直接为0），另外将Bert与GNN两个模块进行联合训练，取得了很好的表现。</p>
 <p>两者的结合存在两个问题，一是难收敛：BERT与GCN处理数据的方式不同、模型大小不同；二是GCN是在整个图上运算，而BERT过大的模型无法一次全部加载图中所有结点，这就给BertGCN的训练带来阻碍。 针对第一个问题，模型使用了Interpolating损失。 <span class="math display">\[
 Z=\lambda Z_{\mathrm{GCN}}+(1-\lambda) Z_{\mathrm{BERT}}, Z_{\mathrm{BERT}}=\operatorname{softmax}(W X)
 \]</span> 当<span class="math inline">\(\lambda=1\)</span>时，BERT模块没有更新；当<span class="math inline">\(\lambda=0\)</span>时，GCN模块没有更新；当<span class="math inline">\(\lambda \in (0,1)\)</span>时，两个模块都能得到更新，并且通过调节<span class="math inline">\(\lambda\)</span>实现BertGCN整体模块的快速收敛。<br />
@@ -498,24 +498,6 @@ Z=\lambda Z_{\mathrm{GCN}}+(1-\lambda) Z_{\mathrm{BERT}}, Z_{\mathrm{BERT}}=\ope
       </div>
     
 
-    
-      <div>
-        <ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>Post author:</strong>
-    Chen jiayuan
-  </li>
-  <li class="post-copyright-link">
-    <strong>Post link:</strong>
-    <a href="http://example.com/2021/12/08/pd8/" title="Every Document Owns Its Structure - Inductive Text Classification via Graph Neural Networks [ACL2020]">http://example.com/2021/12/08/pd8/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>Copyright Notice: </strong>
-    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
-  </li>
-</ul>
-
-      </div>
     
 
     <footer class="post-footer">
@@ -628,7 +610,7 @@ Z=\lambda Z_{\mathrm{GCN}}+(1-\lambda) Z_{\mathrm{BERT}}, Z_{\mathrm{BERT}}=\ope
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">42</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -650,7 +632,7 @@ Z=\lambda Z_{\mathrm{GCN}}+(1-\lambda) Z_{\mathrm{BERT}}, Z_{\mathrm{BERT}}=\ope
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -726,7 +708,7 @@ Z=\lambda Z_{\mathrm{GCN}}+(1-\lambda) Z_{\mathrm{BERT}}, Z_{\mathrm{BERT}}=\ope
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
